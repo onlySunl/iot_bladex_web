@@ -8,7 +8,7 @@
             placeholder="请输入设备名称"
             clearable
             @keyup.enter="handleQuery"
-            prefix-icon="VideoCamera"
+            prefix-icon="el-icon-video-camera"
           />
         </el-form-item>
         <el-form-item label="IP地址" prop="ipAddress">
@@ -17,7 +17,7 @@
             placeholder="请输入IP地址"
             clearable
             @keyup.enter="handleQuery"
-            prefix-icon="MapLocation"
+            prefix-icon="el-icon-map-location"
           />
         </el-form-item>
         <el-form-item label="接入类型" prop="type">
@@ -890,7 +890,7 @@ function handleSelectionChange(selection: QsDevice[]) {
 // 卡片视图多选框选中处理
 function handleCardSelection() {
   const selectedItems = deviceList.value.filter(item => item.checked)
-  ids.value = selectedItems.map(item => item.id!)
+  ids.value = selectedItems.map(item => item.id)
   single.value = selectedItems.length != 1
   multiple.value = !selectedItems.length
 }
@@ -1236,7 +1236,7 @@ const handleNumberInput = (val: string) => {
 function handleStatusChange(row: QsDevice) {
   const text = row.status === "ENABLE" ? "启用" : "停用"
   this.$modal.confirm('确认要"' + text + '"该设备吗?').then(function () {
-    return changeDeviceStatus(row.id!, row.status!)
+    return changeDeviceStatus(row.id, row.status)
   }).then(() => {
     this.$modal.msgSuccess(text + "成功")
   }).catch(function () {
@@ -2251,7 +2251,7 @@ const handleSubscribeCatalog = async (row: QsDevice) => {
   }
 
   try {
-    await subscribeCatalog(row.id!);
+    await subscribeCatalog(row.id);
     this.$modal.msgSuccess('目录订阅成功');
     // 订阅成功后更新本地状态
     row.subscribeCatalogStatus = 1;
@@ -2269,7 +2269,7 @@ const handleUnsubscribeCatalog = async (row: QsDevice) => {
   }
 
   try {
-    await unsubscribeCatalog(row.id!);
+    await unsubscribeCatalog(row.id);
     this.$modal.msgSuccess('取消目录订阅成功');
     // 取消订阅后更新本地状态
     row.subscribeCatalogStatus = 0;
@@ -2394,7 +2394,7 @@ const handleMoreAction = (command: string, row: QsDevice) => {
       handleUpdate(row);
       break;
     case 'viewSnapshots':
-      snapshotDialogRef.value?.openDialog(row.id!, row.deviceName);
+      snapshotDialogRef.value?.openDialog(row.id, row.deviceName);
       break;
     case 'delete':
       handleDelete(row);
@@ -3931,7 +3931,7 @@ function getDeviceSnapshotList() {
 // 删除单个抓图记录
 function handleDeleteDeviceSnapshot(row: QsDeviceSnapshot) {
   this.$modal.confirm('是否确认删除该抓图记录?').then(() => {
-    return delSnapshot(row.id!);
+    return delSnapshot(row.id);
   }).then(() => {
     getDeviceSnapshotList();
     this.$modal.msgSuccess("删除成功");
@@ -3984,7 +3984,7 @@ const handleCaptureFromStream = async () => {
     captureLoading.value = true;
     let response;
     const deviceType = deviceRow.value?.type;
-    const deviceId = deviceRow.value?.id!;
+    const deviceId = deviceRow.value?.id;
     const channelId = deviceRow.value?.channel || 0;
 
     // 根据设备类型调用不同的API
@@ -4042,16 +4042,16 @@ const handleCapture = async (row: QsDevice) => {
     // 根据设备类型调用不同的API
     if (row.type === '5') {
       // ONVIF 设备
-      response = await captureOnvifAndSave(row.id!, channelId, 'manual');
+      response = await captureOnvifAndSave(row.id, channelId, 'manual');
     } else if (row.type === '7') {
       // 海康设备
-      response = await captureHaikangAndSave(row.id!, channelId, 'manual');
+      response = await captureHaikangAndSave(row.id, channelId, 'manual');
     } else if (row.type === '8') {
       // 海康ISUP设备
-      response = await captureHaiKangIsupAndSave(row.id!, channelId, 'manual');
+      response = await captureHaiKangIsupAndSave(row.id, channelId, 'manual');
     } else if (row.type === '9') {
       // 大华设备
-      response = await captureDaHuaAndSave(row.id!, channelId, 'manual');
+      response = await captureDaHuaAndSave(row.id, channelId, 'manual');
     } else {
       this.$modal.msgError('不支持的设备类型');
       return;
@@ -4079,16 +4079,16 @@ const handleReboot = async (row: QsDevice) => {
     // 根据设备类型调用不同的API
     if (row.type === '5') {
       // ONVIF 设备
-      response = await restartOnvifDevice(row.id!);
+      response = await restartOnvifDevice(row.id);
     } else if (row.type === '7') {
       // 海康设备
-      response = await rebootHaiKangDevice(row.id!);
+      response = await rebootHaiKangDevice(row.id);
     } else if (row.type === '8') {
       // 海康ISUP设备
-      response = await rebootHaiKangIsupDevice(row.id!);
+      response = await rebootHaiKangIsupDevice(row.id);
     } else if (row.type === '9') {
       // 大华设备
-      response = await rebootDaHuaDevice(row.id!);
+      response = await rebootDaHuaDevice(row.id);
     } else if (row.type === '12') {
       // GB28181 设备
       if (!row.gbDeviceId) {
@@ -4386,7 +4386,7 @@ const submitRecordControl = async () => {
   }
   try {
     const response = await recordCmd(
-      recordDialogForm.value.device.gbDeviceId!,
+      recordDialogForm.value.device.gbDeviceId,
       recordDialogForm.value.channelId,
       recordDialogForm.value.recordCmd,
       recordDialogForm.value.streamNumber
