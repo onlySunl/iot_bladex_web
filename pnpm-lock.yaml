@@ -105,6 +105,9 @@ importers:
       css-loader:
         specifier: ^3.6.0
         version: 3.6.0(webpack@4.47.0)
+      eslint-loader:
+        specifier: '2'
+        version: 2.2.1(eslint@4.19.1)(webpack@4.47.0)
       file-loader:
         specifier: ^6.2.0
         version: 6.2.0(webpack@4.47.0)
