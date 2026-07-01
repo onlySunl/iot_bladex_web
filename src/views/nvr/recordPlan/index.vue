@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { getList, getDetail, add, update, remove, changeStatus } from '@/api/qs/recordPlan'
+import { getList, getDetail, add, update, remove, changeStatus } from '@/api/nvr/recordPlan'
 
 export default {
   name: 'NvrRecordPlan',

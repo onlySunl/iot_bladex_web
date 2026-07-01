@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import { getList, getDetail, remove, loadRecord, closeStreams } from '@/api/qs/cloudRecord'
-import { getMediaServerList } from '@/api/qs/zlm'
+import { getList, getDetail, remove, loadRecord, closeStreams } from '@/api/nvr/cloudRecord'
+import { getMediaServerList } from '@/api/nvr/zlm'
 
 export default {
   name: 'NvrCloudRecord',

@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { getMediaServerList, getDetail, saveMediaServer, delMediaServer, checkMediaServer, restartServer } from '@/api/qs/zlm'
+import { getMediaServerList, getDetail, saveMediaServer, delMediaServer, checkMediaServer, restartServer } from '@/api/nvr/zlm'
 
 export default {
   name: 'NvrMediaServer',

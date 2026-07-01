@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { getList, getDetail, remove } from '@/api/qs/cloudRecord'
+import { getList, getDetail, remove } from '@/api/nvr/cloudRecord'
 
 export default {
   name: 'NvrDeviceRecordPlayback',

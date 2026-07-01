@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { getAllDevices } from '@/api/qs/device'
+import { getAllDevices } from '@/api/nvr/device'
 
 export default {
   name: 'NvrMap',

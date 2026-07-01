@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { getList, getDetail, remove } from '@/api/qs/snapshot'
+import { getList, getDetail, remove } from '@/api/nvr/snapshot'
 
 export default {
   name: 'NvrSnapshot',

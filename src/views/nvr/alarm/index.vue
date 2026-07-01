@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { getList, getDetail, update, remove, batchHandleAlarm } from '@/api/qs/alarm'
+import { getList, getDetail, update, remove, batchHandleAlarm } from '@/api/nvr/alarm'
 
 export default {
   name: 'NvrAlarm',

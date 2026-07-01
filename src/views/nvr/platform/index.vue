@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { getList, getDetail, add, update, remove, register, unregister, pushCatalog } from '@/api/qs/platform'
+import { getList, getDetail, add, update, remove, register, unregister, pushCatalog } from '@/api/nvr/platform'
 
 export default {
   name: 'NvrPlatform',

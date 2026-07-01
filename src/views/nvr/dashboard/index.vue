@@ -52,8 +52,8 @@
 </template>
 
 <script>
-import { getDeviceStatistics } from '@/api/qs/device'
-import { getSystemInfo } from '@/api/qs/system'
+import { getDeviceStatistics } from '@/api/nvr/device'
+import { getSystemInfo } from '@/api/nvr/system'
 
 export default {
   name: 'NvrDashboard',
