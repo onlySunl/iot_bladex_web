@@ -39,11 +39,11 @@ src/
 │   │   ├── snapshot/         # 抓图管理
 │   │   ├── dashboard/        # 仪表盘
 │   │   ├── map/              # 地图
-│   │   ├── mediaServer/      # 流媒体服务器
-│   │   ├── cloudRecord/      # 云端录像
-│   │   ├── recordPlan/       # 录像计划
-│   │   ├── recordPlayback/   # 录像回放
-│   │   └── deviceRecordPlayback/ # 设备录像回放
+│   │   ├── mediaServer/      # 流媒体服务器（ZLM）
+│   │   ├── cloudRecord/      # 云端录像（ZLM）
+│   │   ├── recordPlan/       # 录像计划（ZLM）
+│   │   ├── recordPlayback/   # 录像回放（ZLM）
+│   │   └── deviceRecordPlayback/ # 设备录像回放（ZLM）
 │   └── iot/      # IoT 模块
 ├── main.js       # 入口文件
 ├── App.vue       # 根组件
@@ -98,3 +98,6 @@ public/
 - pnpm 需要额外安装 cache-loader、babel-loader@8、thread-loader@3 等 loader
 - 构建时不支持可选链（?.）语法，需使用传统写法
 - NVR 模块从 iot-qs-nvr-ui 迁移，API 路径统一使用 `/api/` 前缀
+- ZLM（ZLMediaKit）流媒体服务相关页面已完整迁移，包括：mediaServer、cloudRecord、recordPlan、recordPlayback、deviceRecordPlayback
+- ZLM 路由配置在 `src/router/views/index.js` 中，包含 zlmRoutes 数组
+- byteWeekTimePicker 组件使用 v-model 绑定（Vue 2 的 value/input 模式）

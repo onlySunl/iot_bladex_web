@@ -1,29 +1,29 @@
 <template>
+
   <div class="record-playback-container">
     <!-- 组件切换 -->
     <CloudRecordPlayback v-if="playbackType === 'cloud'" ref="cloudPlaybackRef" :deviceId="deviceId" />
     <DeviceRecordPlayback v-else ref="devicePlaybackRef" :deviceId="deviceId" />
   </div>
+
 </template>
 
 <script>
 import CloudRecordPlayback from './CloudRecordPlayback.vue'
 import DeviceRecordPlayback from './DeviceRecordPlayback.vue'
 
-
-const deviceId = ref<number | null>(null)
-const playbackType = ref<'cloud' | 'device'>('device')
-const cloudPlaybackRef = ref()
-const devicePlaybackRef = ref()
-
-// 直接初始化，不要等 onMounted
-if (this.$route.query.deviceId) {
-  deviceId = Number(this.$route.query.deviceId)
-}
-if (this.$route.query.type === 'cloud') {
-  playbackType = 'cloud'
-} else if (this.$route.query.type === 'device') {
-  playbackType = 'device'
+export default {
+  name: 'RecordPlayback',
+  components: {
+    CloudRecordPlayback,
+    DeviceRecordPlayback,
+  },
+  data() {
+    return {
+      cloudPlaybackRef: null,
+      devicePlaybackRef: null,
+    }
+  },
 }
 </script>
 
@@ -32,7 +32,7 @@ if (this.$route.query.type === 'cloud') {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--el-bg-color);
+  background: #fff;
 }
 
 /* 切换动画 */

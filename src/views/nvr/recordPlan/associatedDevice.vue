@@ -1,4 +1,5 @@
 <template>
+
   <div class="associated-wrap">
     <el-tabs v-model="hasLink" class="demo-tabs" @tab-click="handleClick">
       <el-tab-pane label="未关联" :name="false"/>
@@ -26,9 +27,9 @@
           <el-select v-model="queryParams.type" placeholder="请选择直播流接入类型" clearable>
             <el-option
                 v-for="dict in qs_live_stream_type"
-                :key="dict"
+                :key="dict.value"
                 :label="dict.label"
-                :value="dict"
+                :value="dict.value"
             />
           </el-select>
         </el-form-item>
@@ -36,15 +37,15 @@
           <el-select v-model="queryParams.deviceStatus" placeholder="请选择设备状态" clearable>
             <el-option
                 v-for="dict in qs_device_status"
-                :key="dict"
+                :key="dict.value"
                 :label="dict.label"
-                :value="dict"
+                :value="dict.value"
             />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-          <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleQuery">搜索</el-button>
+          <el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
         </el-form-item>
         </el-form>
       </div>
@@ -53,7 +54,7 @@
         <el-col :span="1.5" v-if="!hasLink">
           <el-button type="primary"
                      plain
-                     icon="Plus"
+                     icon="el-icon-plus"
                      :disabled="multiple"
                      @click="handleAdd">新增
           </el-button>
@@ -62,7 +63,7 @@
           <el-button
               type="danger"
               plain
-              icon="Delete"
+              icon="el-icon-delete"
               :disabled="multiple"
               @click="handleDelete">
             删除
@@ -71,7 +72,7 @@
         <el-col :span="1.5" v-if="!hasLink">
           <el-button type="primary"
                      plain
-                     icon="Plus"
+                     icon="el-icon-plus"
                      @click="handleAddAll">
             添加所有设备
           </el-button>
@@ -80,12 +81,12 @@
           <el-button
               type="danger"
               plain
-              icon="Delete"
+              icon="el-icon-delete"
               @click="handleRemoveAll">
             移除所有设备
           </el-button>
         </el-col>
-        <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
       </el-row>
 
       <el-table v-loading="loading" :data="channelList" @selection-change="handleSelectionChange" border>
@@ -94,177 +95,130 @@
         <el-table-column label="设备名称" align="center" prop="deviceName" fixed/>
         <el-table-column label="IP地址" align="center" prop="ipAddress"/>
         <el-table-column label="接入类型" align="center" prop="type">
-          <template #default="scope">
+          <template slot-scope="scope">
             <dict-tag :options="qs_live_stream_type" :value="scope.row.type"/>
-          </template>
-        </el-table-column>
-        <el-table-column label="设备号" align="center" prop="channel"/>
-        <el-table-column label="设备状态" align="center" prop="deviceStatus">
-          <template #default="scope">
-            <dict-tag :options="qs_device_status" :value="scope.row.deviceStatus"/>
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <pagination
-          v-show="total > 0"
-          :total="total"
-          v-model:page="queryParams.page"
-          v-model:limit="queryParams.count"
-          @pagination="getList"
-      />
-
-    </el-tabs>
-  </div>
+          
 </template>
 
 <script>
 import {link, listPlanRecord} from "@/api/nvr/device";
 
-const {
-  qs_live_stream_type,
-  qs_device_status,
-} = proxy.useDict('qs_live_stream_type', 'qs_device_status')
-
-;
-
-const loading = ref(false)
-const channelList = ref([])
-const total = ref(0);
-const showSearch = ref(true);
-const multiple = ref(true);
-const selectionList = ref([]);
-
-const hasLink = ref(false);
-
-const props = defineProps({
-  planId: {
-    type: String,
-    default: undefined,
+export default {
+  name: 'false',
+  data() {
+    return {
+      loading: false,
+      channelList: [],
+      total: 0,
+      showSearch: true,
+      multiple: true,
+      selectionList: [],
+      hasLink: false,
+      form: {},
+      page: 1,
+      count: 10,
+      deviceName: undefined,
+      ipAddress: undefined,
+      type: undefined,
+      deviceStatus: undefined,
+      recordPlanId: undefined,
+    }
   },
-})
-
-const data = reactive({
-  form: {},
-  queryParams: {
-    page: 1,
-    count: 10,
-    deviceName: undefined,
-    ipAddress: undefined,
-    type: undefined,
-    deviceStatus: undefined,
-    recordPlanId: undefined,
+  mounted() {
+    getList();
   },
-});
-
-const {queryParams, form} = toRefs(data);
-
-function getList() {
-  loading = true
-
-  if(hasLink){
-    queryParams.recordPlanId = props.planId;
-  }else {
-    queryParams.recordPlanId = undefined;
-  }
-  listPlanRecord(queryParams).then((res) => {
-    total = res.total
-    channelList = res.rows
-    loading = false
-  })
+  methods: {
+    getList() {
+      this.loading = true
+      
+        if(this.hasLink){
+          this.queryParams.recordPlanId = props.planId;
+        }else {
+          this.queryParams.recordPlanId = undefined;
+        }
+        listPlanRecord(this.queryParams).then((res) => {
+          this.total = res.total
+          this.channelList = res.rows
+          this.loading = false
+        })
+    },
+    handleQuery() {
+      this.queryParams.page = 1;
+        getList();
+    },
+    resetQuery() {
+      this.resetForm("queryRef");
+        handleQuery();
+    },
+    handleSelectionChange(selection) {
+      this.selectionList = selection
+        this.multiple = !selection.length;
+    },
+    handleAdd() {
+      let deviceIds = []
+        for (let i = 0; i < this.selectionList.length; i++) {
+          deviceIds.push(this.selectionList[i].id)
+        }
+        if (deviceIds.length === 0) {
+          this.$modal.msgError("请选择要关联的设备");
+          return;
+        }
+        linkPlan({
+          planId: props.planId,
+          deviceIds: deviceIds
+        })
+        this.$modal.msgSuccess("关联成功");
+    },
+    linkPlan(data) {
+      link(data).then((res) => {
+          getList();
+        })
+    },
+    handleDelete() {
+      let deviceIds = []
+        for (let i = 0; i < this.selectionList.length; i++) {
+          deviceIds.push(this.selectionList[i].id)
+        }
+        if (deviceIds.length === 0) {
+          this.$modal.msgError("请选择要关联的设备");
+          return;
+        }
+        linkPlan({
+          deviceIds: deviceIds
+        })
+        this.$modal.msgSuccess("取消关联成功");
+    },
+    handleAddAll() {
+      this.$modal.confirm('添加所有设备将包括已经添加到其他计划的设备，确定添加所有设备？').then(function () {
+          return linkPlan({
+            planId: props.planId,
+            allLink: true
+          })
+        }).then(() => {
+          getList()
+          this.$modal.msgSuccess("添加成功");
+        }).catch(() => {
+        });
+    },
+    handleRemoveAll() {
+      this.$modal.confirm('确定移除所有设备？').then(function () {
+          return linkPlan({
+            planId: props.planId,
+            allLink: false
+          })
+        }).then(() => {
+          getList()
+          this.$modal.msgSuccess("移除成功");
+        }).catch(() => {
+        });
+    },
+    handleClick() {
+      nextTick(() => {
+          getList();
+        })
+    },
+  },
 }
-
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.page = 1;
-  getList();
-}
-
-/** 重置按钮操作 */
-function resetQuery() {
-  proxy.resetForm("queryRef");
-  handleQuery();
-}
-
-/** 选择条数  */
-function handleSelectionChange(selection) {
-  selectionList = selection
-  multiple = !selection.length;
-}
-
-function handleAdd() {
-  let deviceIds = []
-  for (let i = 0; i < selectionList.length; i++) {
-    deviceIds.push(selectionList[i].id)
-  }
-  if (deviceIds.length === 0) {
-    this.$modal.msgError("请选择要关联的设备");
-    return;
-  }
-  linkPlan({
-    planId: props.planId,
-    deviceIds: deviceIds
-  })
-  this.$modal.msgSuccess("关联成功");
-}
-
-function linkPlan(data) {
-  link(data).then((res) => {
-    getList();
-  })
-}
-
-function handleDelete() {
-  let deviceIds = []
-  for (let i = 0; i < selectionList.length; i++) {
-    deviceIds.push(selectionList[i].id)
-  }
-  if (deviceIds.length === 0) {
-    this.$modal.msgError("请选择要关联的设备");
-    return;
-  }
-  linkPlan({
-    deviceIds: deviceIds
-  })
-  this.$modal.msgSuccess("取消关联成功");
-}
-
-function handleAddAll() {
-  this.$modal.confirm('添加所有设备将包括已经添加到其他计划的设备，确定添加所有设备？').then(function () {
-    return linkPlan({
-      planId: props.planId,
-      allLink: true
-    })
-  }).then(() => {
-    getList()
-    this.$modal.msgSuccess("添加成功");
-  }).catch(() => {
-  });
-}
-
-function handleRemoveAll() {
-  this.$modal.confirm('确定移除所有设备？').then(function () {
-    return linkPlan({
-      planId: props.planId,
-      allLink: false
-    })
-  }).then(() => {
-    getList()
-    this.$modal.msgSuccess("移除成功");
-  }).catch(() => {
-  });
-}
-
-const handleClick = () => {
-  nextTick(() => {
-    getList();
-  })
-}
-
-
-onMounted(() => {
-  getList();
-})
 </script>
 
 <style scoped>
@@ -295,7 +249,7 @@ onMounted(() => {
 :deep(.el-tabs__active-bar) {
   height: 3px;
   border-radius: 2px;
-  background: linear-gradient(90deg, var(--el-color-primary), var(--el-color-primary-light-3));
+  background: linear-gradient(90deg, #409EFF, #79bbff);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -309,7 +263,7 @@ onMounted(() => {
 }
 
 :deep(.el-tabs__item:hover) {
-  color: var(--el-color-primary);
+  color: #409EFF;
 }
 
 :deep(.el-tabs__item.is-active) {
@@ -320,12 +274,12 @@ onMounted(() => {
 .search-panel {
   padding: 16px 20px;
   margin-bottom: 16px;
-  background: var(--el-bg-color-page);
+  background: #f5f7fa;
   backdrop-filter: blur(10px) saturate(1.1);
   -webkit-backdrop-filter: blur(10px) saturate(1.1);
-  border: 1px solid var(--el-border-color-lighter);
+  border: 1px solid #ebeef5;
   border-radius: 14px;
-  box-shadow: var(--el-box-shadow-lighter);
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
   animation: panelEnter 0.4s ease-out 0.08s backwards;
 }
 
@@ -351,11 +305,11 @@ onMounted(() => {
 
 :deep(.mb8 .el-button:hover:not(:disabled)) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(var(--el-color-primary-rgb), 0.2);
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2);
 }
 
 :deep(.mb8 .el-button--danger:hover:not(:disabled)) {
-  box-shadow: 0 4px 12px rgba(var(--el-color-danger-rgb), 0.2);
+  box-shadow: 0 4px 12px rgba(245, 108, 108, 0.2);
 }
 
 /* ===== 表格优化 ===== */
@@ -363,13 +317,13 @@ onMounted(() => {
   border-radius: 14px;
   overflow: hidden;
   animation: panelEnter 0.4s ease-out 0.2s backwards;
-  box-shadow: var(--el-box-shadow-lighter);
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
 }
 
 :deep(.el-table__header-wrapper th.el-table__cell) {
-  background: var(--el-fill-color-lighter) !important;
+  background: #f5f7fa !important;
   font-weight: 600;
-  color: var(--el-text-color-primary);
+  color: #303133;
   transition: background 0.2s;
 }
 
@@ -401,7 +355,7 @@ onMounted(() => {
 }
 
 :deep(.el-table__body-wrapper .el-table__row:hover > td.el-table__cell) {
-  background: var(--el-fill-color-light) !important;
+  background: #ebeef5 !important;
 }
 
 :deep(.el-table__body-wrapper .el-table__row td.el-table__cell) {
@@ -432,20 +386,20 @@ onMounted(() => {
 
 /* ===== 暗黑模式 ===== */
 html.dark .search-panel {
-  background: var(--el-bg-color-page);
-  border-color: var(--el-border-color);
-  box-shadow: var(--el-box-shadow-dark);
+  background: #f5f7fa;
+  border-color: #dcdfe6;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.3);
 }
 
 html.dark :deep(.el-table) {
-  box-shadow: var(--el-box-shadow-dark);
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.3);
 }
 
 html.dark :deep(.el-table__header-wrapper th.el-table__cell) {
-  background: var(--el-fill-color) !important;
+  background: #ebeef5 !important;
 }
 
 html.dark :deep(.el-table__body-wrapper .el-table__row:hover > td.el-table__cell) {
-  background: var(--el-fill-color) !important;
+  background: #ebeef5 !important;
 }
 </style>

@@ -1,6 +1,69 @@
 import Layout from '@/page/index/'
 
-export default [{
+// ZLM 流媒体服务相关路由
+const zlmRoutes = [{
+  path: '/easyPlayer',
+  component: () => import('@/views/nvr/components/easyPlayer.vue'),
+  name: 'EasyPlayer',
+  meta: { menu: false }
+}, {
+  path: '/mediaServer/addMediaServer',
+  component: Layout,
+  hidden: true,
+  children: [{
+    noCache: true,
+    path: 'index',
+    component: () => import('@/views/nvr/mediaServer/addMediaServer.vue'),
+    name: 'AddMediaServer',
+    meta: { title: '添加媒体服务器', activeMenu: '/mediaServer' }
+  }]
+}, {
+  path: '/mediaServer/updateMediaServer',
+  component: Layout,
+  hidden: true,
+  children: [{
+    noCache: true,
+    path: 'index',
+    component: () => import('@/views/nvr/mediaServer/updateMediaServer.vue'),
+    name: 'UpdateMediaServer',
+    meta: { title: '修改媒体服务器', activeMenu: '/mediaServer' }
+  }]
+}, {
+  path: '/nvr/deviceRecordPlayback',
+  component: Layout,
+  hidden: true,
+  children: [{
+    noCache: false,
+    path: 'index',
+    component: () => import('@/views/nvr/deviceRecordPlayback/index.vue'),
+    name: 'DeviceRecordPlayback',
+    meta: { title: '设备录像回放', activeMenu: '/nvr/deviceRecordPlayback' }
+  }]
+}, {
+  path: '/nvr/recordPlayback',
+  component: Layout,
+  hidden: true,
+  children: [{
+    noCache: false,
+    path: 'index',
+    component: () => import('@/views/nvr/recordPlayback/index.vue'),
+    name: 'RecordPlayback',
+    meta: { title: '录像回放', activeMenu: '/nvr/recordPlayback' }
+  }]
+}, {
+  path: '/nvr/cloudRecord',
+  component: Layout,
+  hidden: true,
+  children: [{
+    noCache: false,
+    path: 'index',
+    component: () => import('@/views/nvr/cloudRecord/index.vue'),
+    name: 'CloudRecord',
+    meta: { title: '云端录像', activeMenu: '/nvr/cloudRecord' }
+  }]
+}]
+
+export default [...zlmRoutes, {
   path: '/wel',
   component: Layout,
   redirect: '/wel/index',
