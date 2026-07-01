@@ -9,4 +9,5 @@ echo "Installing dependencies..."
 pnpm install --no-frozen-lockfile
 
 echo "Building frontend with vue-cli-service..."
+export NODE_OPTIONS="--max-old-space-size=4096"
 pnpm run build
