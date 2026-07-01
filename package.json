@@ -11,13 +11,12 @@
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
-    "@element-plus/icons-vue": "^2.3.2",
     "avue-plugin-ueditor": "^0.1.4",
     "axios": "^0.21.1",
     "babel-polyfill": "^6.26.0",
     "classlist-polyfill": "^1.2.0",
     "crypto-js": "^4.0.0",
-    "element-ui": "^2.15.6",
+    "element-ui": "^2.15.14",
     "js-base64": "^2.5.1",
     "js-cookie": "^2.2.0",
     "js-md5": "^0.7.3",
