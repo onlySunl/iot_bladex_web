@@ -1,4 +1,5 @@
 <template>
+
   <div class="group-tree-container">
     <!-- 搜索区域 -->
     <div class="search-area">
@@ -9,253 +10,11 @@
         class="search-input"
         :prefix-icon="el-icon-search"
       >
-        <template #append v-if="showIndex">
+        <template slot="append">v-if="showIndex">
           <el-tooltip content="显示编号" placement="top">
             <el-checkbox v-model="checked" label="编号" class="index-checkbox" />
           </el-tooltip>
-        </template>
-        <template #prepend>
-          <el-button @click="refresh" class="refresh-btn" icon="el-icon-refresh" title="刷新" />
-        </template>
-      </el-input>
-    </div>
-
-    <!-- 树形组件 -->
-    <el-tree
-      v-if="!searchStr"
-      node-key="id"
-      ref="treeRef"
-      :data="treeData"
-      :props="propsTree"
-      @node-click="handleNodeClick"
-      lazy
-      :load="loadNode"
-      :default-expanded-keys="defaultExpandedKeys"
-      class="custom-tree"
-      highlight-current
-      :expand-on-click-node="false"
-    >
-      <template #default="{ node, data }">
-        <div
-          v-if="showContextmenu"
-          class="custom-tree-node"
-          :class="{ 'is-active': chooseId === data.name }"
-          @contextmenu="onContextMenu($event, data)"
-        >
-          <div class="node-icon-wrap" v-if="!data.leaf">
-            <el-icon
-              class="node-icon folder-icon"
-              :class="{ active: chooseId === data.name }"
-            >
-              <FolderOpened />
-            </el-icon>
-          </div>
-
-          <div class="node-label" :class="{ active: chooseId === data.name }">
-            {{ node.label }}
-          </div>
-
-          <div class="node-extra" v-if="data.deviceId && showIndex && checked">
-            <span class="device-id-badge">{{ data.deviceId }}</span>
-          </div>
-        </div>
-
-        <div v-else class="custom-tree-node" :class="{ 'is-active': chooseId === data.name }">
-          <div v-if="data.leaf">
-            <div
-              v-if="isContextmenu"
-              @contextmenu="onContextMenu($event, data)"
-              class="tree-leaf-row"
-            >
-              <el-icon
-                class="node-icon camera-icon"
-                :class="{ online: data.status === 'ON', offline: data.status === 'OFFLINE' }"
-              >
-                <VideoCamera />
-              </el-icon>
-
-              <div class="node-label">{{ node.label }}</div>
-
-              <div class="node-extra" v-if="data.deviceId && showIndex && checked">
-                <span class="device-id-badge">{{ data.deviceId }}</span>
-              </div>
-            </div>
-
-            <div v-else class="tree-leaf-row">
-              <el-icon
-                class="node-icon camera-icon"
-                :class="{ online: data.status === 'ON', offline: data.status === 'OFFLINE' }"
-              >
-                <VideoCamera />
-              </el-icon>
-
-              <div class="node-label">{{ node.label }}</div>
-
-              <div class="node-extra" v-if="data.deviceId && showIndex && checked">
-                <span class="device-id-badge">{{ data.deviceId }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div v-else class="tree-folder-row">
-            <el-icon
-              class="node-icon folder-icon"
-              :class="{ active: chooseId === data.name }"
-            >
-              <FolderOpened />
-            </el-icon>
-
-            <div class="node-label" :class="{ active: chooseId === data.name }">
-              {{ node.label }}
-            </div>
-
-            <div class="node-extra" v-if="data.deviceId && showIndex && checked">
-              <span class="device-id-badge">{{ data.deviceId }}</span>
-            </div>
-          </div>
-        </div>
-      </template>
-    </el-tree>
-
-    <!-- 搜索结果列表 -->
-    <div v-else class="search-result-area">
-      <div v-if="groupList.length > 0" class="result-list">
-        <div
-          v-for="(item, index) in groupList"
-          :key="item.id"
-          class="result-item"
-          :class="{ 'is-active': chooseId === item.name }"
-          :style="{ animationDelay: index * 0.04 + 's' }"
-          @click="handleNodeClick(item)"
-        >
-          <div class="result-icon-wrap">
-            <span
-              class="iconfont icon-bianzubeifen3"
-              :class="{ active: chooseId === item.name }"
-            />
-          </div>
-          <div class="result-info">
-            <div class="result-name">{{ item.name }}</div>
-            <div class="result-id" v-if="showIndex && checked">编号：{{ item.deviceId }}</div>
-          </div>
-          <i class="el-icon-arrow-right"></i>
-        </div>
-
-        <pagination
-          layout="total, prev, pager, next"
-          v-show="total > 0"
-          :total="total"
-          v-model:page="queryParamsGroup.pageNum"
-          v-model:limit="queryParamsGroup.pageSize"
-          @pagination="getQueryForGroupQuery(searchStr)"
-          class="tree-pagination"
-        />
-      </div>
-
-      <el-empty v-else description="暂无搜索结果" class="tree-empty" />
-    </div>
-
-    <!-- 右键菜单 -->
-    <ContextMenu v-model:show="show" :options="optionsComponent">
-      <context-menu-item label="刷新节点" @click="refreshNode" v-if="contextMenu.includes('refresh')">
-        <template #icon>
-          <i class="el-icon-refresh"></i>
-        </template>
-      </context-menu-item>
-      <context-menu-item label="新增节点" @click="addNode" v-if="contextMenu.includes('add')">
-        <template #icon>
-          <i class="el-icon-plus"></i>
-        </template>
-      </context-menu-item>
-      <context-menu-item
-        label="修改节点"
-        :disabled="nodeData.name === '根资源组'"
-        @click="updateNode"
-        v-if="contextMenu.includes('update')"
-      >
-        <template #icon>
-          <i class="el-icon-edit"></i>
-        </template>
-      </context-menu-item>
-      <context-menu-item
-        label="删除节点"
-        :disabled="nodeData.name === '根资源组'"
-        @click="deleteNode"
-        v-if="contextMenu.includes('delete')"
-      >
-        <template #icon>
-          <i class="el-icon-delete"></i>
-        </template>
-      </context-menu-item>
-      <context-menu-item
-        label="播放通道"
-        :disabled="nodeData.name === '根资源组'"
-        @click="playChannel"
-        v-if="contextMenu.includes('playChannel')"
-      >
-        <template #icon>
-          <i class="el-icon-video-play"></i>
-        </template>
-      </context-menu-item>
-      <context-menu-item
-        label="修改位置"
-        :disabled="nodeData.name === '根资源组'"
-        @click="updatePosition"
-        v-if="contextMenu.includes('updatePosition')"
-      >
-        <template #icon>
-          <i class="el-icon-place"></i>
-        </template>
-      </context-menu-item>
-    </ContextMenu>
-
-    <!-- 新增/修改节点对话框 -->
-    <el-dialog
-      :title="title"
-      v-model="openGroup"
-      width="500px"
-      append-to-body
-      draggable
-      destroy-on-close
-      class="group-dialog"
-      align-center
-    >
-      <el-form
-        ref="formGroupRef"
-        :model="formGroup"
-        :rules="rulesGroup"
-        label-width="90px"
-        class="group-form"
-      >
-        <el-form-item label="节点编号" prop="deviceId">
-          <el-input v-model="formGroup.deviceId" placeholder="请输入编码" clearable>
-            <template #append>
-              <el-button @click="buildDeviceIdCode(formGroup.deviceId)" icon="el-icon-magic-stick">生成</el-button>
-            </template>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="节点名称" prop="name">
-          <el-input v-model="formGroup.name" clearable placeholder="请输入节点名称" />
-        </el-form-item>
-        <el-form-item label="行政区划" prop="civilCode">
-          <el-input v-model="formGroup.civilCode" clearable placeholder="请选择行政区划">
-            <template #append>
-              <el-button @click="chooseCivilCodeFun(formGroup.civilCode)" icon="el-icon-map-location">选择</el-button>
-            </template>
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="cancel" class="cancel-btn">取 消</el-button>
-          <el-button type="primary" @click="submitFormGroup" class="confirm-btn">确 定</el-button>
-        </div>
-      </template>
-    </el-dialog>
-
-    <ChannelCode ref="channelCodeRef" @handleOk="handleOk" />
-    <ChooseCivilCode ref="chooseCivilCodeRef" @onSubmit="gbCivilCodeOnSubmit" />
-  </div>
+        
 </template>
 
 <script>
@@ -263,269 +22,227 @@ import ChannelCode from "../../components/common/channelCode.vue";
 import ChooseCivilCode from "../../components/common/chooseCivilCode.vue";
 import { addGroup, deleteGroup, queryForGroupQuery, queryForGroupTree, updateGroup } from "@/api/nvr/group.js";
 
-const emit = defineEmits(["handleNodeClick", "playChannel", "updatePosition"]);
-const { proxy } = getCurrentInstance();
-const propsTree = ref({
-  label: "name",
-  children: "children",
-  disabled: "disabled",
-});
-const searchStr = ref("");
-const treeData = ref([]);
-const nodeData = ref({});
-const groupList = ref([]);
-const total = ref(0);
-const show = ref(false);
-const optionsComponent = ref({
-  zIndex: 99999,
-  minWidth: 230,
-  x: 500,
-  y: 200,
-});
-
-const title = ref("");
-const openGroup = ref(false);
-const chooseId = ref("");
-const defaultExpandedKeys = ref([]);
-const checked = ref(false);
-
-const data = reactive({
-  formGroup: {},
-  rulesGroup: {
-    name: [{ required: true, message: "请输入节点名称", trigger: "blur" }],
-    deviceId: [{ required: true, message: "请选择节点编号", trigger: "change" }],
-    civilCode: [{ required: true, message: "请选择行政区划", trigger: "change" }],
-  },
-  queryParamsGroup: {
-    pageNum: 1,
-    pageSize: 10,
-    query: null,
-  },
-});
-
-const { formGroup, rulesGroup, queryParamsGroup } = toRefs(data);
-
-const props = defineProps({
-  hasDevice: Boolean,
-  showIndex: {
+export default {
+  props: {
+    showIndex: { 
     type: Boolean,
     default: true,
-  },
-  showContextmenu: {
+   },
+    showContextmenu: { 
     type: Boolean,
     default: true,
-  },
-  isContextmenu: {
+   },
+    isContextmenu: { 
     type: Boolean,
     default: false,
-  },
-  contextMenu: {
+   },
+    contextMenu: { 
     type: Array,
     default: ["refresh", "add", "update", "delete"],
+   },
   },
-});
-
-onMounted(() => {
-  chooseId = null;
-  getQueryForGroupTree();
-});
-
-function getQueryForGroupTree() {
-  queryForGroupTree({
-    query: searchStr,
-    parent: null,
-    hasDevice: props.hasDevice,
-  }).then((res) => {
-    let data = [
-      {
-        id: null,
-        name: "根资源组",
-        children: [],
-        disabled: true,
-      },
-    ];
-    data[0].children = proxy.handleTree(res.data, "id");
-    treeData = data;
-    if (res.data && res.data.length > 0) {
-      defaultExpandedKeys = [];
-      res.data.forEach((item) => {
-        defaultExpandedKeys.push(item.id);
-      });
+  data() {
+    return {
+      searchStr: "",
+      treeData: [],
+      nodeData: {},
+      groupList: [],
+      total: 0,
+      show: false,
+      title: "",
+      openGroup: false,
+      chooseId: "",
+      defaultExpandedKeys: [],
+      checked: false,
+      formGroup: {},
+      name: [{ required: true,
+      message: "请输入节点名称",
+      trigger: "blur" }],
+      deviceId: [{ required: true,
+      message: "请选择节点编号",
+      trigger: "change" }],
+      civilCode: [{ required: true,
+      message: "请选择行政区划",
+      trigger: "change" }],
+      pageNum: 1,
+      pageSize: 10,
+      query: null,
     }
-  });
-}
-
-function getQueryForGroupQuery(val) {
-  queryParamsGroup.query = val;
-  queryForGroupQuery(queryParamsGroup).then((res) => {
-    groupList = res.rows;
-    total = res.total;
-  });
-}
-
-watch(searchStr, (val) => {
-  if (val) {
-    getQueryForGroupQuery(val);
-  }
-});
-
-function refresh() {
-  if (!searchStr) {
-    getQueryForGroupTree();
-  } else {
-    getQueryForGroupQuery(searchStr);
-  }
-}
-
-function handleNodeClick(data) {
-  chooseId = data.name;
-  emit("handleNodeClick", data);
-}
-
-function onContextMenu(e, data) {
-  e.preventDefault();
-  nodeData = data;
-  show = true;
-  optionsComponent.x = e.x;
-  optionsComponent.y = e.y;
-}
-
-function resetGroup() {
-  formGroup = {
-    deviceId: undefined,
-    name: undefined,
-    civilCode: undefined,
-    businessGroup: "",
-  };
-  proxy.resetForm("formGroupRef");
-}
-
-function buildDeviceIdCode(deviceId) {
-  let lockContent = formGroup.businessGroup ? "216" : "215";
-  this.$refs["channelCodeRef"].openDialog(
-    (code) => {},
-    deviceId,
-    5,
-    lockContent
-  );
-}
-
-function handleOk(code) {
-  formGroup.deviceId = code;
-}
-
-function chooseCivilCodeFun() {
-  this.$refs["chooseCivilCodeRef"].openDialog((code) => {});
-}
-
-function gbCivilCodeOnSubmit(data) {
-  formGroup.civilCode = data;
-}
-
-/** 取消按钮 */
-function cancel() {
-  openGroup = false;
-  resetGroup();
-}
-
-function submitFormGroup() {
-  this.$refs["formGroupRef"].validate((valid) => {
-    if (valid) {
-      if (formGroup.id) {
-        updateGroup(formGroup).then(() => {
-          this.$modal.msgSuccess("修改成功");
-          openGroup = false;
-          getQueryForGroupTree();
+  },
+  mounted() {
+    chooseId = null;
+      getQueryForGroupTree();
+  },
+  methods: {
+    getQueryForGroupTree() {
+      queryForGroupTree({
+          query: searchStr,
+          parent: null,
+          hasDevice: props.hasDevice,
+        }).then((res) => {
+          let data = [
+            {
+              id: null,
+              name: "根资源组",
+              children: [],
+              disabled: true,
+            },
+          ];
+          data[0].children = proxy.handleTree(res.data, "id");
+          treeData = data;
+          if (res.data && res.data.length > 0) {
+            defaultExpandedKeys = [];
+            res.data.forEach((item) => {
+              defaultExpandedKeys.push(item.id);
+            });
+          }
         });
-      } else {
-        addGroup(formGroup).then(() => {
-          this.$modal.msgSuccess("新增成功");
-          openGroup = false;
-          getQueryForGroupTree();
+    },
+    getQueryForGroupQuery(val) {
+      queryParamsGroup.query = val;
+        queryForGroupQuery(queryParamsGroup).then((res) => {
+          groupList = res.rows;
+          total = res.total;
         });
-      }
-    }
-  });
+    },
+    refresh() {
+      if (!searchStr) {
+          getQueryForGroupTree();
+        } else {
+          getQueryForGroupQuery(searchStr);
+        }
+    },
+    handleNodeClick(data) {
+      chooseId = data.name;
+        emit("handleNodeClick", data);
+    },
+    onContextMenu(e, data) {
+      e.preventDefault();
+        nodeData = data;
+        show = true;
+        optionsComponent.x = e.x;
+        optionsComponent.y = e.y;
+    },
+    resetGroup() {
+      formGroup = {
+          deviceId: undefined,
+          name: undefined,
+          civilCode: undefined,
+          businessGroup: "",
+        };
+        proxy.resetForm("formGroupRef");
+    },
+    buildDeviceIdCode(deviceId) {
+      let lockContent = formGroup.businessGroup ? "216" : "215";
+        this.$refs["channelCodeRef"].openDialog(
+          (code) => {},
+          deviceId,
+          5,
+          lockContent
+        );
+    },
+    handleOk(code) {
+      formGroup.deviceId = code;
+    },
+    chooseCivilCodeFun() {
+      this.$refs["chooseCivilCodeRef"].openDialog((code) => {});
+    },
+    gbCivilCodeOnSubmit(data) {
+      formGroup.civilCode = data;
+    },
+    cancel() {
+      openGroup = false;
+        resetGroup();
+    },
+    submitFormGroup() {
+      this.$refs["formGroupRef"].validate((valid) => {
+          if (valid) {
+            if (formGroup.id) {
+              updateGroup(formGroup).then(() => {
+                this.$modal.msgSuccess("修改成功");
+                openGroup = false;
+                getQueryForGroupTree();
+              });
+            } else {
+              addGroup(formGroup).then(() => {
+                this.$modal.msgSuccess("新增成功");
+                openGroup = false;
+                getQueryForGroupTree();
+              });
+            }
+          }
+        });
+    },
+    loadNode(node, resolve) {
+      if (node.level === 0) {
+          return resolve([
+            {
+              treeId: "",
+              deviceId: "",
+              name: "根资源组",
+              isLeaf: false,
+              type: 0,
+            },
+          ]);
+        } else if (node.level > 0) {
+          if (node.data.leaf) {
+            return resolve([]);
+          }
+          let res = await queryForGroupTree({
+            query: "",
+            parent: node.data.id,
+            leaf: false,
+            hasDevice: props.hasDevice,
+          });
+      
+          let terr = [...proxy.handleTree(res.data, "id")];
+          if (res.data && res.data.length > 0) {
+            defaultExpandedKeys = [];
+            res.data.forEach((item) => {
+              defaultExpandedKeys.push(item.id);
+            });
+          }
+      
+          resolve(terr);
+        } else {
+          resolve([]);
+        }
+    },
+    addNode() {
+      resetGroup();
+        formGroup.parentId = nodeData.id;
+        formGroup.businessGroup = nodeData.businessGroup;
+        formGroup.parentDeviceId = nodeData.deviceId;
+        openGroup = true;
+        title = "新增虚拟组织";
+    },
+    updateNode() {
+      resetGroup();
+        formGroup = JSON.parse(JSON.stringify(nodeData));
+        openGroup = true;
+        title = "修改虚拟组织";
+    },
+    deleteNode() {
+      this.$modal
+          .confirm('是否确认删除名称为"' + nodeData.name + '"的数据项?')
+          .then(function () {
+            deleteGroup(nodeData.id).then(() => {
+              getQueryForGroupTree();
+              this.$modal.msgSuccess("删除成功");
+            });
+          });
+    },
+    refreshNode() {
+      refresh();
+    },
+    playChannel() {
+      emit("playChannel", nodeData);
+    },
+    updatePosition() {
+      emit("updatePosition", nodeData);
+    },
+  },
 }
-
-async function loadNode(node, resolve) {
-  if (node.level === 0) {
-    return resolve([
-      {
-        treeId: "",
-        deviceId: "",
-        name: "根资源组",
-        isLeaf: false,
-        type: 0,
-      },
-    ]);
-  } else if (node.level > 0) {
-    if (node.data.leaf) {
-      return resolve([]);
-    }
-    let res = await queryForGroupTree({
-      query: "",
-      parent: node.data.id,
-      leaf: false,
-      hasDevice: props.hasDevice,
-    });
-
-    let terr = [...proxy.handleTree(res.data, "id")];
-    if (res.data && res.data.length > 0) {
-      defaultExpandedKeys = [];
-      res.data.forEach((item) => {
-        defaultExpandedKeys.push(item.id);
-      });
-    }
-
-    resolve(terr);
-  } else {
-    resolve([]);
-  }
-}
-
-function addNode() {
-  resetGroup();
-  formGroup.parentId = nodeData.id;
-  formGroup.businessGroup = nodeData.businessGroup;
-  formGroup.parentDeviceId = nodeData.deviceId;
-  openGroup = true;
-  title = "新增虚拟组织";
-}
-
-function updateNode() {
-  resetGroup();
-  formGroup = JSON.parse(JSON.stringify(nodeData));
-  openGroup = true;
-  title = "修改虚拟组织";
-}
-
-function deleteNode() {
-  this.$modal
-    .confirm('是否确认删除名称为"' + nodeData.name + '"的数据项?')
-    .then(function () {
-      deleteGroup(nodeData.id).then(() => {
-        getQueryForGroupTree();
-        this.$modal.msgSuccess("删除成功");
-      });
-    });
-}
-
-function refreshNode() {
-  refresh();
-}
-
-function playChannel() {
-  emit("playChannel", nodeData);
-}
-
-function updatePosition() {
-  emit("updatePosition", nodeData);
-}
-
-defineExpose({
-  refresh,
-});
 </script>
 
 <style scoped lang="scss">
@@ -555,11 +272,11 @@ defineExpose({
   .search-input {
     :deep(.el-input__wrapper) {
       border-radius: 8px 0 0 8px;
-      box-shadow: 0 0 0 1px var(--el-border-color-light) inset;
+      box-shadow: 0 0 0 1px #dcdfe6 inset;
       transition: all 0.3s;
 
       &:focus-within {
-        box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 0 0 3px var(--el-color-primary-light-8);
+        box-shadow: 0 0 0 1px #409EFF inset, 0 0 0 3px #d9ecff;
       }
     }
 
@@ -575,20 +292,20 @@ defineExpose({
         margin: 0;
         height: 100%;
         padding: 0 12px;
-        background: var(--el-fill-color-light);
-        color: var(--el-text-color-regular);
+        background: #ebeef5;
+        color: #606266;
         transition: all 0.3s;
 
         &:hover {
-          background: var(--el-color-primary-light-9);
-          color: var(--el-color-primary);
+          background: #ecf5ff;
+          color: #409EFF;
         }
       }
     }
 
     :deep(.el-input-group__append) {
       padding: 0 10px;
-      background: var(--el-fill-color-light);
+      background: #ebeef5;
       border-radius: 0 8px 8px 0;
 
       .index-checkbox {
@@ -620,37 +337,37 @@ defineExpose({
     transition: all 0.25s ease;
 
     &:hover {
-      background-color: var(--el-color-primary-light-9) !important;
+      background-color: #ecf5ff !important;
     }
   }
 
   :deep(.el-tree-node.is-current > .el-tree-node__content) {
-    background: linear-gradient(90deg, var(--el-color-primary-light-9) 0%, var(--el-color-primary-light-8) 100%) !important;
-    box-shadow: 0 0 0 1px var(--el-color-primary-light-7) inset;
+    background: linear-gradient(90deg, #ecf5ff 0%, #d9ecff 100%) !important;
+    box-shadow: 0 0 0 1px #c6e2ff inset;
 
     .node-label.active,
     .node-label {
-      color: var(--el-color-primary);
+      color: #409EFF;
       font-weight: 600;
     }
 
     .folder-icon {
-      color: var(--el-color-primary);
+      color: #409EFF;
       transform: scale(1.1);
     }
   }
 
   :deep(.el-tree-node__expand-icon) {
-    color: var(--el-text-color-secondary);
+    color: #909399;
     transition: all 0.3s;
 
     &:hover {
-      color: var(--el-color-primary);
+      color: #409EFF;
     }
   }
 
   :deep(.el-tree-node__loading-icon) {
-    color: var(--el-color-primary);
+    color: #409EFF;
   }
 }
 
@@ -661,12 +378,12 @@ defineExpose({
   gap: 6px;
   width: 100%;
   font-size: 14px;
-  color: var(--el-text-color-primary);
+  color: #303133;
   transition: all 0.25s;
 
   &.is-active {
     .node-label {
-      color: var(--el-color-primary);
+      color: #409EFF;
       font-weight: 600;
     }
   }
@@ -692,16 +409,16 @@ defineExpose({
   flex-shrink: 0;
 
   &.folder-icon {
-    color: var(--el-color-warning);
+    color: #E6A23C;
 
     &.active {
-      color: var(--el-color-primary);
+      color: #409EFF;
     }
   }
 
   &.camera-icon {
     &.online {
-      color: var(--el-color-success);
+      color: #67C23A;
     }
 
     &.offline {
@@ -728,8 +445,8 @@ defineExpose({
   align-items: center;
   padding: 0 8px;
   height: 20px;
-  background: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
+  background: #ecf5ff;
+  color: #409EFF;
   border-radius: 10px;
   font-size: 11px;
   font-weight: 600;
@@ -755,16 +472,16 @@ defineExpose({
   align-items: center;
   gap: 10px;
   padding: 12px 14px;
-  background: var(--el-bg-color-overlay);
-  border: 1px solid var(--el-border-color-lighter);
+  background: #fff;
+  border: 1px solid #ebeef5;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: slideInLeft 0.35s ease-out both;
 
   &:hover {
-    background: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary-light-7);
+    background: #ecf5ff;
+    border-color: #c6e2ff;
     transform: translateX(4px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 
@@ -775,17 +492,17 @@ defineExpose({
   }
 
   &.is-active {
-    background: linear-gradient(90deg, var(--el-color-primary-light-9) 0%, var(--el-color-primary-light-8) 100%);
-    border-color: var(--el-color-primary-light-5);
-    box-shadow: 0 2px 8px var(--el-color-primary-light-7);
+    background: linear-gradient(90deg, #ecf5ff 0%, #d9ecff 100%);
+    border-color: #a0cfff;
+    box-shadow: 0 2px 8px #c6e2ff;
 
     .result-name {
-      color: var(--el-color-primary);
+      color: #409EFF;
       font-weight: 600;
     }
 
     .iconfont {
-      color: var(--el-color-primary);
+      color: #409EFF;
     }
   }
 }
@@ -808,23 +525,23 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--el-fill-color-light);
+  background: #ebeef5;
   border-radius: 8px;
   transition: all 0.3s;
 
   .iconfont {
     font-size: 18px;
-    color: var(--el-text-color-secondary);
+    color: #909399;
     transition: color 0.3s;
 
     &.active {
-      color: var(--el-color-primary);
+      color: #409EFF;
     }
   }
 }
 
 .result-item:hover .result-icon-wrap {
-  background: var(--el-color-primary-light-8);
+  background: #d9ecff;
 }
 
 .result-info {
@@ -834,7 +551,7 @@ defineExpose({
 
 .result-name {
   font-size: 14px;
-  color: var(--el-text-color-primary);
+  color: #303133;
   font-weight: 500;
   transition: color 0.25s;
   overflow: hidden;
@@ -851,7 +568,7 @@ defineExpose({
 
 .result-arrow {
   flex-shrink: 0;
-  color: var(--el-color-primary);
+  color: #409EFF;
   opacity: 0;
   transform: translateX(-4px);
   transition: all 0.3s;
@@ -866,12 +583,12 @@ defineExpose({
     transition: all 0.3s;
 
     &:hover:not(.is-active) {
-      color: var(--el-color-primary);
+      color: #409EFF;
       transform: translateY(-1px);
     }
 
     &.is-active {
-      box-shadow: 0 2px 8px var(--el-color-primary-light-5);
+      box-shadow: 0 2px 8px #a0cfff;
     }
   }
 }
@@ -893,17 +610,17 @@ defineExpose({
   :deep(.el-dialog__header) {
     padding: 18px 24px;
     margin-right: 0;
-    border-bottom: 1px solid var(--el-border-color-lighter);
+    border-bottom: 1px solid #ebeef5;
     background: linear-gradient(
       135deg,
-      var(--el-color-primary-light-9) 0%,
-      var(--el-bg-color-overlay) 60%
+      #ecf5ff 0%,
+      #fff 60%
     );
 
     .el-dialog__title {
       font-weight: 600;
       font-size: 16px;
-      color: var(--el-text-color-primary);
+      color: #303133;
     }
 
     .el-dialog__headerbtn {
@@ -916,7 +633,7 @@ defineExpose({
         background: var(--el-color-danger-light-9);
 
         .el-dialog__close {
-          color: var(--el-color-danger);
+          color: #F56C6C;
         }
       }
     }
@@ -941,20 +658,20 @@ defineExpose({
 .group-form {
   :deep(.el-form-item__label) {
     font-weight: 500;
-    color: var(--el-text-color-regular);
+    color: #606266;
   }
 
   :deep(.el-input__wrapper) {
-    box-shadow: 0 0 0 1px var(--el-border-color-light) inset;
+    box-shadow: 0 0 0 1px #dcdfe6 inset;
     transition: all 0.3s;
 
     &:hover,
     &:focus-within {
-      box-shadow: 0 0 0 1px var(--el-color-primary-light-5) inset;
+      box-shadow: 0 0 0 1px #a0cfff inset;
     }
 
     &:focus-within {
-      box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 0 0 3px var(--el-color-primary-light-8);
+      box-shadow: 0 0 0 1px #409EFF inset, 0 0 0 3px #d9ecff;
     }
   }
 
@@ -968,13 +685,13 @@ defineExpose({
       margin: 0;
       height: 100%;
       padding: 0 14px;
-      background: var(--el-fill-color-light);
-      color: var(--el-text-color-regular);
+      background: #ebeef5;
+      color: #606266;
       transition: all 0.3s;
 
       &:hover {
-        background: var(--el-color-primary-light-9);
-        color: var(--el-color-primary);
+        background: #ecf5ff;
+        color: #409EFF;
       }
     }
   }
@@ -999,21 +716,16 @@ defineExpose({
 
     &:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px var(--el-color-primary-light-7);
+      box-shadow: 0 4px 12px #c6e2ff;
     }
   }
 }
 
 /* ========== 暗黑模式适配 ========== */
-html.dark {
-  .group-tree-container {
-    .search-input {
-      :deep(.el-input-group__prepend .refresh-btn) {
-        background: var(--el-bg-color-overlay);
-      }
+
 
       :deep(.el-input-group__append) {
-        background: var(--el-bg-color-overlay);
+        background: #fff;
       }
     }
 
@@ -1041,7 +753,7 @@ html.dark {
     }
 
     .result-icon-wrap {
-      background: var(--el-bg-color-overlay);
+      background: #fff;
     }
 
     .device-id-badge {
@@ -1052,7 +764,7 @@ html.dark {
       background: linear-gradient(
         135deg,
         rgba(64, 158, 255, 0.08) 0%,
-        var(--el-bg-color-overlay) 60%
+        #fff 60%
       );
     }
   }
@@ -1066,13 +778,13 @@ html.dark {
 
 .custom-tree::-webkit-scrollbar-thumb,
 .search-result-area::-webkit-scrollbar-thumb {
-  background: var(--el-border-color);
+  background: #dcdfe6;
   border-radius: 3px;
 }
 
 .custom-tree::-webkit-scrollbar-thumb:hover,
 .search-result-area::-webkit-scrollbar-thumb:hover {
-  background: var(--el-color-primary-light-5);
+  background: #a0cfff;
 }
 
 .custom-tree::-webkit-scrollbar-track,

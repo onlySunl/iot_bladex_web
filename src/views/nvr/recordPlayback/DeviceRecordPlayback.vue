@@ -168,7 +168,7 @@
 </template>
 
 <script>
-import {getCurrentInstance, nextTick, onMounted, onUnmounted} from 'vue'
+
 import screenfull from 'screenfull'
 import { ElLoading, ElMessage } from 'element-plus'
 import RegionTree from '@/views/components/common/RegionTree.vue'

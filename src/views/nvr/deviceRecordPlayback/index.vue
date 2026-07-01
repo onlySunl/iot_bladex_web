@@ -20,8 +20,18 @@ export default {
   },
   data() {
     return {
-      cloudPlaybackRef: null,
-      devicePlaybackRef: null,
+      playbackType: 'device',
+      deviceId: null,
+    }
+  },
+  created() {
+    if (this.$route.query.deviceId) {
+      this.deviceId = Number(this.$route.query.deviceId)
+    }
+    if (this.$route.query.type === 'cloud') {
+      this.playbackType = 'cloud'
+    } else if (this.$route.query.type === 'device') {
+      this.playbackType = 'device'
     }
   },
 }

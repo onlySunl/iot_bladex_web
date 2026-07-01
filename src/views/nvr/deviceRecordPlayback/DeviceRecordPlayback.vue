@@ -126,7 +126,7 @@
 </template>
 
 <script>
-import {getCurrentInstance, nextTick, onMounted, onUnmounted, watch} from 'vue'
+
 import screenfull from 'screenfull'
 import { ElLoading, ElMessage } from 'element-plus'
 import {Pane, Splitpanes} from 'splitpanes'

@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <el-dialog
         draggable
@@ -22,39 +23,43 @@
       </el-form>
     </el-dialog>
   </div>
+
 </template>
 
 <script>
 import RegionTree from "../../components/common/RegionTree.vue";
 
-const showDialog = ref(false);
-const regionDeviceId = ref('');
-const regionName = ref('');
-const emit = defineEmits(['onSubmit']);
-defineExpose({openDialog})
-
-function openDialog(callback) {
-  showDialog = true;
-}
-
-function onSubmit() {
-  if(!regionDeviceId){
-    ElMessage({
-      message: '行政区划不存在',
-      type: 'error',
-    })
-    return
-  }
-  close();
-  emit('onSubmit', regionDeviceId,regionName);
-}
-
-function close() {
-  showDialog = false;
-}
-
-function handleNodeClick(data) {
-  regionDeviceId = data.deviceId;
-  regionName = data.name;
+export default {
+  data() {
+    return {
+      showDialog: false,
+      regionDeviceId: '',
+      regionName: '',
+    }
+  },
+  methods: {
+    openDialog(callback) {
+      showDialog = true;
+    },
+    onSubmit() {
+      if(!regionDeviceId){
+          ElMessage({
+            message: '行政区划不存在',
+            type: 'error',
+          })
+          return
+        }
+        close();
+        emit('onSubmit', regionDeviceId,regionName);
+    },
+    close() {
+      showDialog = false;
+    },
+    handleNodeClick(data) {
+      regionDeviceId = data.deviceId;
+        regionName = data.name;
+    },
+  },
 }
 </script>
+

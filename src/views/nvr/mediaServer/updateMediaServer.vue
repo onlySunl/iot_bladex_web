@@ -3,582 +3,364 @@
     <!-- 步骤条 -->
     <div class="step-bar">
       <el-steps :active="activeStep" finish-status="success" align-center>
-        <el-step title="基础配置" />
-        <el-step title="端口配置" />
-        <el-step title="网络配置" />
+        <el-step title="基础配置" description="IP、端口、密钥"></el-step>
+        <el-step title="端口配置" description="RTSP、RTMP、RTP等"></el-step>
+        <el-step title="确认提交" description="检查配置信息"></el-step>
       </el-steps>
     </div>
 
-    <el-form ref="mediaServerFormRef" :model="form" :rules="rules" label-width="140px">
-      <!-- 步骤 1：基础配置 -->
-      <div class="step-panel" :class="{ 'is-active': activeStep === 0 }">
-        <div class="form-group">
-          <div class="group-title">
-            <i class="el-icon-info-filled"></i>
-            <span>基础配置</span>
-          </div>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="服务 IP" prop="ip">
-                <el-input v-model="form.ip" placeholder="请输入服务器绑定的 IP 地址" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="HTTP 端口" prop="httpPort">
-                <el-input v-model="form.httpPort" placeholder="请输入HTTP 协议端口" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="密钥" prop="secret">
-                <el-input v-model="form.secret" placeholder="请输入密钥" show-password />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="服务类型" prop="type">
-                <el-select v-model="form.type" style="width: 100%">
-                  <el-option key="zlm" label="ZLMediaKit" value="zlm"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
-        <div class="step-actions">
-          <el-button type="primary" @click="handleNext">下一步</el-button>
-        </div>
+    <!-- 步骤1：基础配置 -->
+    <div class="step-panel" :class="{ 'is-active': activeStep === 0 }">
+      <div class="form-group">
+        <h3 class="group-title"><i class="el-icon-connection"></i> 服务器连接</h3>
+        <el-form ref="mediaServerFormRef" :model="form" :rules="rules" label-width="120px">
+          <el-form-item label="服务器IP" prop="ip">
+            <el-input v-model="form.ip" placeholder="请输入服务器IP地址" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="HTTP端口" prop="httpPort">
+            <el-input v-model="form.httpPort" placeholder="请输入HTTP端口" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="密钥" prop="secret">
+            <el-input v-model="form.secret" placeholder="请输入密钥" show-password clearable></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitCheckMediaServerForm" :loading="isConnected">
+              <i class="el-icon-connection" v-if="!isConnected"></i>
+              <i class="el-icon-success" v-else></i>
+              {{ isConnected ? '已连接' : '测试连接' }}
+            </el-button>
+          </el-form-item>
+        </el-form>
       </div>
+    </div>
 
-      <!-- 步骤 2：端口配置 -->
-      <div class="step-panel" :class="{ 'is-active': activeStep === 1 }">
-        <div class="form-group">
-          <div class="group-title">
-            <i class="el-icon-setting"></i>
-            <span>端口配置</span>
-          </div>
+    <!-- 步骤2：端口配置 -->
+    <div class="step-panel" :class="{ 'is-active': activeStep === 1 }">
+      <div class="form-group">
+        <h3 class="group-title"><i class="el-icon-setting"></i> 流媒体端口</h3>
+        <el-form :model="form" label-width="140px">
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="RTMP 端口" prop="rtmpPort">
-                <el-input v-model="form.rtmpPort" placeholder="请输入 RTMP 端口" clearable
-                          :disabled="form.defaultServer"></el-input>
+              <el-form-item label="RTSP端口">
+                <el-input v-model="form.rtspPort" placeholder="RTSP端口"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="RTMPS 端口" prop="rtmpSslPort">
-                <el-input v-model="form.rtmpSslPort" placeholder="请输入 RTMPS 端口" clearable
-                          :disabled="form.defaultServer"></el-input>
+              <el-form-item label="RTSP SSL端口">
+                <el-input v-model="form.rtspSslPort" placeholder="RTSP SSL端口"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="HTTPS 端口" prop="httpSslPort">
-                <el-input v-model="form.httpSslPort" placeholder="请输入 HTTPS 端口" clearable
-                          :disabled="form.defaultServer"></el-input>
+              <el-form-item label="RTMP端口">
+                <el-input v-model="form.rtmpPort" placeholder="RTMP端口"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="录像管理端口" prop="recordAssistPort">
-                <el-input v-model="form.recordAssistPort" placeholder="请输入录像管理端口" clearable
-                          :disabled="form.defaultServer"></el-input>
+              <el-form-item label="RTMP SSL端口">
+                <el-input v-model="form.rtmpSslPort" placeholder="RTMP SSL端口"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="RTSP 端口" prop="rtspPort">
-                <el-input v-model="form.rtspPort" placeholder="请输入 RTSP 端口" clearable
-                          :disabled="form.defaultServer"></el-input>
+              <el-form-item label="HTTP SSL端口">
+                <el-input v-model="form.httpSslPort" placeholder="HTTP SSL端口"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="RTSPS 端口" prop="rtspSslPort">
-                <el-input v-model="form.rtspSslPort" placeholder="请输入 RTSPS 端口" clearable
-                          :disabled="form.defaultServer"></el-input>
+              <el-form-item label="录制辅助端口">
+                <el-input v-model="form.recordAssistPort" placeholder="录制辅助端口"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="收流端口范围">
-                <div class="port-range">
-                  <el-input v-model="rtpPortRange1" placeholder="起始" @change="portRangeChange" clearable
-                            :disabled="form.defaultServer"></el-input>
-                  <span class="separator"></span>
-                  <el-input v-model="rtpPortRange2" placeholder="终止" @change="portRangeChange" clearable
-                            :disabled="form.defaultServer"></el-input>
-                </div>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
-        <div class="step-actions">
-          <el-button @click="handlePrev">上一步</el-button>
-          <el-button type="primary" @click="handleNext">下一步</el-button>
-        </div>
+        </el-form>
       </div>
+      <div class="form-group" style="margin-top: 20px;">
+        <h3 class="group-title"><i class="el-icon-monitor"></i> RTP配置</h3>
+        <el-form :model="form" label-width="140px">
+          <el-form-item label="启用RTP">
+            <el-switch v-model="form.rtpEnable"></el-switch>
+          </el-form-item>
+          <el-form-item label="RTP端口范围" v-if="form.rtpEnable">
+            <el-col :span="11">
+              <el-input v-model="rtpPortRange1" placeholder="起始端口" @change="portRangeChange"></el-input>
+            </el-col>
+            <el-col :span="2" style="text-align: center;">-</el-col>
+            <el-col :span="11">
+              <el-input v-model="rtpPortRange2" placeholder="结束端口" @change="portRangeChange"></el-input>
+            </el-col>
+          </el-form-item>
+          <el-form-item label="发送RTP端口范围" v-if="form.rtpEnable">
+            <el-col :span="11">
+              <el-input v-model="sendRtpPortRange1" placeholder="起始端口" @change="portRangeChange"></el-input>
+            </el-col>
+            <el-col :span="2" style="text-align: center;">-</el-col>
+            <el-col :span="11">
+              <el-input v-model="sendRtpPortRange2" placeholder="结束端口" @change="portRangeChange"></el-input>
+            </el-col>
+          </el-form-item>
+          <el-form-item label="RTP代理端口">
+            <el-input v-model="form.rtpProxyPort" placeholder="RTP代理端口"></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
 
-      <!-- 步骤 3：网络配置 -->
-      <div class="step-panel" :class="{ 'is-active': activeStep === 2 }">
-        <div class="form-group">
-          <div class="group-title">
-            <i class="el-icon-monitor"></i>
-            <span>网络配置</span>
-          </div>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="流 IP" prop="streamIp">
-                <el-input v-model="form.streamIp" placeholder="请输入流 IP" clearable
-                          :disabled="form.defaultServer"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="HOOK IP" prop="hookIp">
-                <el-input v-model="form.hookIp" placeholder="请输入 HOOK IP" clearable
-                          :disabled="form.defaultServer"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="SDP IP" prop="sdpIp">
-                <el-input v-model="form.sdpIp" placeholder="请输入 SDP IP" clearable
-                          :disabled="form.defaultServer"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="自动配置媒体服务">
-                <el-switch v-model="form.autoConfig" :disabled="form.defaultServer"></el-switch>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
-        <div class="step-actions">
-          <el-button @click="handlePrev">上一步</el-button>
-          <el-button type="primary" @click="submitForm">保 存</el-button>
+    <!-- 步骤3：确认提交 -->
+    <div class="step-panel" :class="{ 'is-active': activeStep === 2 }">
+      <div class="form-group">
+        <h3 class="group-title"><i class="el-icon-info"></i> 配置确认</h3>
+        <el-descriptions :column="2" border>
+          <el-descriptions-item label="服务器IP">{{ form.ip }}</el-descriptions-item>
+          <el-descriptions-item label="HTTP端口">{{ form.httpPort }}</el-descriptions-item>
+          <el-descriptions-item label="RTSP端口">{{ form.rtspPort || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="RTMP端口">{{ form.rtmpPort || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="RTP启用">{{ form.rtpEnable ? '是' : '否' }}</el-descriptions-item>
+          <el-descriptions-item label="RTP端口范围" v-if="form.rtpEnable">{{ form.rtpPortRange }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="form-group" style="margin-top: 20px;">
+      <div style="display: flex; justify-content: space-between;">
+        <el-button @click="handlePrev" :disabled="activeStep === 0">
+          <i class="el-icon-arrow-left"></i> 上一步
+        </el-button>
+        <div>
+          <el-button v-if="activeStep < 2" type="primary" @click="handleNext">
+            下一步 <i class="el-icon-arrow-right"></i>
+          </el-button>
+          <el-button v-else type="success" @click="submitForm">
+            <i class="el-icon-check"></i> 提交
+          </el-button>
           <el-button @click="cancel">取 消</el-button>
         </div>
       </div>
-    </el-form>
+    </div>
   </div>
 </template>
 
 <script>
-import {getMediaServer, saveMediaServer} from "@/api/nvr/zlm.js";
+import { checkMediaServer, saveMediaServer } from "@/api/nvr/zlm.js";
 
-;
-;
-
-const activeStep = ref(0);
-
-const rtpPortRange1 = ref(30000)
-const rtpPortRange2 = ref(30500)
-const sendRtpPortRange1 = ref(50000)
-const sendRtpPortRange2 = ref(60000)
-
-const isValidIp = (rule, value, callback) => {
-  var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
-  if (!reg.test(value)) {
-    return callback(new Error('请输入有效的IP地址'))
-  } else {
-    callback()
-  }
-  return true
-}
-const isValidPort = (rule, value, callback) => {
-  var reg = /^(([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5]))$/
-  if (!reg.test(value)) {
-    return callback(new Error('请输入有效的端口号'))
-  } else {
-    callback()
-  }
-  return true
-}
-
-const data = reactive({
-  form: {},
-  rules: {
-    ip: [{required: true, validator: isValidIp, message: '请输入有效的IP地址', trigger: 'blur'}],
-    httpPort: [{required: true, validator: isValidPort, message: '请输入有效的端口号', trigger: 'blur'}],
-    secret: [{required: true, message: "请输入secret", trigger: "blur"}],
+export default {
+  name: 'UpdateMediaServer',
+  data() {
+    return {
+      activeStep: 0,
+      isConnected: false,
+      isUpdatingForm: false,
+      rtpPortRange1: 30000,
+      rtpPortRange2: 30500,
+      sendRtpPortRange1: 50000,
+      sendRtpPortRange2: 60000,
+      form: {
+        id: null,
+        ip: '',
+        httpPort: '',
+        secret: '',
+        type: 'zlm',
+        autoConfig: true,
+        hookIp: null,
+        sdpIp: null,
+        streamIp: null,
+        httpSslPort: null,
+        recordAssistPort: null,
+        rtmpPort: null,
+        rtmpSslPort: null,
+        rtpEnable: true,
+        rtpPortRange: null,
+        sendRtpPortRange: null,
+        rtpProxyPort: null,
+        rtspPort: null,
+        rtspSslPort: null,
+      },
+      rules: {
+        ip: [{ required: true, validator: this.isValidIp, message: '请输入有效的IP地址', trigger: 'blur' }],
+        httpPort: [{ required: true, validator: this.isValidPort, message: '请输入有效的端口号', trigger: 'blur' }],
+        secret: [{ required: true, message: "请输入secret", trigger: "blur" }],
+      },
+    };
   },
-});
-
-const {form, rules} = toRefs(data);
-
-
-
-function cancel() {
-  reset();
-  this.$tab.closeOpenPage({path: "/mediaServer"});
-}
-
-function reset() {
-  activeStep = 0;
-  form = {
-    id: null,
-    ip: '',
-    httpPort: '',
-    secret: '',
-    type: 'zlm',
-    autoConfig: true,
-    hookIp: null,
-    sdpIp: null,
-    streamIp: null,
-    httpSslPort: null,
-    recordAssistPort: null,
-    rtmpPort: null,
-    rtmpSslPort: null,
-    rtpEnable: true,
-    rtpPortRange: null,
-    sendRtpPortRange: null,
-    rtpProxyPort: null,
-    rtspPort: null,
-    rtspSslPort: null,
-  };
-  rtpPortRange1 = 30000
-  rtpPortRange2 = 30500
-  sendRtpPortRange1 = 50000
-  sendRtpPortRange2 = 60000
-  proxy.resetForm("mediaServerFormRef");
-}
-
-const handleNext = () => {
-  if (activeStep === 0) {
-    this.$refs["mediaServerFormRef"].validateField(['ip', 'httpPort', 'secret']).then(() => {
-      activeStep++
-    }).catch(() => {})
-  } else if (activeStep < 2) {
-    activeStep++
-  }
-}
-
-const handlePrev = () => {
-  if (activeStep > 0) {
-    activeStep--
-  }
-}
-
-function portRangeChange() {
-  if (form.rtpEnable) {
-    form.rtpPortRange = rtpPortRange1 + "," + rtpPortRange2
-    form.sendRtpPortRange = sendRtpPortRange1 + "," + sendRtpPortRange2
-  }
-}
-
-function submitForm() {
-  this.$refs["mediaServerFormRef"].validate(valid => {
-    if (valid) {
-      saveMediaServer(form).then(response => {
-        this.$modal.msgSuccess("保存成功");
-        cancel();
-      })
-    }
-  })
-}
-
-onMounted(() => {
-  let id = this.$route.query && this.$route.query.id;
-  reset();
-  getMediaServer(id).then(response => {
-    form = response.data
-    if (form.rtpPortRange) {
-      rtpPortRange1 = parseInt(form.rtpPortRange.split(",")[0])
-      rtpPortRange2 = parseInt(form.rtpPortRange.split(",")[1])
-    }
-  })
-})
+  watch: {
+    'form.ip'() {
+      if (!this.isUpdatingForm) {
+        this.isConnected = false;
+      }
+    },
+    'form.httpPort'() {
+      if (!this.isUpdatingForm) {
+        this.isConnected = false;
+      }
+    },
+    'form.secret'() {
+      if (!this.isUpdatingForm) {
+        this.isConnected = false;
+      }
+    },
+  },
+  mounted() {
+    this.reset();
+  },
+  methods: {
+    isValidIp(rule, value, callback) {
+      const reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
+      if (!reg.test(value)) {
+        return callback(new Error('请输入有效的IP地址'));
+      } else {
+        callback();
+      }
+    },
+    isValidPort(rule, value, callback) {
+      const reg = /^(([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5]))$/;
+      if (!reg.test(value)) {
+        return callback(new Error('请输入有效的端口号'));
+      } else {
+        callback();
+      }
+    },
+    cancel() {
+      this.reset();
+      this.$tab.closeOpenPage({ path: "/mediaServer" });
+    },
+    reset() {
+      this.activeStep = 0;
+      this.isConnected = false;
+      this.form = {
+        id: null,
+        ip: '',
+        httpPort: '',
+        secret: '',
+        type: 'zlm',
+        autoConfig: true,
+        hookIp: null,
+        sdpIp: null,
+        streamIp: null,
+        httpSslPort: null,
+        recordAssistPort: null,
+        rtmpPort: null,
+        rtmpSslPort: null,
+        rtpEnable: true,
+        rtpPortRange: null,
+        sendRtpPortRange: null,
+        rtpProxyPort: null,
+        rtspPort: null,
+        rtspSslPort: null,
+      };
+      this.rtpPortRange1 = 30000;
+      this.rtpPortRange2 = 30500;
+      this.sendRtpPortRange1 = 50000;
+      this.sendRtpPortRange2 = 60000;
+      this.$refs.mediaServerFormRef && this.$refs.mediaServerFormRef.resetFields();
+    },
+    handleNext() {
+      if (this.activeStep === 0) {
+        this.$refs.mediaServerFormRef.validateField(['ip', 'httpPort', 'secret']).then(() => {
+          if (!this.isConnected) {
+            this.$modal.msgWarning("请先测试连接");
+            return;
+          }
+          this.activeStep++;
+        }).catch(() => {});
+      } else if (this.activeStep < 2) {
+        this.activeStep++;
+      }
+    },
+    handlePrev() {
+      if (this.activeStep > 0) {
+        this.activeStep--;
+      }
+    },
+    submitCheckMediaServerForm() {
+      this.$refs.mediaServerFormRef.validateField(['ip', 'httpPort', 'secret']).then(() => {
+        checkMediaServer(
+          this.form.ip,
+          this.form.httpPort,
+          this.form.secret,
+          this.form.type,
+        ).then(response => {
+          const httpPort = this.form.httpPort;
+          this.isUpdatingForm = true;
+          Object.assign(this.form, response.data);
+          this.form.httpPort = httpPort;
+          this.form.autoConfig = true;
+          this.form.rtpEnable = true;
+          this.rtpPortRange1 = 30000;
+          this.rtpPortRange2 = 30500;
+          this.sendRtpPortRange1 = 50000;
+          this.sendRtpPortRange2 = 60000;
+          this.isConnected = true;
+          this.$nextTick(() => {
+            this.isUpdatingForm = false;
+          });
+          this.$modal.msgSuccess("该ZLMediaKit可用");
+        }).catch(() => {
+          this.$modal.msgError("测试连接失败，请检查配置");
+        });
+      }).catch(() => {});
+    },
+    portRangeChange() {
+      if (this.form.rtpEnable) {
+        this.form.rtpPortRange = this.rtpPortRange1 + "," + this.rtpPortRange2;
+        this.form.sendRtpPortRange = this.sendRtpPortRange1 + "," + this.sendRtpPortRange2;
+      }
+    },
+    submitForm() {
+      this.$refs.mediaServerFormRef.validate(valid => {
+        if (valid) {
+          saveMediaServer(this.form).then(() => {
+            this.$modal.msgSuccess("新增成功");
+            this.cancel();
+          });
+        }
+      });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 .app-container {
   padding: 20px;
-  animation: pageEnter 0.5s ease-out;
 }
 
-@keyframes pageEnter {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===== 步骤条 ===== */
 .step-bar {
   margin-bottom: 24px;
   padding: 20px 32px;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px) saturate(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 16px;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.03),
-    0 4px 12px rgba(0, 0, 0, 0.04),
-    0 8px 24px rgba(0, 0, 0, 0.02);
-  animation: cardEnter 0.5s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.step-bar :deep(.el-step__head.is-success),
-.step-bar :deep(.el-step__title.is-success) {
-  color: var(--el-color-primary);
-  border-color: var(--el-color-primary);
-}
-
-.step-bar :deep(.el-step__head.is-process) {
-  color: #fff;
-  border-color: var(--el-color-primary);
-}
-
-.step-bar :deep(.el-step__head.is-process .el-step__icon) {
-  background: var(--el-color-primary);
-  box-shadow: 0 0 10px rgba(var(--el-color-primary-rgb), 0.4);
-}
-
-.step-bar :deep(.el-step__line-inner) {
-  border-color: var(--el-color-primary);
-  transition: all 0.3s ease;
-}
-
-/* ===== 步骤面板 ===== */
 .step-panel {
   display: none;
-  opacity: 0;
-  transform: translateY(12px);
 }
 
 .step-panel.is-active {
   display: block;
-  animation: stepEnter 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-@keyframes stepEnter {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===== 玻璃卡片 ===== */
 .form-group {
-  margin-bottom: 0;
   padding: 24px 28px;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px) saturate(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 16px;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.03),
-    0 4px 12px rgba(0, 0, 0, 0.04),
-    0 8px 24px rgba(0, 0, 0, 0.02);
-  animation: cardEnter 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s backwards;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.form-group:hover {
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.05),
-    0 8px 24px rgba(0, 0, 0, 0.06),
-    0 16px 48px rgba(0, 0, 0, 0.04);
-  transform: translateY(-2px);
-}
-
-@keyframes cardEnter {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* ===== 分组标题 ===== */
 .group-title {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 15px;
+  margin-bottom: 20px;
+  font-size: 16px;
   font-weight: 600;
-  color: var(--el-text-color-primary, #303133);
-  margin-bottom: 24px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-  position: relative;
-  letter-spacing: 0.3px;
+  color: #303133;
 
-  .el-icon {
-    color: var(--el-color-primary, #409eff);
-    font-size: 18px;
-    filter: drop-shadow(0 0 4px rgba(var(--el-color-primary-rgb), 0.25));
-    animation: iconPulse 2.5s ease-in-out infinite;
-  }
-}
-
-.group-title::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 50px;
-  height: 2px;
-  background: linear-gradient(90deg, var(--el-color-primary), #36cfc9);
-  border-radius: 1px;
-  opacity: 0.7;
-}
-
-@keyframes iconPulse {
-  0%, 100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 4px rgba(var(--el-color-primary-rgb), 0.2));
-  }
-  50% {
-    transform: scale(1.15);
-    filter: drop-shadow(0 0 8px rgba(var(--el-color-primary-rgb), 0.4));
-  }
-}
-
-/* ===== 端口范围 ===== */
-.port-range {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.separator {
-  width: 20px;
-  height: 2px;
-  background: linear-gradient(90deg, var(--el-color-primary-light-5), var(--el-color-primary));
-  border-radius: 1px;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.separator::before,
-.separator::after {
-  content: '';
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: var(--el-color-primary);
-  border-radius: 50%;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.separator::before { left: -1px; }
-.separator::after { right: -1px; }
-
-/* ===== 输入框 focus 光晕 ===== */
-:deep(.el-input__wrapper) {
-  transition: all 0.25s ease;
-}
-
-:deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 0 10px rgba(var(--el-color-primary-rgb), 0.12);
-}
-
-/* ===== 步骤操作按钮 ===== */
-.step-actions {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  padding-top: 16px;
-  animation: stepEnter 0.45s cubic-bezier(0.4, 0, 0.2, 1) 0.2s backwards;
-}
-
-.step-actions .el-button {
-  min-width: 100px;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  height: 36px;
-}
-
-.step-actions .el-button--primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(var(--el-color-primary-rgb), 0.35);
-}
-
-.step-actions .el-button--primary:active {
-  transform: translateY(0) scale(0.97);
-}
-
-.step-actions .el-button:not(.el-button--primary) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-/* ===== 测试连接按钮 ===== */
-:deep(.el-form-item .el-button--primary) {
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-:deep(.el-form-item .el-button--primary:hover) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(var(--el-color-primary-rgb), 0.25);
-}
-
-/* ===== switch 优化 ===== */
-:deep(.el-switch__core) {
-  transition: all 0.3s ease;
-}
-
-/* ===== 暗黑模式 ===== */
-html.dark {
-  .step-bar {
-    background: rgba(30, 30, 40, 0.55);
-    border-color: rgba(255, 255, 255, 0.06);
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.2),
-      0 4px 12px rgba(0, 0, 0, 0.15),
-      0 8px 24px rgba(0, 0, 0, 0.1);
-  }
-
-  .form-group {
-    background: rgba(30, 30, 40, 0.55);
-    border-color: rgba(255, 255, 255, 0.06);
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.2),
-      0 4px 12px rgba(0, 0, 0, 0.15),
-      0 8px 24px rgba(0, 0, 0, 0.1);
-  }
-
-  .form-group:hover {
-    box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.25),
-      0 8px 24px rgba(0, 0, 0, 0.2),
-      0 16px 48px rgba(0, 0, 0, 0.15);
-  }
-
-  .group-title {
-    color: var(--el-text-color-primary, #e5eaf3);
-    border-bottom-color: rgba(255, 255, 255, 0.06);
-  }
-
-  .group-title::after {
-    opacity: 0.9;
-  }
-
-  .separator {
-    background: linear-gradient(90deg, var(--el-color-primary-light-3), var(--el-color-primary));
-  }
-
-  .separator::before,
-  .separator::after {
-    background: var(--el-color-primary-light-3);
-  }
-
-  :deep(.el-input__wrapper.is-focus) {
-    box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 0 12px rgba(var(--el-color-primary-rgb), 0.2);
+  i {
+    margin-right: 8px;
+    color: #409EFF;
   }
 }
 </style>

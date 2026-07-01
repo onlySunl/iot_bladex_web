@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <el-dialog
       draggable
@@ -57,8 +58,8 @@
           </el-form-item>
           <el-form-item class="form-actions">
             <div class="button-group">
-              <el-button type="primary" icon="Search" @click="handleQuery" class="search-btn">搜索</el-button>
-              <el-button icon="Refresh" @click="resetQuery" class="reset-btn">重置</el-button>
+              <el-button type="primary" icon="el-icon-search" @click="handleQuery" class="search-btn">搜索</el-button>
+              <el-button icon="el-icon-refresh" @click="resetQuery" class="reset-btn">重置</el-button>
             </div>
           </el-form-item>
         </el-form>
@@ -80,168 +81,74 @@
               type="primary"
               plain
               :disabled="unusualCivilCodeList.length > 0 ? false : true"
-              icon="Delete"
+              icon="el-icon-delete"
               @click="handleClearAll"
               class="action-btn clear-all-btn"
             >全部清除
             </el-button>
           </el-col>
-          <right-toolbar v-model:showSearch="showSearch" @queryTable="getUnusualCivilCodeListFun"></right-toolbar>
+          <right-toolbar :showSearch.sync="showSearch" @queryTable="getUnusualCivilCodeListFun"></right-toolbar>
         </el-row>
 
         <div class="table-wrapper">
           <el-table v-loading="loading" :data="unusualCivilCodeList" @selection-change="handleSelectionChange" class="custom-table" highlight-current-row>
             <el-table-column type="selection" width="55" align="center" fixed/>
             <el-table-column label="编号" align="center" prop="id" width="70">
-              <template #default="scope">
+              <template slot-scope="scope">
                 <span class="id-badge">{{ scope.row.id }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="设备名称" align="center" prop="deviceName" min-width="150">
-              <template #default="scope">
-                <div class="device-name-cell">
-                  <i class="el-icon-video-camera"></i>
-                  <span>{{ scope.row.deviceName }}</span>
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column label="IP地址" align="center" prop="ipAddress" min-width="140">
-              <template #default="scope">
-                <div class="ip-cell">
-                  <i class="el-icon-connection"></i>
-                  <span>{{ scope.row.ipAddress }}</span>
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column label="接入类型" align="center" prop="type" width="120">
-              <template #default="scope">
-                <dict-tag :options="qs_live_stream_type" :value="scope.row.type"/>
-              </template>
-            </el-table-column>
-            <el-table-column label="设备状态" align="center" prop="deviceStatus" width="110">
-              <template #default="scope">
-                <dict-tag :options="qs_device_status" :value="scope.row.deviceStatus"/>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="100" fixed="right">
-              <template #default="scope">
-                <div class="table-actions">
-                  <el-tooltip content="删除">
-                    <el-button type="danger" text bg size="small" icon="Delete" @click="handleDelete(scope.row)"></el-button>
-                  </el-tooltip>
-                </div>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-
-        <pagination
-          v-show="total > 0"
-          :total="total"
-          v-model:page="queryParams.pageNum"
-          v-model:limit="queryParams.pageSize"
-          @pagination="getUnusualCivilCodeListFun"
-          class="custom-pagination"
-        />
-      </div>
-    </el-dialog>
-  </div>
+              
 </template>
 
 <script>
 import {clearDeviceCivilCode, getUnusualCivilCodeList} from "@/api/nvr/device.js";
 
-const {
-  qs_live_stream_type,
-  qs_device_status,
-} = proxy.useDict('qs_live_stream_type', 'qs_device_status')
-
-
-const single = ref(true)
-const selectionList = ref([])
-const showDialog = ref(false);
-const title = ref('');
-const unusualCivilCodeList = ref([])
-const total = ref(0)
-const loading = ref(true)
-const showSearch = ref(true)
-const data = reactive({
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10,
-    deviceName: undefined,
-    ipAddress: undefined,
-    type: undefined,
-    deviceStatus: undefined,
-    status: 'ENABLE',
+export default {
+  name: 'small-padding fixed-width',
+  data() {
+    return {
+      single: true,
+      selectionList: [],
+      showDialog: false,
+      title: '',
+      unusualCivilCodeList: [],
+      total: 0,
+      loading: true,
+      showSearch: true,
+      pageNum: 1,
+      pageSize: 10,
+      deviceName: undefined,
+      ipAddress: undefined,
+      type: undefined,
+      deviceStatus: undefined,
+      status: 'ENABLE',
+    }
   },
-})
-
-const {queryParams} = toRefs(data)
-
-defineExpose({openDialog})
-
-function getUnusualCivilCodeListFun() {
-  loading = true
-  getUnusualCivilCodeList(queryParams).then(res => {
-    unusualCivilCodeList = res.rows
-    total = res.total
-    loading = false
-  })
-}
-
-/** 多选框选中数据 */
-function handleSelectionChange(selection) {
-  selectionList = selection
-  single = selection.length != 1
-}
-
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.pageNum = 1
-  getUnusualCivilCodeListFun()
-}
-
-/** 重置按钮操作 */
-function resetQuery() {
-  proxy.resetForm("queryRef")
-  handleQuery()
-}
-
-function handleClear() {
-  clearDeviceCivilCode({
-    deviceIds: selectionList.map(item => item.id)
-  }).then(res => {
-    this.$modal.msgSuccess("清除成功");
-    getUnusualCivilCodeListFun()
-  })
-}
-const handleDelete = (row) => {
-  clearDeviceCivilCode({
-    deviceIds: [row.id]
-  }).then(res => {
-    this.$modal.msgSuccess("清除成功");
-    getUnusualCivilCodeListFun()
-  })
-}
-
-function handleClearAll() {
-  clearDeviceCivilCode({
-    all: true,
-    deviceIds: []
-  }).then(res => {
-    this.$modal.msgSuccess("全部清除成功");
-    getUnusualCivilCodeListFun()
-  })
-}
-
-function close() {
-  showDialog = false;
-}
-
-function openDialog() {
-  showDialog = true;
-  getUnusualCivilCodeListFun()
+  methods: {
+    handleClearAll() {
+      clearDeviceCivilCode({
+          all: true,
+          deviceIds: []
+        }).then(res => {
+          this.$modal.msgSuccess("全部清除成功");
+          getUnusualCivilCodeListFun()
+        })
+    },
+    close() {
+      showDialog = false;
+    },
+    openDialog() {
+      showDialog = true;
+        getUnusualCivilCodeListFun()
+    },
+    handleDelete(row) {
+      clearDeviceCivilCode({
+          deviceIds: [row.id]
+        }).then(res => {
+          this.$modal.msgSuccess("清除成功");
+          getUnusualCivilCodeListFun()
+        })
+    },
+  },
 }
 </script>
 
@@ -249,9 +156,9 @@ function openDialog() {
 /* ========== 查询表单 ========== */
 .query-form {
   padding: 18px 22px;
-  background: var(--el-bg-color-overlay);
+  background: #fff;
   border-radius: 10px;
-  border: 1px solid var(--el-border-color-lighter);
+  border: 1px solid #ebeef5;
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04);
   margin-bottom: 0important;
   animation: fadeInUp 0.4s ease-out 0.1s both;
@@ -267,16 +174,16 @@ function openDialog() {
 
   :deep(.el-input__wrapper),
   :deep(.el-select .el-input__wrapper) {
-    box-shadow: 0 0 0 1px var(--el-border-color-light) inset;
+    box-shadow: 0 0 0 1px #dcdfe6 inset;
     transition: all 0.3s;
 
     &:hover,
     &:focus-within {
-      box-shadow: 0 0 0 1px var(--el-color-primary-light-5) inset;
+      box-shadow: 0 0 0 1px #a0cfff inset;
     }
 
     &:focus-within {
-      box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 0 0 3px var(--el-color-primary-light-8);
+      box-shadow: 0 0 0 1px #409EFF inset, 0 0 0 3px #d9ecff;
     }
   }
 }
@@ -286,7 +193,7 @@ function openDialog() {
   margin-left: autoimportant;
   margin-right: 0important;
   padding-left: 32px;
-  border-left: 1px solid var(--el-border-color-lighter);
+  border-left: 1px solid #ebeef5;
   margin-left: 24pximportant;
 
   .button-group {
@@ -311,7 +218,7 @@ function openDialog() {
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px var(--el-color-primary-light-7);
+    box-shadow: 0 4px 12px #c6e2ff;
   }
 
   &:active {
@@ -366,9 +273,9 @@ function openDialog() {
 
 /* ========== 表格区域 ========== */
 .table-wrapper {
-  background: var(--el-bg-color-overlay);
+  background: #fff;
   border-radius: 10px;
-  border: 1px solid var(--el-border-color-lighter);
+  border: 1px solid #ebeef5;
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04);
   overflow: hidden;
   animation: fadeInUp 0.4s ease-out 0.2s both;
@@ -380,12 +287,12 @@ function openDialog() {
 }
 
 .custom-table {
-  --el-table-header-bg-color: var(--el-fill-color-light);
+  --el-table-header-bg-color: #ebeef5;
 
   :deep(.el-table__header-wrapper) {
     th {
-      background-color: var(--el-fill-color-light) !important;
-      color: var(--el-text-color-primary);
+      background-color: #ebeef5 !important;
+      color: #303133;
       font-weight: 600;
       font-size: 13px;
       letter-spacing: 0.3px;
@@ -405,12 +312,12 @@ function openDialog() {
       }
 
       &:hover {
-        background-color: var(--el-color-primary-light-9) !important;
+        background-color: #ecf5ff !important;
         transform: scale(1.002);
       }
 
       &.current-row {
-        background-color: var(--el-color-primary-light-9) !important;
+        background-color: #ecf5ff !important;
       }
     }
   }
@@ -439,15 +346,15 @@ function openDialog() {
   min-width: 28px;
   height: 22px;
   padding: 0 8px;
-  background: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
+  background: #ecf5ff;
+  color: #409EFF;
   border-radius: 11px;
   font-size: 12px;
   font-weight: 600;
   transition: all 0.3s;
 
   .el-table__row:hover & {
-    background: var(--el-color-primary-light-8);
+    background: #d9ecff;
     transform: scale(1.05);
   }
 }
@@ -457,12 +364,12 @@ function openDialog() {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--el-text-color-primary);
+  color: #303133;
   font-weight: 500;
   transition: color 0.3s;
 
   .el-icon {
-    color: var(--el-color-primary);
+    color: #409EFF;
     font-size: 16px;
   }
 }
@@ -473,7 +380,7 @@ function openDialog() {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  color: var(--el-text-color-regular);
+  color: #606266;
   font-family: "Courier New", monospace;
   font-size: 13px;
   transition: color 0.3s;
@@ -508,15 +415,15 @@ function openDialog() {
 .table-actions .el-button--primary[text],
 .table-actions .el-button--primary[text][bg] {
   color: #ffffffimportant;
-  background-color: var(--el-color-primary) !important;
-  border-color: var(--el-color-primary) !important;
+  background-color: #409EFF !important;
+  border-color: #409EFF !important;
 }
 .table-actions .el-button--danger,
 .table-actions .el-button--danger[text],
 .table-actions .el-button--danger[text][bg] {
   color: #ffffffimportant;
-  background-color: var(--el-color-danger) !important;
-  border-color: var(--el-color-danger) !important;
+  background-color: #F56C6C !important;
+  border-color: #F56C6C !important;
 }
 
 
@@ -526,12 +433,12 @@ function openDialog() {
   animation: fadeInUp 0.4s ease-out 0.25s both;
 
   :deep(.el-pagination__total) {
-    color: var(--el-text-color-regular);
+    color: #606266;
   }
 
   :deep(.el-pagination__sizes) {
     .el-input__wrapper {
-      box-shadow: 0 0 0 1px var(--el-border-color-light) inset;
+      box-shadow: 0 0 0 1px #dcdfe6 inset;
     }
   }
 
@@ -539,12 +446,12 @@ function openDialog() {
     transition: all 0.3s;
 
     &:hover:not(.is-active) {
-      color: var(--el-color-primary);
+      color: #409EFF;
       transform: translateY(-1px);
     }
 
     &.is-active {
-      box-shadow: 0 2px 8px var(--el-color-primary-light-5);
+      box-shadow: 0 2px 8px #a0cfff;
     }
   }
 }
@@ -561,17 +468,17 @@ function openDialog() {
   :deep(.el-dialog__header) {
     padding: 20px 24px;
     margin-right: 0;
-    border-bottom: 1px solid var(--el-border-color-lighter);
+    border-bottom: 1px solid #ebeef5;
     background: linear-gradient(
       135deg,
-      var(--el-color-primary-light-9) 0%,
-      var(--el-bg-color-overlay) 60%
+      #ecf5ff 0%,
+      #fff 60%
     );
 
     .el-dialog__title {
       font-weight: 600;
       font-size: 16px;
-      color: var(--el-text-color-primary);
+      color: #303133;
       letter-spacing: 0.5px;
     }
 
@@ -585,7 +492,7 @@ function openDialog() {
         background: var(--el-color-danger-light-9);
 
         .el-dialog__close {
-          color: var(--el-color-danger);
+          color: #F56C6C;
         }
       }
     }
@@ -629,7 +536,7 @@ function openDialog() {
       padding-left: 0;
       border-left: none;
       width: 100%;
-      border-top: 1px solid var(--el-border-color-lighter);
+      border-top: 1px solid #ebeef5;
       padding-top: 16px;
       margin-top: 8px;
 
@@ -647,13 +554,13 @@ function openDialog() {
 }
 
 :deep(.el-table__body-wrapper::-webkit-scrollbar-thumb) {
-  background: var(--el-border-color);
+  background: #dcdfe6;
   border-radius: 3px;
   transition: background 0.3s;
 }
 
 :deep(.el-table__body-wrapper::-webkit-scrollbar-thumb:hover) {
-  background: var(--el-color-primary-light-5);
+  background: #a0cfff;
 }
 
 :deep(.el-table__body-wrapper::-webkit-scrollbar-track) {

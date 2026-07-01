@@ -41,16 +41,20 @@ import CloudRecordPlayback from './CloudRecordPlayback.vue'
 import DeviceRecordPlayback from './DeviceRecordPlayback.vue'
 
 export default {
-  name: 'fade-transform',
+  name: 'RecordPlayback',
   components: {
     CloudRecordPlayback,
     DeviceRecordPlayback,
   },
   data() {
     return {
-      cloudPlaybackRef: null,
-      devicePlaybackRef: null,
+      playbackType: 'device',
     }
+  },
+  methods: {
+    handleTypeChange(type) {
+      this.playbackType = type
+    },
   },
 }
 </script>

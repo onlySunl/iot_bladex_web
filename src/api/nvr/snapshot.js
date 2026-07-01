@@ -35,15 +35,14 @@ export function exportSnapshot(query) {
 }
 
 // 从流中抓图并保存
-export function captureFromStream(data: {
-    deviceId: number;
-    app: string;
-    stream: string;
-    snapshotType?: string;
-}) {
+export function captureFromStream(data) {
     return request({
         url: '/api/qs/snapshot/captureFromStream',
         method: 'post',
         params: data
     })
 }
+
+// Aliases for compatibility
+export const getSnapshotList = listSnapshot
+export const deleteSnapshot = delSnapshot

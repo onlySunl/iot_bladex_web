@@ -1,4 +1,5 @@
 <template>
+
   <div class="app-container">
     <div class="search-box">
       <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="130px" class="query-form">
@@ -26,8 +27,8 @@
         </el-form-item>
         <el-form-item class="form-actions">
           <div class="button-group">
-            <el-button type="primary" icon="Search" @click="handleQuery" class="search-btn">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery" class="reset-btn">重置</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="handleQuery" class="search-btn">搜索</el-button>
+            <el-button icon="el-icon-refresh" @click="resetQuery" class="reset-btn">重置</el-button>
           </div>
         </el-form-item>
       </el-form>
@@ -37,7 +38,7 @@
           <el-button
             type="primary"
             plain
-            icon="Plus"
+            icon="el-icon-plus"
             @click="handleAdd"
             class="action-btn add-btn"
           >新增
@@ -47,7 +48,7 @@
           <el-button
             type="success"
             plain
-            icon="Edit"
+            icon="el-icon-edit"
             :disabled="single"
             @click="handleUpdate"
             class="action-btn edit-btn"
@@ -58,14 +59,14 @@
           <el-button
             type="danger"
             plain
-            icon="Delete"
+            icon="el-icon-delete"
             :disabled="multiple"
             @click="handleDelete"
             class="action-btn delete-btn"
           >删除
           </el-button>
         </el-col>
-        <right-toolbar v-model:showSearch="showSearch" v-model:viewMode="viewMode" :showViewSwitch="true" @queryTable="getList"/>
+        <right-toolbar :showSearch.sync="showSearch" :viewMode.sync="viewMode" :showViewSwitch="true" @queryTable="getList"/>
       </el-row>
     </div>
 
@@ -79,625 +80,198 @@
       >
         <el-table-column type="selection" width="55" align="center" fixed/>
         <el-table-column label="编号" align="center" prop="id" width="70" fixed>
-          <template #default="scope">
+          <template slot-scope="scope">
             <span class="id-badge">{{ scope.row.id }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="平台名称" align="center" prop="name" min-width="150" fixed/>
-        <el-table-column label="国标编码" align="center" prop="serverGbId" min-width="180" :show-overflow-tooltip="true"/>
-        <el-table-column label="服务器IP" align="center" prop="serverIp" width="150"/>
-        <el-table-column label="服务器端口" align="center" prop="serverPort" width="100"/>
-        <el-table-column label="传输协议" align="center" prop="transport" width="100"/>
-        <el-table-column label="启用状态" align="center" prop="enable" width="100">
-          <template #default="scope">
-            <el-switch
-              v-model="scope.row.enable"
-              :active-value="1"
-              :inactive-value="0"
-              @change="handleEnableChange(scope.row)"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column label="在线状态" align="center" prop="status" width="100">
-          <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
-              {{ scope.row.status === 1 ? '在线' : '离线' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="关联设备" align="center" prop="deviceCount" width="110">
-          <template #default="scope">
-            <el-tag type="info" effect="plain">{{ scope.row.deviceCount || 0 }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-          <template #default="scope">
-            <span>{{ parseTime(scope.row.createTime) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" align="center" width="380" class-name="small-padding fixed-width fixed-right">
-          <template #default="scope">
-            <div class="table-actions">
-                <el-tooltip content="修改">
-                  <el-button type="primary" text bg size="small" icon="Edit" @click="handleUpdate(scope.row)"/>
-                </el-tooltip>
-                <el-tooltip content="关联通道">
-                  <el-button type="success" text bg size="small" icon="Connection" @click="handleAssociated(scope.row)"/>
-                </el-tooltip>
-                <template v-if="scope.row.enable === 1">
-                  <el-tooltip v-if="scope.row.status === 0" content="上线">
-                    <el-button type="primary" text bg size="small" icon="Connection" @click="handleRegister(scope.row)"/>
-                  </el-tooltip>
-                  <el-tooltip v-if="scope.row.status === 1" content="注销">
-                    <el-button type="warning" text bg size="small" icon="SwitchButton" @click="handleUnregister(scope.row)"/>
-                  </el-tooltip>
-                  <el-tooltip v-if="scope.row.status === 1" content="推送通道">
-                    <el-button type="info" text bg size="small" icon="Upload" @click="handlePushCatalog(scope.row)"/>
-                  </el-tooltip>
-                </template>
-                <el-tooltip content="删除">
-                  <el-button type="danger" text bg size="small" icon="Delete" @click="handleDelete(scope.row)"/>
-                </el-tooltip>
-              </div>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-
-    <div v-else class="card-view" v-loading="loading">
-      <div class="card-grid" v-if="platformList.length > 0">
-        <div class="platform-card" :class="{ 'is-selected': item.checked, 'is-online': item.status === 1 }" v-for="item in platformList" :key="item.id">
-            <div class="card-header">
-              <div class="header-left">
-                <el-checkbox v-model="item.checked" @change="handleCardSelection" class="card-checkbox"/>
-                <div class="platform-icon">
-                  <i class="el-icon-monitor"></i>
-                </div>
-                <div class="platform-name" :title="item.name">{{ item.name }}</div>
-              </div>
-              <div class="header-actions">
-                <el-switch
-                  v-model="item.enable"
-                  :active-value="1"
-                  :inactive-value="0"
-                  @change="handleEnableChange(item)"
-                  size="small"
-                />
-                <div class="status-dot" :class="item.status === 1 ? 'pulse online' : 'breathe offline'"/>
-              </div>
-            </div>
-
-            <div class="card-body">
-              <div class="info-row">
-                <div class="info-item">
-                  <span class="info-label">编号</span>
-                  <span class="info-value">{{ item.id }}</span>
-                </div>
-              </div>
-
-              <div class="info-row">
-                <div class="info-item full">
-                  <span class="info-label">国标编码</span>
-                  <span class="info-value" :title="item.serverGbId">{{ item.serverGbId || '-' }}</span>
-                </div>
-              </div>
-
-              <div class="info-row">
-                <div class="info-item">
-                  <span class="info-label">服务器IP</span>
-                  <span class="info-value">{{ item.serverIp || '-' }}</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">端口</span>
-                  <span class="info-value">{{ item.serverPort || '-' }}</span>
-                </div>
-              </div>
-
-              <div class="info-row">
-                <div class="info-item">
-                  <span class="info-label">传输协议</span>
-                  <span class="info-value">{{ item.transport || '-' }}</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">关联设备</span>
-                  <span class="info-value">
-                    <el-tag type="info" effect="plain" size="small">{{ item.deviceCount || 0 }}</el-tag>
-                  </span>
-                </div>
-              </div>
-              <div class="info-row">
-                <div class="info-item full">
-                  <span class="info-label">创建时间</span>
-                  <span class="info-value">{{ parseTime(item.createTime) }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="card-footer">
-              <el-button
-                type="primary"
-                size="small"
-                icon="Edit"
-                @click="handleUpdate(item)"
-                class="btn-primary"
-              >编辑</el-button>
-              <div class="footer-actions">
-                <el-tooltip content="关联通道">
-                  <el-button type="success" text bg size="small" icon="Connection" @click="handleAssociated(item)"/>
-                </el-tooltip>
-                <template v-if="item.enable === 1">
-                  <el-tooltip v-if="item.status === 0" content="上线">
-                    <el-button type="primary" text bg size="small" icon="Connection" @click="handleRegister(item)"/>
-                  </el-tooltip>
-                  <el-tooltip v-if="item.status === 1" content="注销">
-                    <el-button type="warning" text bg size="small" icon="SwitchButton" @click="handleUnregister(item)"/>
-                  </el-tooltip>
-                  <el-tooltip v-if="item.status === 1" content="推送通道">
-                    <el-button type="info" text bg size="small" icon="Upload" @click="handlePushCatalog(item)"/>
-                  </el-tooltip>
-                </template>
-                <el-tooltip content="删除">
-                  <el-button type="danger" text bg size="small" icon="Delete" @click="handleDelete(item)"/>
-                </el-tooltip>
-              </div>
-            </div>
-        </div>
-      </div>
-      <el-empty v-else description="暂无平台数据" />
-    </div>
-
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
-
-    <el-dialog :title="title" v-model="open" width="900px" append-to-body draggable destroy-on-close class="glass-dialog">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="130px">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="平台名称" prop="name">
-              <el-input v-model="form.name" placeholder="请输入平台名称"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="是否启用" prop="enable">
-              <el-radio-group v-model="form.enable">
-                <el-radio :value="0">禁用</el-radio>
-                <el-radio :value="1">启用</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <div class="section-divider">
-          <div class="section-divider-icon-wrapper">
-            <i class="el-icon-monitor"></i>
-          </div>
-          <div class="section-divider-title">平台配置</div>
-          <div class="section-divider-line"/>
-        </div>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="平台国标编码" prop="serverGbId">
-              <el-input v-model="form.serverGbId" placeholder="请输入平台国标编码"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="平台域" prop="serverGbDomain">
-              <el-input v-model="form.serverGbDomain" placeholder="请输入平台域"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="服务器IP" prop="serverIp">
-              <el-input v-model="form.serverIp" placeholder="请输入服务器IP地址">
-                <template #prefix>
-                  <i class="el-icon-location"></i>
-                </template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="服务器端口" prop="serverPort">
-              <el-input-number v-model="form.serverPort" :min="1" :max="65535" placeholder="请输入服务器端口" style="width: 100%;"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <div class="section-divider">
-          <div class="section-divider-icon-wrapper">
-            <i class="el-icon-camera"></i>
-          </div>
-          <div class="section-divider-title">设备配置</div>
-          <div class="section-divider-line"/>
-        </div>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="设备国标编码" prop="deviceGbId">
-              <el-input v-model="form.deviceGbId" placeholder="请输入设备国标编码"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="设备IP" prop="deviceIp">
-              <el-input v-model="form.deviceIp" placeholder="请输入设备IP地址">
-                <template #prefix>
-                  <i class="el-icon-location"></i>
-                </template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="设备端口" prop="devicePort">
-              <el-input v-model="form.devicePort" placeholder="请输入设备端口"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="传输协议" prop="transport">
-              <el-radio-group v-model="form.transport">
-                <el-radio-button value="UDP">UDP</el-radio-button>
-                <el-radio-button value="TCP">TCP</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <div class="section-divider">
-          <div class="section-divider-icon-wrapper">
-            <i class="el-icon-lock"></i>
-          </div>
-          <div class="section-divider-title">SIP认证</div>
-          <div class="section-divider-line"/>
-        </div>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="用户名" prop="username">
-              <el-input v-model="form.username" placeholder="请输入SIP认证用户名">
-                <template #prefix>
-                  <i class="el-icon-user"></i>
-                </template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="密码" prop="password">
-              <el-input v-model="form.password" type="password" placeholder="请输入SIP认证密码" show-password>
-                <template #prefix>
-                  <i class="el-icon-key"></i>
-                </template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="注册有效期(秒)" prop="expires">
-              <el-input v-model="form.expires" placeholder="请输入注册有效期">
-                <template #suffix>
-                  <span class="input-suffix">秒</span>
-                </template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="心跳超时(秒)" prop="keepTimeout">
-              <el-input v-model="form.keepTimeout" placeholder="请输入心跳超时时间">
-                <template #suffix>
-                  <span class="input-suffix">秒</span>
-                </template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <div class="section-divider">
-          <div class="section-divider-icon-wrapper">
-            <i class="el-icon-setting"></i>
-          </div>
-          <div class="section-divider-title">扩展配置</div>
-          <div class="section-divider-line"/>
-        </div>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="行政区划" prop="civilCode">
-              <el-input v-model="form.civilCode" placeholder="请输入行政区划编码"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="字符编码" prop="characterSet">
-              <el-radio-group v-model="form.characterSet">
-                <el-radio-button value="GB2312">GB2312</el-radio-button>
-                <el-radio-button value="UTF-8">UTF-8</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="设备厂商" prop="manufacturer">
-              <el-input v-model="form.manufacturer" placeholder="请输入设备厂商"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="设备型号" prop="model">
-              <el-input v-model="form.model" placeholder="请输入设备型号"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="安装地址" prop="address">
-          <el-input v-model="form.address" placeholder="请输入安装地址">
-            <template #prefix>
-              <i class="el-icon-position"></i>
-            </template>
-          </el-input>
-        </el-form-item>
-        <el-divider class="form-divider">功能设置</el-divider>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="云台控制" prop="ptz">
-              <el-switch v-model="form.ptz" :active-value="1" :inactive-value="0"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="启用RTCP" prop="rtcp">
-              <el-switch v-model="form.rtcp" :active-value="1" :inactive-value="0"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="消息通道" prop="asMessageChannel">
-              <el-switch v-model="form.asMessageChannel" :active-value="1" :inactive-value="0"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="自动推送通道" prop="autoPushChannel">
-              <el-switch v-model="form.autoPushChannel" :active-value="1" :inactive-value="0"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="查询分组目录" prop="catalogWithGroup">
-              <el-switch v-model="form.catalogWithGroup" :active-value="1" :inactive-value="0"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="查询区域目录" prop="catalogWithRegion">
-              <el-switch v-model="form.catalogWithRegion" :active-value="1" :inactive-value="0"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
-        </div>
-      </template>
-    </el-dialog>
-
-    <el-dialog title="关联通道" v-model="associatedOpen" width="1300px" append-to-body destroy-on-close class="glass-dialog">
-      <associated-channel :platform-id="associatedPlatformId" v-if="associatedOpen"/>
-    </el-dialog>
-  </div>
+          
 </template>
 
 <script>
 import {listPlatform, getPlatform, delPlatform, addPlatform, updatePlatform, unregisterPlatform, registerPlatform, pushCatalog} from '@/api/nvr/platform';
 import AssociatedChannel from './associatedChannel.vue';
 
-;
-
-const showSearch = ref(true);
-const viewMode = ref('card');
-const loading = ref(true);
-const open = ref(false);
-const ids = ref([]);
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const title = ref('');
-const platformList = ref([]);
-const associatedOpen = ref(false);
-const associatedPlatformId = ref(null);
-
-const queryParams = ref({
-  pageNum: 1,
-  pageSize: 10,
-  name: null,
-  serverGbId: null,
-  status: null,
-  enable: null
-});
-
-const form = ref({});
-
-const rules = ref({
-  name: [{required: true, message: '平台名称不能为空', trigger: 'blur'}],
-  serverGbId: [{required: true, message: '平台国标编码不能为空', trigger: 'blur'}]
-});
-
-function getList() {
-  loading = true;
-  listPlatform(queryParams).then(response => {
-    platformList = response.rows.map(row => ({
-      ...row,
-      checked: false
-    }));
-    total = response.total;
-    loading = false;
-  });
-}
-
-function cancel() {
-  open = false;
-  reset();
-}
-
-function reset() {
-  form = {
-    id: null,
-    enable: 1,
-    name: null,
-    serverGbId: null,
-    serverGbDomain: null,
-    serverIp: null,
-    serverPort: null,
-    deviceGbId: '34020000001320000001',
-    deviceIp: null,
-    devicePort: null,
-    username: '34020000001320000001',
-    password: null,
-    expires: 3600,
-    keepTimeout: 60,
-    transport: 'UDP',
-    civilCode: null,
-    manufacturer: null,
-    model: null,
-    address: null,
-    characterSet: 'GB2312',
-    ptz: 1,
-    rtcp: 1,
-    status: 0,
-    catalogGroup: null,
-    registerWay: null,
-    secrecy: null,
-    asMessageChannel: 1,
-    catalogWithPlatform: 1,
-    catalogWithGroup: 0,
-    catalogWithRegion: 0,
-    autoPushChannel: 1,
-    sendStreamIp: null,
-    serverId: null
-  };
-  proxy.resetForm('formRef');
-}
-
-function handleQuery() {
-  queryParams.pageNum = 1;
-  getList();
-}
-
-function resetQuery() {
-  proxy.resetForm('queryRef');
-  handleQuery();
-}
-
-function handleSelectionChange(selection) {
-  ids = selection.map(item => item.id);
-  single = selection.length !== 1;
-  multiple = !selection.length;
-}
-
-function handleCardSelection() {
-  const selected = platformList.filter(item => item.checked);
-  ids = selected.map(item => item.id);
-  single = selected.length !== 1;
-  multiple = !selected.length;
-}
-
-function handleAdd() {
-  reset();
-  open = true;
-  title = '添加国标GB28181平台配置';
-}
-
-function handleAssociated(row) {
-  associatedPlatformId = row.id;
-  associatedOpen = true;
-}
-
-function handleUpdate(row) {
-  reset();
-  const id = row.id || ids[0];
-  getPlatform(id).then(response => {
-    form = response.data;
-    open = true;
-    title = '修改国标GB28181平台配置';
-  });
-}
-
-function submitForm() {
-  this.$refs['formRef'].validate(valid => {
-    if (valid) {
-      if (form.id != null) {
-        updatePlatform(form).then(response => {
-          this.$modal.msgSuccess('修改成功');
-          open = false;
-          getList();
-        });
-      } else {
-        addPlatform(form).then(response => {
-          this.$modal.msgSuccess('新增成功');
-          open = false;
-          getList();
-        });
-      }
+export default {
+  name: 'small-padding fixed-width fixed-right',
+  components: {
+    AssociatedChannel,
+  },
+  data() {
+    return {
+      showSearch: true,
+      viewMode: 'card',
+      loading: true,
+      open: false,
+      ids: [],
+      single: true,
+      multiple: true,
+      total: 0,
+      title: '',
+      platformList: [],
+      associatedOpen: false,
+      associatedPlatformId: null,
+      form: {},
     }
-  });
-}
-
-function handleDelete(row) {
-  const id = row.id || ids;
-  this.$modal.confirm('是否确认删除国标GB28181平台配置编号为"' + id + '"的数据项？').then(() => {
-    return delPlatform(id);
-  }).then(() => {
+  },
+  mounted() {
     getList();
-    this.$modal.msgSuccess('删除成功');
-  }).catch(() => {
-  });
+  },
+  methods: {
+    getList() {
+      loading = true;
+        listPlatform(queryParams).then(response => {
+          platformList = response.rows.map(row => ({
+            ...row,
+            checked: false
+          }));
+          total = response.total;
+          loading = false;
+        });
+    },
+    cancel() {
+      open = false;
+        reset();
+    },
+    reset() {
+      form = {
+          id: null,
+          enable: 1,
+          name: null,
+          serverGbId: null,
+          serverGbDomain: null,
+          serverIp: null,
+          serverPort: null,
+          deviceGbId: '34020000001320000001',
+          deviceIp: null,
+          devicePort: null,
+          username: '34020000001320000001',
+          password: null,
+          expires: 3600,
+          keepTimeout: 60,
+          transport: 'UDP',
+          civilCode: null,
+          manufacturer: null,
+          model: null,
+          address: null,
+          characterSet: 'GB2312',
+          ptz: 1,
+          rtcp: 1,
+          status: 0,
+          catalogGroup: null,
+          registerWay: null,
+          secrecy: null,
+          asMessageChannel: 1,
+          catalogWithPlatform: 1,
+          catalogWithGroup: 0,
+          catalogWithRegion: 0,
+          autoPushChannel: 1,
+          sendStreamIp: null,
+          serverId: null
+        };
+        proxy.resetForm('formRef');
+    },
+    handleQuery() {
+      queryParams.pageNum = 1;
+        getList();
+    },
+    resetQuery() {
+      proxy.resetForm('queryRef');
+        handleQuery();
+    },
+    handleSelectionChange(selection) {
+      ids = selection.map(item => item.id);
+        single = selection.length !== 1;
+        multiple = !selection.length;
+    },
+    handleCardSelection() {
+      const selected = platformList.filter(item => item.checked);
+        ids = selected.map(item => item.id);
+        single = selected.length !== 1;
+        multiple = !selected.length;
+    },
+    handleAdd() {
+      reset();
+        open = true;
+        title = '添加国标GB28181平台配置';
+    },
+    handleAssociated(row) {
+      associatedPlatformId = row.id;
+        associatedOpen = true;
+    },
+    handleUpdate(row) {
+      reset();
+        const id = row.id || ids[0];
+        getPlatform(id).then(response => {
+          form = response.data;
+          open = true;
+          title = '修改国标GB28181平台配置';
+        });
+    },
+    submitForm() {
+      this.$refs['formRef'].validate(valid => {
+          if (valid) {
+            if (form.id != null) {
+              updatePlatform(form).then(response => {
+                this.$modal.msgSuccess('修改成功');
+                open = false;
+                getList();
+              });
+            } else {
+              addPlatform(form).then(response => {
+                this.$modal.msgSuccess('新增成功');
+                open = false;
+                getList();
+              });
+            }
+          }
+        });
+    },
+    handleDelete(row) {
+      const id = row.id || ids;
+        this.$modal.confirm('是否确认删除国标GB28181平台配置编号为"' + id + '"的数据项？').then(() => {
+          return delPlatform(id);
+        }).then(() => {
+          getList();
+          this.$modal.msgSuccess('删除成功');
+        }).catch(() => {
+        });
+    },
+    handleRegister(row) {
+      this.$modal.confirm('是否确认上线平台"' + row.name + '"？').then(() => {
+          return registerPlatform(row.id);
+        }).then(() => {
+          getList();
+          this.$modal.msgSuccess('上线成功');
+        }).catch(() => {
+        });
+    },
+    handleUnregister(row) {
+      this.$modal.confirm('是否确认注销平台"' + row.name + '"？').then(() => {
+          return unregisterPlatform(row.id);
+        }).then(() => {
+          getList();
+          this.$modal.msgSuccess('注销成功');
+        }).catch(() => {
+        });
+    },
+    handlePushCatalog(row) {
+      this.$modal.confirm('是否确认推送通道到平台"' + row.name + '"？').then(() => {
+          return pushCatalog(row.id);
+        }).then(() => {
+          this.$modal.msgSuccess('推送成功');
+        }).catch(() => {
+        });
+    },
+    handleEnableChange(row) {
+      const text = row.enable === 1 ? '启用' : '禁用';
+        this.$modal.confirm('是否确认' + text + '平台"' + row.name + '"？').then(() => {
+          return updatePlatform({id: row.id, enable: row.enable});
+        }).then(() => {
+          this.$modal.msgSuccess(text + '成功');
+        }).catch(() => {
+          row.enable = row.enable === 1 ? 0 : 1;
+        });
+    },
+  },
 }
-
-function handleRegister(row) {
-  this.$modal.confirm('是否确认上线平台"' + row.name + '"？').then(() => {
-    return registerPlatform(row.id);
-  }).then(() => {
-    getList();
-    this.$modal.msgSuccess('上线成功');
-  }).catch(() => {
-  });
-}
-
-function handleUnregister(row) {
-  this.$modal.confirm('是否确认注销平台"' + row.name + '"？').then(() => {
-    return unregisterPlatform(row.id);
-  }).then(() => {
-    getList();
-    this.$modal.msgSuccess('注销成功');
-  }).catch(() => {
-  });
-}
-
-function handlePushCatalog(row) {
-  this.$modal.confirm('是否确认推送通道到平台"' + row.name + '"？').then(() => {
-    return pushCatalog(row.id);
-  }).then(() => {
-    this.$modal.msgSuccess('推送成功');
-  }).catch(() => {
-  });
-}
-
-function handleEnableChange(row) {
-  const text = row.enable === 1 ? '启用' : '禁用';
-  this.$modal.confirm('是否确认' + text + '平台"' + row.name + '"？').then(() => {
-    return updatePlatform({id: row.id, enable: row.enable});
-  }).then(() => {
-    this.$modal.msgSuccess(text + '成功');
-  }).catch(() => {
-    row.enable = row.enable === 1 ? 0 : 1;
-  });
-}
-
-onMounted(() => {
-  getList();
-});
 </script>
 
 <style lang="scss" scoped>
@@ -723,9 +297,9 @@ onMounted(() => {
 
 .query-form {
   padding: 14px 16px;
-  background: var(--el-bg-color-overlay);
+  background: #fff;
   border-radius: 12px;
-  border: 1px solid var(--el-border-color-lighter);
+  border: 1px solid #ebeef5;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04);
   margin-bottom: 0important;
   animation: fadeInUp 0.4s ease-out 0.15s both;
@@ -741,16 +315,16 @@ onMounted(() => {
 
   :deep(.el-input__wrapper),
   :deep(.el-select .el-input__wrapper) {
-    box-shadow: 0 0 0 1px var(--el-border-color-light) inset;
+    box-shadow: 0 0 0 1px #dcdfe6 inset;
     transition: all 0.3s;
 
     &:hover,
     &:focus-within {
-      box-shadow: 0 0 0 1px var(--el-color-primary-light-5) inset;
+      box-shadow: 0 0 0 1px #a0cfff inset;
     }
 
     &:focus-within {
-      box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 0 0 3px var(--el-color-primary-light-8);
+      box-shadow: 0 0 0 1px #409EFF inset, 0 0 0 3px #d9ecff;
     }
   }
 }
@@ -771,7 +345,7 @@ onMounted(() => {
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px var(--el-color-primary-light-7);
+    box-shadow: 0 4px 12px #c6e2ff;
   }
 
   &:active {
@@ -830,7 +404,7 @@ onMounted(() => {
   margin-left: autoimportant;
   margin-right: 0important;
   padding-left: 16px;
-  border-left: 1px solid var(--el-border-color-lighter);
+  border-left: 1px solid #ebeef5;
   margin-left: 12pximportant;
 
   .button-group {
@@ -840,9 +414,9 @@ onMounted(() => {
 }
 
 .table-wrapper {
-  background: var(--el-bg-color-overlay);
+  background: #fff;
   border-radius: 12px;
-  border: 1px solid var(--el-border-color-lighter);
+  border: 1px solid #ebeef5;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04);
   overflow: hidden;
   animation: fadeInUp 0.4s ease-out 0.25s both;
@@ -854,12 +428,12 @@ onMounted(() => {
 }
 
 .custom-table {
-  --el-table-header-bg-color: var(--el-fill-color-light);
+  --el-table-header-bg-color: #ebeef5;
 
   :deep(.el-table__header-wrapper) {
     th {
-      background-color: var(--el-fill-color-light) !important;
-      color: var(--el-text-color-primary);
+      background-color: #ebeef5 !important;
+      color: #303133;
       font-weight: 600;
       font-size: 13px;
       letter-spacing: 0.3px;
@@ -879,12 +453,12 @@ onMounted(() => {
       }
 
       &:hover {
-        background-color: var(--el-color-primary-light-9) !important;
+        background-color: #ecf5ff !important;
         transform: scale(1.002);
       }
 
       &.current-row {
-        background-color: var(--el-color-primary-light-9) !important;
+        background-color: #ecf5ff !important;
       }
     }
   }
@@ -912,15 +486,15 @@ onMounted(() => {
   min-width: 28px;
   height: 22px;
   padding: 0 8px;
-  background: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
+  background: #ecf5ff;
+  color: #409EFF;
   border-radius: 11px;
   font-size: 12px;
   font-weight: 600;
   transition: all 0.3s;
 
   .el-table__row:hover & {
-    background: var(--el-color-primary-light-8);
+    background: #d9ecff;
     transform: scale(1.05);
   }
 }
@@ -931,11 +505,11 @@ onMounted(() => {
 }
 
 :deep(.el-pagination__total) {
-  color: var(--el-text-color-secondary);
+  color: #909399;
 }
 
 :deep(.el-pagination__sizes) .el-input__wrapper {
-  box-shadow: 0 0 0 1px var(--el-border-color-light) inset;
+  box-shadow: 0 0 0 1px #dcdfe6 inset;
 }
 
 :deep(.el-pager li) {
@@ -943,12 +517,12 @@ onMounted(() => {
 }
 
 :deep(.el-pager li:hover:not(.is-active)) {
-  color: var(--el-color-primary);
+  color: #409EFF;
   transform: translateY(-1px);
 }
 
 :deep(.el-pager li.is-active) {
-  box-shadow: 0 2px 8px var(--el-color-primary-light-5);
+  box-shadow: 0 2px 8px #a0cfff;
 }
 
 .table-actions {
@@ -977,32 +551,32 @@ onMounted(() => {
 .table-actions .el-button--primary[text],
 .table-actions .el-button--primary[text][bg] {
   color: #ffffffimportant;
-  background-color: var(--el-color-primary) !important;
-  border-color: var(--el-color-primary) !important;
+  background-color: #409EFF !important;
+  border-color: #409EFF !important;
 }
 
 .table-actions .el-button--danger,
 .table-actions .el-button--danger[text],
 .table-actions .el-button--danger[text][bg] {
   color: #ffffffimportant;
-  background-color: var(--el-color-danger) !important;
-  border-color: var(--el-color-danger) !important;
+  background-color: #F56C6C !important;
+  border-color: #F56C6C !important;
 }
 
 .table-actions .el-button--success,
 .table-actions .el-button--success[text],
 .table-actions .el-button--success[text][bg] {
   color: #ffffffimportant;
-  background-color: var(--el-color-success) !important;
-  border-color: var(--el-color-success) !important;
+  background-color: #67C23A !important;
+  border-color: #67C23A !important;
 }
 
 .table-actions .el-button--warning,
 .table-actions .el-button--warning[text],
 .table-actions .el-button--warning[text][bg] {
   color: #ffffffimportant;
-  background-color: var(--el-color-warning) !important;
-  border-color: var(--el-color-warning) !important;
+  background-color: #E6A23C !important;
+  border-color: #E6A23C !important;
 }
 
 .table-actions .el-button--info,
@@ -1014,19 +588,19 @@ onMounted(() => {
 }
 
 .input-suffix {
-  color: var(--el-text-color-secondary);
+  color: #909399;
   font-size: 13px;
 }
 
 .form-divider {
   margin: 20px 0;
-  border-color: var(--el-border-color-lighter);
+  border-color: #ebeef5;
 
   :deep(.el-divider__text) {
-    background: var(--el-fill-color-light);
+    background: #ebeef5;
     padding: 0 16px;
     font-size: 13px;
-    color: var(--el-text-color-secondary);
+    color: #909399;
     font-weight: 500;
   }
 }
@@ -1058,7 +632,7 @@ onMounted(() => {
 .section-divider-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--el-text-color-primary);
+  color: #303133;
 }
 
 .section-divider-line {
@@ -1089,7 +663,7 @@ onMounted(() => {
 }
 
 .platform-card {
-  background: var(--el-bg-color-overlay);
+  background: #fff;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04);
@@ -1112,13 +686,13 @@ onMounted(() => {
   }
 
   &.is-selected {
-    border-color: var(--el-color-primary);
-    box-shadow: 0 0 0 1px var(--el-color-primary), 0 8px 28px var(--el-color-primary-light-6);
+    border-color: #409EFF;
+    box-shadow: 0 0 0 1px #409EFF, 0 8px 28px var(--el-color-primary-light-6);
   }
 
   &.is-online {
     .card-header {
-      background: linear-gradient(135deg, var(--el-color-success-light-9) 0%, var(--el-bg-color-overlay) 100%);
+      background: linear-gradient(135deg, var(--el-color-success-light-9) 0%, #fff 100%);
     }
   }
 }
@@ -1139,8 +713,8 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  background: linear-gradient(135deg, var(--el-fill-color-lighter) 0%, var(--el-bg-color-overlay) 100%);
+  border-bottom: 1px solid #ebeef5;
+  background: linear-gradient(135deg, #f5f7fa 0%, #fff 100%);
   transition: background 0.3s;
 }
 
@@ -1163,15 +737,15 @@ onMounted(() => {
 
   :deep(.el-checkbox__input) {
     .el-checkbox__inner {
-      border-color: var(--el-border-color-light);
-      background: var(--el-bg-color);
+      border-color: #dcdfe6;
+      background: #fff;
     }
   }
 
   :deep(.el-checkbox__input.is-checked) {
     .el-checkbox__inner {
-      background-color: var(--el-color-primary);
-      border-color: var(--el-color-primary);
+      background-color: #409EFF;
+      border-color: #409EFF;
     }
   }
 }
@@ -1180,7 +754,7 @@ onMounted(() => {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--el-color-primary-light-5) 0%, var(--el-color-primary-light-3) 100%);
+  background: linear-gradient(135deg, #a0cfff 0%, #79bbff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1196,7 +770,7 @@ onMounted(() => {
 .platform-name {
   font-size: 15px;
   font-weight: 600;
-  color: var(--el-text-color-primary);
+  color: #303133;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1209,7 +783,7 @@ onMounted(() => {
   gap: 6px;
   padding: 6px 12px;
   border-radius: 20px;
-  background: var(--el-fill-color-lighter);
+  background: #f5f7fa;
   flex-shrink: 0;
 
   &.online {
@@ -1225,17 +799,17 @@ onMounted(() => {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--el-color-danger);
+  background: #F56C6C;
   flex-shrink: 0;
   box-shadow: 0 0 0 4px var(--el-color-danger-light-9);
 
   &.online {
-    background: var(--el-color-success);
+    background: #67C23A;
     box-shadow: 0 0 0 4px var(--el-color-success-light-9);
   }
 
   &.offline {
-    background: var(--el-color-danger);
+    background: #F56C6C;
     box-shadow: 0 0 0 4px var(--el-color-danger-light-9);
   }
 
@@ -1271,7 +845,7 @@ onMounted(() => {
 .status-text {
   font-size: 12px;
   font-weight: 600;
-  color: var(--el-text-color-primary);
+  color: #303133;
 }
 
 .card-body {
@@ -1303,19 +877,19 @@ onMounted(() => {
 
 .info-label {
   font-size: 12px;
-  color: var(--el-text-color-secondary);
+  color: #909399;
   font-weight: 500;
 }
 
 .info-value {
   font-size: 13px;
-  color: var(--el-text-color-primary);
+  color: #303133;
   font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   padding: 6px 10px;
-  background: var(--el-fill-color-lighter);
+  background: #f5f7fa;
   border-radius: 6px;
 }
 
@@ -1324,7 +898,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  border-top: 1px solid var(--el-border-color-lighter);
+  border-top: 1px solid #ebeef5;
   padding-top: 14px;
 }
 
@@ -1346,32 +920,32 @@ onMounted(() => {
 .footer-actions .el-button--primary[text],
 .footer-actions .el-button--primary[text][bg] {
   color: #ffffffimportant;
-  background-color: var(--el-color-primary) !important;
-  border-color: var(--el-color-primary) !important;
+  background-color: #409EFF !important;
+  border-color: #409EFF !important;
 }
 
 .footer-actions .el-button--danger,
 .footer-actions .el-button--danger[text],
 .footer-actions .el-button--danger[text][bg] {
   color: #ffffffimportant;
-  background-color: var(--el-color-danger) !important;
-  border-color: var(--el-color-danger) !important;
+  background-color: #F56C6C !important;
+  border-color: #F56C6C !important;
 }
 
 .footer-actions .el-button--success,
 .footer-actions .el-button--success[text],
 .footer-actions .el-button--success[text][bg] {
   color: #ffffffimportant;
-  background-color: var(--el-color-success) !important;
-  border-color: var(--el-color-success) !important;
+  background-color: #67C23A !important;
+  border-color: #67C23A !important;
 }
 
 .footer-actions .el-button--warning,
 .footer-actions .el-button--warning[text],
 .footer-actions .el-button--warning[text][bg] {
   color: #ffffffimportant;
-  background-color: var(--el-color-warning) !important;
-  border-color: var(--el-color-warning) !important;
+  background-color: #E6A23C !important;
+  border-color: #E6A23C !important;
 }
 
 .footer-actions .el-button--info,

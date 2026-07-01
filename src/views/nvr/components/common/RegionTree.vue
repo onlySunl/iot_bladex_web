@@ -1,4 +1,5 @@
 <template>
+
   <div class="region-tree-container">
     <!-- 搜索区域 -->
     <div class="search-area">
@@ -9,789 +10,390 @@
         class="search-input"
         :prefix-icon="el-icon-search"
       >
-        <template #append v-if="showIndex">
+        <template slot="append">v-if="showIndex">
           <el-tooltip content="显示编号" placement="top">
             <el-checkbox v-model="checked" label="编号" class="index-checkbox" />
           </el-tooltip>
-        </template>
-        <template #prepend>
-          <el-button @click="refresh" class="refresh-btn" icon="el-icon-refresh" title="刷新" />
-        </template>
-      </el-input>
-    </div>
-
-    <!-- 树形组件 -->
-    <el-tree
-      v-if="!searchStr"
-      node-key="id"
-      ref="treeRef"
-      :data="treeData"
-      :props="{ label: 'name', children: 'children' }"
-      @node-click="handleNodeClick"
-      lazy
-      :load="loadNode"
-      :default-expanded-keys="defaultExpandedKeys"
-      class="custom-tree"
-      highlight-current
-      :expand-on-click-node="false"
-    >
-      <template #default="{ node, data }">
-        <div
-          v-if="showContextmenu"
-          class="custom-tree-node"
-          :class="{ 'is-active': chooseId === data.name }"
-          @contextmenu="onContextMenu($event, data)"
-        >
-          <div class="node-icon-wrap" v-if="!data.leaf">
-            <el-icon
-              class="node-icon folder-icon"
-              :class="{ active: chooseId === data.name }"
-            >
-              <FolderOpened />
-            </el-icon>
-          </div>
-
-          <div class="node-label" :class="{ active: chooseId === data.name }">
-            {{ node.label }}
-          </div>
-
-          <div class="node-extra" v-if="data.deviceId && showIndex && checked">
-            <span class="device-id-badge">{{ data.deviceId }}</span>
-          </div>
-        </div>
-
-        <div v-else class="custom-tree-node" :class="{ 'is-active': chooseId === data.name }">
-          <div v-if="data.leaf">
-            <div
-              v-if="isContextmenu"
-              @contextmenu="onContextMenu($event, data)"
-              class="tree-leaf-row"
-            >
-              <el-icon
-                class="node-icon camera-icon"
-                :class="{ online: data.status === 'ON', offline: data.status === 'OFFLINE' }"
-              >
-                <VideoCamera />
-              </el-icon>
-
-              <div class="node-label">{{ node.label }}</div>
-
-              <div class="node-extra" v-if="data.deviceId && showIndex && checked">
-                <span class="device-id-badge">{{ data.deviceId }}</span>
-              </div>
-            </div>
-
-            <div v-else class="tree-leaf-row">
-              <el-icon
-                class="node-icon camera-icon"
-                :class="{ online: data.status === 'ON', offline: data.status === 'OFFLINE' }"
-              >
-                <VideoCamera />
-              </el-icon>
-
-              <div class="node-label">{{ node.label }}</div>
-
-              <div class="node-extra" v-if="data.deviceId && showIndex && checked">
-                <span class="device-id-badge">{{ data.deviceId }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div v-else class="tree-folder-row">
-            <el-icon
-              class="node-icon folder-icon"
-              :class="{ active: chooseId === data.name }"
-            >
-              <FolderOpened />
-            </el-icon>
-
-            <div class="node-label" :class="{ active: chooseId === data.name }">
-              {{ node.label }}
-            </div>
-
-            <div class="node-extra" v-if="data.deviceId && showIndex && checked">
-              <span class="device-id-badge">{{ data.deviceId }}</span>
-            </div>
-          </div>
-        </div>
-      </template>
-    </el-tree>
-
-    <!-- 搜索结果列表 -->
-    <div v-else class="search-result-area">
-      <div v-if="regionList.length > 0" class="result-list">
-        <div
-          v-for="(item, index) in regionList"
-          :key="item.id"
-          class="result-item"
-          :class="{ 'is-active': chooseId === item.name }"
-          :style="{ animationDelay: index * 0.04 + 's' }"
-          @click="handleNodeClick(item)"
-        >
-          <div class="result-icon-wrap">
-            <span
-              class="iconfont icon-bianzubeifen3"
-              :class="{ active: chooseId === item.name }"
-            />
-          </div>
-          <div class="result-info">
-            <div class="result-name">{{ item.name }}</div>
-            <div class="result-id" v-if="showIndex && checked">编号：{{ item.deviceId }}</div>
-          </div>
-          <i class="el-icon-arrow-right"></i>
-        </div>
-
-        <pagination
-          layout="total, prev, pager, next"
-          v-show="total > 0"
-          :total="total"
-          v-model:page="queryParamsRegion.pageNum"
-          v-model:limit="queryParamsRegion.pageSize"
-          @pagination="getQueryForRegionQuery(searchStr)"
-          class="tree-pagination"
-        />
-      </div>
-
-      <el-empty v-else description="暂无搜索结果" class="tree-empty" />
-    </div>
-
-    <!-- 右键菜单 -->
-    <ContextMenu v-model:show="show" :options="optionsComponent">
-      <context-menu-item label="刷新节点" @click="refreshNode" v-if="contextMenu.includes('refresh')">
-        <template #icon>
-          <i class="el-icon-refresh"></i>
-        </template>
-      </context-menu-item>
-      <context-menu-item label="新增节点" @click="addNode" v-if="contextMenu.includes('add')">
-        <template #icon>
-          <i class="el-icon-plus"></i>
-        </template>
-      </context-menu-item>
-      <context-menu-item
-        label="修改节点"
-        :disabled="nodeData.name === '根资源组'"
-        @click="updateNode"
-        v-if="contextMenu.includes('update')"
-      >
-        <template #icon>
-          <i class="el-icon-edit"></i>
-        </template>
-      </context-menu-item>
-      <context-menu-item
-        label="删除节点"
-        :disabled="nodeData.name === '根资源组'"
-        @click="deleteNode"
-        v-if="contextMenu.includes('delete')"
-      >
-        <template #icon>
-          <i class="el-icon-delete"></i>
-        </template>
-      </context-menu-item>
-      <context-menu-item
-        label="播放通道"
-        :disabled="nodeData.name === '根资源组'"
-        @click="playChannel"
-        v-if="contextMenu.includes('playChannel')"
-      >
-        <template #icon>
-          <i class="el-icon-video-play"></i>
-        </template>
-      </context-menu-item>
-      <context-menu-item
-        label="修改位置"
-        :disabled="nodeData.name === '根资源组'"
-        @click="updatePosition"
-        v-if="contextMenu.includes('updatePosition')"
-      >
-        <template #icon>
-          <i class="el-icon-place"></i>
-        </template>
-      </context-menu-item>
-    </ContextMenu>
-
-    <!-- 新增/修改行政区划对话框 -->
-    <el-dialog
-      :title="title"
-      v-model="openRegion"
-      width="1000px"
-      append-to-body
-      draggable
-      destroy-on-close
-      class="region-dialog"
-      align-center
-    >
-      <div class="dialog-body">
-        <el-tabs
-          v-model="activeKeyRegion"
-          class="region-tabs"
-          @tab-click="getRegionList"
-        >
-          <el-tab-pane name="0">
-            <template #label>
-              <div class="tab-label">
-                <div class="tab-code">{{ allValRegion[0].val }}</div>
-                <div class="tab-meaning">{{ allValRegion[0].meaning }}</div>
-              </div>
-            </template>
-            <div class="radio-group">
-              <el-radio
-                v-for="item in regionList"
-                v-model="allValRegion[0].val"
-                :key="item.deviceId"
-                :name="item.name"
-                :label="item.deviceId"
-                @change="deviceChange(item)"
-                class="region-radio"
-              >
-                <span class="radio-name">{{ item.name }}</span>
-                <span class="radio-code">{{ item.deviceId }}</span>
-              </el-radio>
-            </div>
-          </el-tab-pane>
-
-          <el-tab-pane name="1">
-            <template #label>
-              <div class="tab-label">
-                <div class="tab-code">{{ allValRegion[1].val ? allValRegion[1].val : "--" }}</div>
-                <div class="tab-meaning">{{ allValRegion[1].meaning }}</div>
-              </div>
-            </template>
-            <div class="radio-group">
-              <el-radio
-                :key="-1"
-                v-model="allValRegion[1].val"
-                @change="deviceChange"
-                label=""
-                class="region-radio"
-              >
-                <span class="radio-name text-muted">不添加</span>
-              </el-radio>
-              <el-radio
-                v-for="item in regionList"
-                v-model="allValRegion[1].val"
-                @change="deviceChange(item)"
-                :key="item.deviceId"
-                :label="item.deviceId.substring(2)"
-                class="region-radio"
-              >
-                <span class="radio-name">{{ item.name }}</span>
-                <span class="radio-code">{{ item.deviceId.substring(2) }}</span>
-              </el-radio>
-            </div>
-          </el-tab-pane>
-
-          <el-tab-pane name="2">
-            <template #label>
-              <div class="tab-label">
-                <div class="tab-code">{{ allValRegion[2].val ? allValRegion[2].val : "--" }}</div>
-                <div class="tab-meaning">{{ allValRegion[2].meaning }}</div>
-              </div>
-            </template>
-            <div class="radio-group">
-              <el-radio
-                :key="-1"
-                label=""
-                v-model="allValRegion[2].val"
-                @change="deviceChange"
-                class="region-radio"
-              >
-                <span class="radio-name text-muted">不添加</span>
-              </el-radio>
-              <el-radio
-                v-for="item in regionList"
-                v-model="allValRegion[2].val"
-                @change="deviceChange(item)"
-                :key="item.deviceId"
-                :label="item.deviceId.substring(4)"
-                class="region-radio"
-              >
-                <span class="radio-name">{{ item.name }}</span>
-                <span class="radio-code">{{ item.deviceId.substring(4) }}</span>
-              </el-radio>
-            </div>
-          </el-tab-pane>
-
-          <el-tab-pane name="3">
-            <template #label>
-              <div class="tab-label">
-                <div class="tab-code">{{ allValRegion[3].val ? allValRegion[3].val : "--" }}</div>
-                <div class="tab-meaning">{{ allValRegion[3].meaning }}</div>
-              </div>
-            </template>
-            <div class="manual-input-area">
-              <div class="input-hint">请手动输入基层接入单位编码，两位数字</div>
-              <el-input
-                type="text"
-                placeholder="例如：01"
-                v-model="allValRegion[3].val"
-                maxlength="2"
-                :disabled="allValRegion[3].lock"
-                show-word-limit
-                @input="deviceChange"
-                class="manual-input"
-                clearable
-              />
-            </div>
-          </el-tab-pane>
-        </el-tabs>
-
-        <el-divider class="dialog-divider" />
-
-        <el-form
-          ref="formRegionRef"
-          :model="formRegion"
-          :rules="rulesRegion"
-          label-width="90px"
-          class="region-form"
-        >
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="名称" prop="name">
-                <el-input v-model="formRegion.name" autocomplete="off" placeholder="请输入名称" clearable />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="编号" prop="deviceId">
-                <el-input v-model="formRegion.deviceId" disabled autocomplete="off" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-      </div>
-
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="cancel" class="cancel-btn">取 消</el-button>
-          <el-button type="primary" @click="submitFormRegion" class="confirm-btn">确 定</el-button>
-        </div>
-      </template>
-    </el-dialog>
-  </div>
+        
 </template>
 
 <script>
 import {
-  addRegion,
-  updateRegion,
-  deleteRegion,
-  getAllChild,
-  queryForRegionTree,
-  queryForRegionQuery,
-} from "@/api/nvr/region.js";
 
-const emit = defineEmits(["handleNodeClick", "playChannel", "updatePosition"]);
-const { proxy } = getCurrentInstance();
-
-const searchStr = ref("");
-const treeData = ref([]);
-
-const nodeData = ref({});
-const regionList = ref([]);
-const total = ref(0);
-const show = ref(false);
-const optionsComponent = ref({
-  zIndex: 99999,
-  minWidth: 230,
-  x: 500,
-  y: 200,
-});
-
-const title = ref("");
-const openRegion = ref(false);
-const chooseId = ref("");
-const allValRegion = ref([]);
-const activeKeyRegion = ref("0");
-const defaultExpandedKeys = ref([]);
-const checked = ref(false);
-
-const data = reactive({
-  formRegion: {},
-  rulesRegion: {
-    name: [{ required: true, message: "请输入节点名称", trigger: "blur" }],
-    deviceId: [{ required: true, message: "请选择节点编号", trigger: "change" }],
-  },
-  queryParamsRegion: {
-    pageNum: 1,
-    pageSize: 10,
-    query: null,
-  },
-});
-
-const { formRegion, rulesRegion, queryParamsRegion } = toRefs(data);
-
-const props = defineProps({
-  hasDevice: Boolean,
-  showIndex: {
+export default {
+  name: '0',
+  props: {
+    showIndex: { 
     type: Boolean,
     default: true,
-  },
-  showContextmenu: {
+   },
+    showContextmenu: { 
     type: Boolean,
     default: true,
-  },
-  isContextmenu: {
+   },
+    isContextmenu: { 
     type: Boolean,
     default: false,
-  },
-  contextMenu: {
+   },
+    contextMenu: { 
     type: Array,
     default: ["refresh", "add", "update", "delete"],
+   },
   },
-});
-
-onMounted(() => {
-  activeKeyRegion = "0";
-  chooseId = null;
-  getQueryForRegionTree();
-});
-
-function getQueryForRegionTree() {
-  queryForRegionTree({
-    query: searchStr,
-    parent: null,
-    hasDevice: props.hasDevice,
-  }).then((res) => {
-    let data = [
-      {
-        name: "根资源组",
-        children: [],
-      },
-    ];
-    data[0].children = proxy.handleTree(res.data, "id");
-    treeData = data;
-    if (res.data && res.data.length > 0) {
-      defaultExpandedKeys = [];
-      res.data.forEach((item) => {
-        defaultExpandedKeys.push(item.id);
-      });
+  data() {
+    return {
+      searchStr: "",
+      treeData: [],
+      nodeData: {},
+      regionList: [],
+      total: 0,
+      show: false,
+      title: "",
+      openRegion: false,
+      chooseId: "",
+      allValRegion: [],
+      activeKeyRegion: "0",
+      defaultExpandedKeys: [],
+      checked: false,
+      formRegion: {},
+      name: [{ required: true,
+      message: "请输入节点名称",
+      trigger: "blur" }],
+      deviceId: [{ required: true,
+      message: "请选择节点编号",
+      trigger: "change" }],
+      pageNum: 1,
+      pageSize: 10,
+      query: null,
     }
-  });
-}
-
-function getQueryForRegionQuery(val) {
-  queryParamsRegion.query = val;
-  queryForRegionQuery(queryParamsRegion).then((res) => {
-    regionList = res.rows;
-    total = res.total;
-  });
-}
-
-watch(searchStr, (val) => {
-  if (val) {
-    getQueryForRegionQuery(val);
-  }
-});
-
-function refresh() {
-  if (!searchStr) {
-    getQueryForRegionTree();
-  } else {
-    getQueryForRegionQuery(searchStr);
-  }
-}
-
-async function loadNode(node, resolve) {
-  if (node.level === 0) {
-    return resolve([
-      {
-        treeId: "",
-        deviceId: "",
-        name: "根资源组",
-        isLeaf: false,
-        type: 0,
-      },
-    ]);
-  } else if (node.level > 0) {
-    if (node.data.leaf) {
-      return resolve([]);
-    }
-    let res = await queryForRegionTree({
-      query: "",
-      parent: node.data.id,
-      leaf: false,
-      hasDevice: props.hasDevice,
-    });
-
-    let terr = [...proxy.handleTree(res.data, "id")];
-
-    if (res.data && res.data.length > 0) {
-      defaultExpandedKeys = [];
-      res.data.forEach((item) => {
-        defaultExpandedKeys.push(item.id);
-      });
-    }
-    resolve(terr);
-  } else {
-    resolve([]);
-  }
-}
-
-function onContextMenu(e, data) {
-  e.preventDefault();
-  nodeData = data;
-  show = true;
-  optionsComponent.x = e.x;
-  optionsComponent.y = e.y;
-}
-
-function handleNodeClick(data) {
-  chooseId = data.name;
-  emit("handleNodeClick", data);
-}
-
-function resetRegion() {
-  formRegion = {
-    deviceId: undefined,
-    name: undefined,
-  };
-  proxy.resetForm("formRegionRef");
-}
-
-function queryChildList(parent) {
-  getAllChild({ parent: parent }).then((res) => {
-    regionList = res.data;
-  });
-}
-
-function getRegionList() {
-  nextTick(() => {
-    if (activeKeyRegion === "0") {
-      queryChildList();
-    } else if (activeKeyRegion === "1" || activeKeyRegion === "2") {
-      let parent = "";
-      if (activeKeyRegion === "1") {
-        parent = allValRegion[0].val;
-      }
-      if (activeKeyRegion === "2") {
-        if (allValRegion[1].val === "") {
-          parent = "";
+  },
+  mounted() {
+    activeKeyRegion = "0";
+      chooseId = null;
+      getQueryForRegionTree();
+  },
+  methods: {
+    getQueryForRegionTree() {
+      queryForRegionTree({
+          query: searchStr,
+          parent: null,
+          hasDevice: props.hasDevice,
+        }).then((res) => {
+          let data = [
+            {
+              name: "根资源组",
+              children: [],
+            },
+          ];
+          data[0].children = proxy.handleTree(res.data, "id");
+          treeData = data;
+          if (res.data && res.data.length > 0) {
+            defaultExpandedKeys = [];
+            res.data.forEach((item) => {
+              defaultExpandedKeys.push(item.id);
+            });
+          }
+        });
+    },
+    getQueryForRegionQuery(val) {
+      queryParamsRegion.query = val;
+        queryForRegionQuery(queryParamsRegion).then((res) => {
+          regionList = res.rows;
+          total = res.total;
+        });
+    },
+    refresh() {
+      if (!searchStr) {
+          getQueryForRegionTree();
         } else {
-          parent = allValRegion[0].val + allValRegion[1].val;
+          getQueryForRegionQuery(searchStr);
         }
-      }
-
-      if (activeKeyRegion !== "0" && parent === "") {
-        this.$modal.msgError("请先选择上级行政区划");
-      }
-      if (parent !== "") {
-        queryChildList(parent);
-      } else {
-        regionList = [];
-      }
-    }
-  });
-}
-
-function deviceChange(item) {
-  nextTick(() => {
-    let code = allValRegion[0].val;
-
-    if (allValRegion[1].val) {
-      code += allValRegion[1].val;
-      if (allValRegion[2].val) {
-        code += allValRegion[2].val;
-        if (allValRegion[3].val) {
-          code += allValRegion[3].val;
+    },
+    loadNode(node, resolve) {
+      if (node.level === 0) {
+          return resolve([
+            {
+              treeId: "",
+              deviceId: "",
+              name: "根资源组",
+              isLeaf: false,
+              type: 0,
+            },
+          ]);
+        } else if (node.level > 0) {
+          if (node.data.leaf) {
+            return resolve([]);
+          }
+          let res = await queryForRegionTree({
+            query: "",
+            parent: node.data.id,
+            leaf: false,
+            hasDevice: props.hasDevice,
+          });
+      
+          let terr = [...proxy.handleTree(res.data, "id")];
+      
+          if (res.data && res.data.length > 0) {
+            defaultExpandedKeys = [];
+            res.data.forEach((item) => {
+              defaultExpandedKeys.push(item.id);
+            });
+          }
+          resolve(terr);
+        } else {
+          resolve([]);
         }
-      } else {
-        allValRegion[3].val = "";
-      }
-    } else {
-      allValRegion[2].val = "";
-      allValRegion[3].val = "";
-    }
-    formRegion.deviceId = code;
-  });
-}
-
-/** 取消按钮 */
-function cancel() {
-  openRegion = false;
-  resetRegion();
-}
-
-function addNode() {
-  resetRegion();
-  formRegion.parentId = nodeData.id;
-  if (nodeData.deviceId) {
-    formRegion.deviceId = String(nodeData.deviceId).slice(0, -2);
-  }
-  formRegion.parentDeviceId = nodeData.deviceId;
-  openRegion = true;
-  title = "新增行政区划";
-  getRegionList();
-  allValRegion = [
-    {
-      id: [1, 2],
-      meaning: "省级编码",
-      val: "11",
-      type: "中心编码",
-      lock: false,
     },
-    {
-      id: [3, 4],
-      meaning: "市级编码",
-      val: "",
-      type: "中心编码",
-      lock: false,
+    onContextMenu(e, data) {
+      e.preventDefault();
+        nodeData = data;
+        show = true;
+        optionsComponent.x = e.x;
+        optionsComponent.y = e.y;
     },
-    {
-      id: [5, 6],
-      meaning: "区级编码",
-      val: "",
-      type: "中心编码",
-      lock: false,
+    handleNodeClick(data) {
+      chooseId = data.name;
+        emit("handleNodeClick", data);
     },
-    {
-      id: [7, 8],
-      meaning: "基层接入单位编码",
-      val: "",
-      type: "中心编码",
-      lock: false,
+    resetRegion() {
+      formRegion = {
+          deviceId: undefined,
+          name: undefined,
+        };
+        proxy.resetForm("formRegionRef");
     },
-  ];
-
-  activeKeyRegion = "0";
-  if (formRegion.deviceId) {
-    if (formRegion.deviceId.length >= 2 && allValRegion[0]) {
-      allValRegion[0].val = formRegion.deviceId.substring(0, 2);
-    }
-    if (formRegion.deviceId.length >= 4 && allValRegion[1]) {
-      allValRegion[1].val = formRegion.deviceId.substring(2, 4);
-    }
-    if (formRegion.deviceId.length >= 6 && allValRegion[2]) {
-      allValRegion[2].val = formRegion.deviceId.substring(4, 6);
-    }
-    activeKeyRegion = "3";
-  } else {
-    if (formRegion.parentDeviceId) {
-      if (formRegion.parentDeviceId.length >= 2) {
-        allValRegion[0].val = formRegion.parentDeviceId.substring(0, 2);
-        activeKeyRegion = "1";
-      }
-      if (formRegion.parentDeviceId.length >= 4) {
-        allValRegion[1].val = formRegion.parentDeviceId.substring(2, 4);
-        activeKeyRegion = "2";
-      }
-    }
-  }
-}
-
-function submitFormRegion() {
-  this.$refs["formRegionRef"].validate((valid) => {
-    if (valid) {
-      if (formRegion.id) {
-        updateRegion(formRegion).then(() => {
-          this.$modal.msgSuccess("修改成功");
-          openRegion = false;
-          getQueryForRegionTree();
+    queryChildList(parent) {
+      getAllChild({ parent: parent }).then((res) => {
+          regionList = res.data;
         });
-      } else {
-        addRegion(formRegion).then(() => {
-          this.$modal.msgSuccess("新增成功");
-          openRegion = false;
-          getQueryForRegionTree();
+    },
+    getRegionList() {
+      nextTick(() => {
+          if (activeKeyRegion === "0") {
+            queryChildList();
+          } else if (activeKeyRegion === "1" || activeKeyRegion === "2") {
+            let parent = "";
+            if (activeKeyRegion === "1") {
+              parent = allValRegion[0].val;
+            }
+            if (activeKeyRegion === "2") {
+              if (allValRegion[1].val === "") {
+                parent = "";
+              } else {
+                parent = allValRegion[0].val + allValRegion[1].val;
+              }
+            }
+      
+            if (activeKeyRegion !== "0" && parent === "") {
+              this.$modal.msgError("请先选择上级行政区划");
+            }
+            if (parent !== "") {
+              queryChildList(parent);
+            } else {
+              regionList = [];
+            }
+          }
         });
-      }
-    }
-  });
-}
-
-function updateNode() {
-  resetRegion();
-  formRegion = JSON.parse(JSON.stringify(nodeData));
-  openRegion = true;
-  title = "修改行政区划";
-  getRegionList();
-  allValRegion = [
-    {
-      id: [1, 2],
-      meaning: "省级编码",
-      val: "11",
-      type: "中心编码",
-      lock: false,
     },
-    {
-      id: [3, 4],
-      meaning: "市级编码",
-      val: "",
-      type: "中心编码",
-      lock: false,
+    deviceChange(item) {
+      nextTick(() => {
+          let code = allValRegion[0].val;
+      
+          if (allValRegion[1].val) {
+            code += allValRegion[1].val;
+            if (allValRegion[2].val) {
+              code += allValRegion[2].val;
+              if (allValRegion[3].val) {
+                code += allValRegion[3].val;
+              }
+            } else {
+              allValRegion[3].val = "";
+            }
+          } else {
+            allValRegion[2].val = "";
+            allValRegion[3].val = "";
+          }
+          formRegion.deviceId = code;
+        });
     },
-    {
-      id: [5, 6],
-      meaning: "区级编码",
-      val: "",
-      type: "中心编码",
-      lock: false,
+    cancel() {
+      openRegion = false;
+        resetRegion();
     },
-    {
-      id: [7, 8],
-      meaning: "基层接入单位编码",
-      val: "",
-      type: "中心编码",
-      lock: false,
+    addNode() {
+      resetRegion();
+        formRegion.parentId = nodeData.id;
+        if (nodeData.deviceId) {
+          formRegion.deviceId = String(nodeData.deviceId).slice(0, -2);
+        }
+        formRegion.parentDeviceId = nodeData.deviceId;
+        openRegion = true;
+        title = "新增行政区划";
+        getRegionList();
+        allValRegion = [
+          {
+            id: [1, 2],
+            meaning: "省级编码",
+            val: "11",
+            type: "中心编码",
+            lock: false,
+          },
+          {
+            id: [3, 4],
+            meaning: "市级编码",
+            val: "",
+            type: "中心编码",
+            lock: false,
+          },
+          {
+            id: [5, 6],
+            meaning: "区级编码",
+            val: "",
+            type: "中心编码",
+            lock: false,
+          },
+          {
+            id: [7, 8],
+            meaning: "基层接入单位编码",
+            val: "",
+            type: "中心编码",
+            lock: false,
+          },
+        ];
+      
+        activeKeyRegion = "0";
+        if (formRegion.deviceId) {
+          if (formRegion.deviceId.length >= 2 && allValRegion[0]) {
+            allValRegion[0].val = formRegion.deviceId.substring(0, 2);
+          }
+          if (formRegion.deviceId.length >= 4 && allValRegion[1]) {
+            allValRegion[1].val = formRegion.deviceId.substring(2, 4);
+          }
+          if (formRegion.deviceId.length >= 6 && allValRegion[2]) {
+            allValRegion[2].val = formRegion.deviceId.substring(4, 6);
+          }
+          activeKeyRegion = "3";
+        } else {
+          if (formRegion.parentDeviceId) {
+            if (formRegion.parentDeviceId.length >= 2) {
+              allValRegion[0].val = formRegion.parentDeviceId.substring(0, 2);
+              activeKeyRegion = "1";
+            }
+            if (formRegion.parentDeviceId.length >= 4) {
+              allValRegion[1].val = formRegion.parentDeviceId.substring(2, 4);
+              activeKeyRegion = "2";
+            }
+          }
+        }
     },
-  ];
-
-  activeKeyRegion = "0";
-  if (formRegion.deviceId) {
-    if (formRegion.deviceId.length >= 2 && allValRegion[0]) {
-      allValRegion[0].val = formRegion.deviceId.substring(0, 2);
-    }
-    if (formRegion.deviceId.length >= 4 && allValRegion[1]) {
-      allValRegion[1].val = formRegion.deviceId.substring(2, 4);
-    }
-    if (formRegion.deviceId.length >= 6 && allValRegion[2]) {
-      allValRegion[2].val = formRegion.deviceId.substring(4, 6);
-    }
-    if (formRegion.deviceId.length === 8 && allValRegion[3]) {
-      allValRegion[3].val = formRegion.deviceId.substring(6, 8);
-    }
-  } else {
-    if (formRegion.parentDeviceId) {
-      if (formRegion.parentDeviceId.length >= 2) {
-        allValRegion[0].val = formRegion.parentDeviceId.substring(0, 2);
-        activeKeyRegion = "1";
-      }
-      if (formRegion.parentDeviceId.length >= 4) {
-        allValRegion[1].val = formRegion.parentDeviceId.substring(2, 4);
-        activeKeyRegion = "2";
-      }
-      if (formRegion.parentDeviceId.length >= 6) {
-        allValRegion[2].val = formRegion.parentDeviceId.substring(4, 6);
-        activeKeyRegion = "3";
-      }
-    }
-  }
+    submitFormRegion() {
+      this.$refs["formRegionRef"].validate((valid) => {
+          if (valid) {
+            if (formRegion.id) {
+              updateRegion(formRegion).then(() => {
+                this.$modal.msgSuccess("修改成功");
+                openRegion = false;
+                getQueryForRegionTree();
+              });
+            } else {
+              addRegion(formRegion).then(() => {
+                this.$modal.msgSuccess("新增成功");
+                openRegion = false;
+                getQueryForRegionTree();
+              });
+            }
+          }
+        });
+    },
+    updateNode() {
+      resetRegion();
+        formRegion = JSON.parse(JSON.stringify(nodeData));
+        openRegion = true;
+        title = "修改行政区划";
+        getRegionList();
+        allValRegion = [
+          {
+            id: [1, 2],
+            meaning: "省级编码",
+            val: "11",
+            type: "中心编码",
+            lock: false,
+          },
+          {
+            id: [3, 4],
+            meaning: "市级编码",
+            val: "",
+            type: "中心编码",
+            lock: false,
+          },
+          {
+            id: [5, 6],
+            meaning: "区级编码",
+            val: "",
+            type: "中心编码",
+            lock: false,
+          },
+          {
+            id: [7, 8],
+            meaning: "基层接入单位编码",
+            val: "",
+            type: "中心编码",
+            lock: false,
+          },
+        ];
+      
+        activeKeyRegion = "0";
+        if (formRegion.deviceId) {
+          if (formRegion.deviceId.length >= 2 && allValRegion[0]) {
+            allValRegion[0].val = formRegion.deviceId.substring(0, 2);
+          }
+          if (formRegion.deviceId.length >= 4 && allValRegion[1]) {
+            allValRegion[1].val = formRegion.deviceId.substring(2, 4);
+          }
+          if (formRegion.deviceId.length >= 6 && allValRegion[2]) {
+            allValRegion[2].val = formRegion.deviceId.substring(4, 6);
+          }
+          if (formRegion.deviceId.length === 8 && allValRegion[3]) {
+            allValRegion[3].val = formRegion.deviceId.substring(6, 8);
+          }
+        } else {
+          if (formRegion.parentDeviceId) {
+            if (formRegion.parentDeviceId.length >= 2) {
+              allValRegion[0].val = formRegion.parentDeviceId.substring(0, 2);
+              activeKeyRegion = "1";
+            }
+            if (formRegion.parentDeviceId.length >= 4) {
+              allValRegion[1].val = formRegion.parentDeviceId.substring(2, 4);
+              activeKeyRegion = "2";
+            }
+            if (formRegion.parentDeviceId.length >= 6) {
+              allValRegion[2].val = formRegion.parentDeviceId.substring(4, 6);
+              activeKeyRegion = "3";
+            }
+          }
+        }
+    },
+    deleteNode() {
+      this.$modal
+          .confirm('是否确认删除名称为"' + nodeData.name + '"的数据项?')
+          .then(function () {
+            deleteRegion(nodeData.id).then(() => {
+              getQueryForRegionTree();
+              this.$modal.msgSuccess("删除成功");
+            });
+          });
+    },
+    refreshNode() {
+      refresh();
+    },
+    playChannel() {
+      emit("playChannel", nodeData);
+    },
+    updatePosition() {
+      emit("updatePosition", nodeData);
+    },
+  },
 }
-
-function deleteNode() {
-  this.$modal
-    .confirm('是否确认删除名称为"' + nodeData.name + '"的数据项?')
-    .then(function () {
-      deleteRegion(nodeData.id).then(() => {
-        getQueryForRegionTree();
-        this.$modal.msgSuccess("删除成功");
-      });
-    });
-}
-
-function refreshNode() {
-  refresh();
-}
-
-function playChannel() {
-  emit("playChannel", nodeData);
-}
-
-function updatePosition() {
-  emit("updatePosition", nodeData);
-}
-
-defineExpose({
-  refresh,
-});
 </script>
 
 <style scoped lang="scss">
@@ -821,11 +423,11 @@ defineExpose({
   .search-input {
     :deep(.el-input__wrapper) {
       border-radius: 8px 0 0 8px;
-      box-shadow: 0 0 0 1px var(--el-border-color-light) inset;
+      box-shadow: 0 0 0 1px #dcdfe6 inset;
       transition: all 0.3s;
 
       &:focus-within {
-        box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 0 0 3px var(--el-color-primary-light-8);
+        box-shadow: 0 0 0 1px #409EFF inset, 0 0 0 3px #d9ecff;
       }
     }
 
@@ -841,20 +443,20 @@ defineExpose({
         margin: 0;
         height: 100%;
         padding: 0 12px;
-        background: var(--el-fill-color-light);
-        color: var(--el-text-color-regular);
+        background: #ebeef5;
+        color: #606266;
         transition: all 0.3s;
 
         &:hover {
-          background: var(--el-color-primary-light-9);
-          color: var(--el-color-primary);
+          background: #ecf5ff;
+          color: #409EFF;
         }
       }
     }
 
     :deep(.el-input-group__append) {
       padding: 0 10px;
-      background: var(--el-fill-color-light);
+      background: #ebeef5;
       border-radius: 0 8px 8px 0;
 
       .index-checkbox {
@@ -886,37 +488,37 @@ defineExpose({
     transition: all 0.25s ease;
 
     &:hover {
-      background-color: var(--el-color-primary-light-9) !important;
+      background-color: #ecf5ff !important;
     }
   }
 
   :deep(.el-tree-node.is-current > .el-tree-node__content) {
-    background: linear-gradient(90deg, var(--el-color-primary-light-9) 0%, var(--el-color-primary-light-8) 100%) !important;
-    box-shadow: 0 0 0 1px var(--el-color-primary-light-7) inset;
+    background: linear-gradient(90deg, #ecf5ff 0%, #d9ecff 100%) !important;
+    box-shadow: 0 0 0 1px #c6e2ff inset;
 
     .node-label.active,
     .node-label {
-      color: var(--el-color-primary);
+      color: #409EFF;
       font-weight: 600;
     }
 
     .folder-icon {
-      color: var(--el-color-primary);
+      color: #409EFF;
       transform: scale(1.1);
     }
   }
 
   :deep(.el-tree-node__expand-icon) {
-    color: var(--el-text-color-secondary);
+    color: #909399;
     transition: all 0.3s;
 
     &:hover {
-      color: var(--el-color-primary);
+      color: #409EFF;
     }
   }
 
   :deep(.el-tree-node__loading-icon) {
-    color: var(--el-color-primary);
+    color: #409EFF;
   }
 }
 
@@ -927,12 +529,12 @@ defineExpose({
   gap: 6px;
   width: 100%;
   font-size: 14px;
-  color: var(--el-text-color-primary);
+  color: #303133;
   transition: all 0.25s;
 
   &.is-active {
     .node-label {
-      color: var(--el-color-primary);
+      color: #409EFF;
       font-weight: 600;
     }
   }
@@ -958,16 +560,16 @@ defineExpose({
   flex-shrink: 0;
 
   &.folder-icon {
-    color: var(--el-color-warning);
+    color: #E6A23C;
 
     &.active {
-      color: var(--el-color-primary);
+      color: #409EFF;
     }
   }
 
   &.camera-icon {
     &.online {
-      color: var(--el-color-success);
+      color: #67C23A;
     }
 
     &.offline {
@@ -994,8 +596,8 @@ defineExpose({
   align-items: center;
   padding: 0 8px;
   height: 20px;
-  background: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
+  background: #ecf5ff;
+  color: #409EFF;
   border-radius: 10px;
   font-size: 11px;
   font-weight: 600;
@@ -1021,16 +623,16 @@ defineExpose({
   align-items: center;
   gap: 10px;
   padding: 12px 14px;
-  background: var(--el-bg-color-overlay);
-  border: 1px solid var(--el-border-color-lighter);
+  background: #fff;
+  border: 1px solid #ebeef5;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: slideInLeft 0.35s ease-out both;
 
   &:hover {
-    background: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary-light-7);
+    background: #ecf5ff;
+    border-color: #c6e2ff;
     transform: translateX(4px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 
@@ -1041,17 +643,17 @@ defineExpose({
   }
 
   &.is-active {
-    background: linear-gradient(90deg, var(--el-color-primary-light-9) 0%, var(--el-color-primary-light-8) 100%);
-    border-color: var(--el-color-primary-light-5);
-    box-shadow: 0 2px 8px var(--el-color-primary-light-7);
+    background: linear-gradient(90deg, #ecf5ff 0%, #d9ecff 100%);
+    border-color: #a0cfff;
+    box-shadow: 0 2px 8px #c6e2ff;
 
     .result-name {
-      color: var(--el-color-primary);
+      color: #409EFF;
       font-weight: 600;
     }
 
     .iconfont {
-      color: var(--el-color-primary);
+      color: #409EFF;
     }
   }
 }
@@ -1074,23 +676,23 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--el-fill-color-light);
+  background: #ebeef5;
   border-radius: 8px;
   transition: all 0.3s;
 
   .iconfont {
     font-size: 18px;
-    color: var(--el-text-color-secondary);
+    color: #909399;
     transition: color 0.3s;
 
     &.active {
-      color: var(--el-color-primary);
+      color: #409EFF;
     }
   }
 }
 
 .result-item:hover .result-icon-wrap {
-  background: var(--el-color-primary-light-8);
+  background: #d9ecff;
 }
 
 .result-info {
@@ -1100,7 +702,7 @@ defineExpose({
 
 .result-name {
   font-size: 14px;
-  color: var(--el-text-color-primary);
+  color: #303133;
   font-weight: 500;
   transition: color 0.25s;
   overflow: hidden;
@@ -1117,7 +719,7 @@ defineExpose({
 
 .result-arrow {
   flex-shrink: 0;
-  color: var(--el-color-primary);
+  color: #409EFF;
   opacity: 0;
   transform: translateX(-4px);
   transition: all 0.3s;
@@ -1132,12 +734,12 @@ defineExpose({
     transition: all 0.3s;
 
     &:hover:not(.is-active) {
-      color: var(--el-color-primary);
+      color: #409EFF;
       transform: translateY(-1px);
     }
 
     &.is-active {
-      box-shadow: 0 2px 8px var(--el-color-primary-light-5);
+      box-shadow: 0 2px 8px #a0cfff;
     }
   }
 }
@@ -1159,17 +761,17 @@ defineExpose({
   :deep(.el-dialog__header) {
     padding: 18px 24px;
     margin-right: 0;
-    border-bottom: 1px solid var(--el-border-color-lighter);
+    border-bottom: 1px solid #ebeef5;
     background: linear-gradient(
       135deg,
-      var(--el-color-primary-light-9) 0%,
-      var(--el-bg-color-overlay) 60%
+      #ecf5ff 0%,
+      #fff 60%
     );
 
     .el-dialog__title {
       font-weight: 600;
       font-size: 16px;
-      color: var(--el-text-color-primary);
+      color: #303133;
     }
 
     .el-dialog__headerbtn {
@@ -1182,7 +784,7 @@ defineExpose({
         background: var(--el-color-danger-light-9);
 
         .el-dialog__close {
-          color: var(--el-color-danger);
+          color: #F56C6C;
         }
       }
     }
@@ -1217,7 +819,7 @@ defineExpose({
   :deep(.el-tabs__nav-wrap) {
     &::after {
       height: 1px;
-      background: var(--el-border-color-lighter);
+      background: #ebeef5;
     }
   }
 
@@ -1228,17 +830,17 @@ defineExpose({
 
     &.is-active {
       .tab-code {
-        color: var(--el-color-primary);
+        color: #409EFF;
       }
 
       .tab-meaning {
-        color: var(--el-color-primary);
+        color: #409EFF;
       }
     }
 
     &:hover {
       .tab-code {
-        color: var(--el-color-primary-light-3);
+        color: #79bbff;
       }
     }
   }
@@ -1246,7 +848,7 @@ defineExpose({
   :deep(.el-tabs__active-bar) {
     height: 3px;
     border-radius: 2px;
-    background: linear-gradient(90deg, var(--el-color-primary) 0%, var(--el-color-primary-light-3) 100%);
+    background: linear-gradient(90deg, #409EFF 0%, #79bbff 100%);
   }
 }
 
@@ -1257,14 +859,14 @@ defineExpose({
   .tab-code {
     font-size: 20px;
     font-weight: 700;
-    color: var(--el-text-color-primary);
+    color: #303133;
     font-family: "Courier New", monospace;
     transition: color 0.3s;
   }
 
   .tab-meaning {
     font-size: 12px;
-    color: var(--el-text-color-secondary);
+    color: #909399;
     transition: color 0.3s;
   }
 }
@@ -1283,12 +885,12 @@ defineExpose({
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--el-border-color);
+    background: #dcdfe6;
     border-radius: 3px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: var(--el-color-primary-light-5);
+    background: #a0cfff;
   }
 }
 
@@ -1306,14 +908,14 @@ defineExpose({
   }
 
   &:hover {
-    background: var(--el-fill-color-light);
+    background: #ebeef5;
   }
 
   &.is-checked {
-    background: var(--el-color-primary-light-9);
+    background: #ecf5ff;
 
     .radio-name {
-      color: var(--el-color-primary);
+      color: #409EFF;
       font-weight: 600;
     }
   }
@@ -1321,7 +923,7 @@ defineExpose({
 
 .radio-name {
   font-size: 14px;
-  color: var(--el-text-color-primary);
+  color: #303133;
   transition: color 0.25s;
 
   &.text-muted {
@@ -1331,17 +933,17 @@ defineExpose({
 
 .radio-code {
   font-size: 12px;
-  color: var(--el-text-color-secondary);
+  color: #909399;
   font-family: "Courier New", monospace;
-  background: var(--el-fill-color-light);
+  background: #ebeef5;
   padding: 2px 8px;
   border-radius: 4px;
   transition: all 0.25s;
 }
 
 .region-radio.is-checked .radio-code {
-  background: var(--el-color-primary-light-8);
-  color: var(--el-color-primary);
+  background: #d9ecff;
+  color: #409EFF;
 }
 
 /* 手动输入 */
@@ -1350,7 +952,7 @@ defineExpose({
 
   .input-hint {
     font-size: 13px;
-    color: var(--el-text-color-secondary);
+    color: #909399;
     margin-bottom: 12px;
     padding-left: 4px;
   }
@@ -1359,11 +961,11 @@ defineExpose({
     max-width: 300px;
 
     :deep(.el-input__wrapper) {
-      box-shadow: 0 0 0 1px var(--el-border-color-light) inset;
+      box-shadow: 0 0 0 1px #dcdfe6 inset;
       transition: all 0.3s;
 
       &:focus-within {
-        box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 0 0 3px var(--el-color-primary-light-8);
+        box-shadow: 0 0 0 1px #409EFF inset, 0 0 0 3px #d9ecff;
       }
     }
   }
@@ -1378,20 +980,20 @@ defineExpose({
 .region-form {
   :deep(.el-form-item__label) {
     font-weight: 500;
-    color: var(--el-text-color-regular);
+    color: #606266;
   }
 
   :deep(.el-input__wrapper) {
-    box-shadow: 0 0 0 1px var(--el-border-color-light) inset;
+    box-shadow: 0 0 0 1px #dcdfe6 inset;
     transition: all 0.3s;
 
     &:hover,
     &:focus-within {
-      box-shadow: 0 0 0 1px var(--el-color-primary-light-5) inset;
+      box-shadow: 0 0 0 1px #a0cfff inset;
     }
 
     &:focus-within {
-      box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 0 0 3px var(--el-color-primary-light-8);
+      box-shadow: 0 0 0 1px #409EFF inset, 0 0 0 3px #d9ecff;
     }
   }
 }
@@ -1417,21 +1019,16 @@ defineExpose({
 
     &:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px var(--el-color-primary-light-7);
+      box-shadow: 0 4px 12px #c6e2ff;
     }
   }
 }
 
 /* ========== 暗黑模式适配 ========== */
-html.dark {
-  .region-tree-container {
-    .search-input {
-      :deep(.el-input-group__prepend .refresh-btn) {
-        background: var(--el-bg-color-overlay);
-      }
+
 
       :deep(.el-input-group__append) {
-        background: var(--el-bg-color-overlay);
+        background: #fff;
       }
     }
 
@@ -1459,7 +1056,7 @@ html.dark {
     }
 
     .result-icon-wrap {
-      background: var(--el-bg-color-overlay);
+      background: #fff;
     }
 
     .device-id-badge {
@@ -1470,13 +1067,13 @@ html.dark {
       background: linear-gradient(
         135deg,
         rgba(64, 158, 255, 0.08) 0%,
-        var(--el-bg-color-overlay) 60%
+        #fff 60%
       );
     }
 
     .region-radio {
       &:hover {
-        background: var(--el-bg-color-overlay);
+        background: #fff;
       }
 
       &.is-checked {
@@ -1485,7 +1082,7 @@ html.dark {
     }
 
     .radio-code {
-      background: var(--el-bg-color-overlay);
+      background: #fff;
     }
 
     .region-radio.is-checked .radio-code {
@@ -1502,13 +1099,13 @@ html.dark {
 
 .custom-tree::-webkit-scrollbar-thumb,
 .search-result-area::-webkit-scrollbar-thumb {
-  background: var(--el-border-color);
+  background: #dcdfe6;
   border-radius: 3px;
 }
 
 .custom-tree::-webkit-scrollbar-thumb:hover,
 .search-result-area::-webkit-scrollbar-thumb:hover {
-  background: var(--el-color-primary-light-5);
+  background: #a0cfff;
 }
 
 .custom-tree::-webkit-scrollbar-track,
