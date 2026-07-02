@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/axios';
 import {HaikangIsupDevice} from "@/types/api";
 import {AjaxResult} from "@/types";
 

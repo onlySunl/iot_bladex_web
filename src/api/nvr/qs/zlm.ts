@@ -1,6 +1,6 @@
-import request from '@/utils/request'
+import request from '@/axios';
 import {MediaInfo, MediaServer, PullConfig, RTPServerParam, Snap, StreamContent} from "@/types/api";
-import {AjaxResult} from "@/types";
+import {AjaxResult} from "@/types/common";
 
 // 拉流播放
 export function streamPullPlay(data: PullConfig): Promise<AjaxResult<StreamContent>> {

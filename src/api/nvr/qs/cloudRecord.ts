@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/axios';
 import type {AjaxResult, CloudRecordQueryParams, TableDataInfo, ZlmCloudRecord} from '@/types'
 
 // 查询云端录像列表（分页）

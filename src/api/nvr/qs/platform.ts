@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/axios';
 import type {AjaxResult, TableDataInfo} from '@/types'
 import type {QsDevice} from '@/types/api'
 

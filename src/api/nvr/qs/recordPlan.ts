@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/axios';
 import type { AjaxResult, TableDataInfo, RecordPlanQueryParams, ZlmRecordPlan } from '@/types'
 
 // 查询录像计划列表

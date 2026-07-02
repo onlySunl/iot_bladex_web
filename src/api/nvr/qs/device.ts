@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/axios';
 import type {AjaxResult, DeviceQueryParams, QsDevice, TableDataInfo} from '@/types'
 import {RecordPlanParam} from "@/types/api";
 

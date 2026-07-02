@@ -1,6 +1,6 @@
 // 查询视频监控设备列表
-import request from "@/utils/request";
-import {AjaxResult} from "@/types";
+import request from '@/axios';
+import {AjaxResult} from "@/types/common";
 
 /**
  * 获取系统信息

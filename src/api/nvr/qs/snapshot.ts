@@ -1,5 +1,5 @@
-import request from '@/utils/request'
-import type {AjaxResult, TableDataInfo} from '@/types'
+import request from '@/axios';
+import type {AjaxResult, TableDataInfo} from '@/types/common'
 import type {QsDeviceSnapshot, SnapshotQueryParams} from '@/types/api/qs/snapshot'
 
 // 查询设备抓图列表

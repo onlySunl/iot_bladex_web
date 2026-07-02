@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/axios';
 import type { AjaxResult } from '@/types'
 import type { Gb28181Device, Gb28181Channel } from '@/types/api/qs/gb28181'
 

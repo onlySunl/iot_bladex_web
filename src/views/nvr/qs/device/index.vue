@@ -116,10 +116,10 @@ import {
   addDeviceConfig,
   updateDeviceConfig,
   removeDeviceConfig
-} from '@/api/nvr/device';
+} from '@/api/nvr/qs/device';
 
-import { pageMediaServer } from '@/api/nvr/zlm';
-import { listGroup } from '@/api/nvr/group';
+import { pageMediaServer } from '@/api/nvr/qs/zlm';
+import { listGroup } from '@/api/nvr/qs/group';
 
 // 导入工具函数
 import { formatCapacity, calculateStoragePercentage, getStorageStatus, getOnlineStatus } from './utils';

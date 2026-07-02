@@ -1,6 +1,6 @@
 import {QsGroup} from "@/types/api";
 import {AjaxResult} from "@/types";
-import request from "@/utils/request";
+import request from '@/axios';
 
 /**
  * 添加分组

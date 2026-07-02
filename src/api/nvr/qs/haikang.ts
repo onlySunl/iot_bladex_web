@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/axios';
 import {AjaxResult} from "@/types";
 
 /**
