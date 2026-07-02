@@ -4,6 +4,7 @@ import common from './modules/common';
 import tags from './modules/tags';
 import logs from './modules/logs';
 import dict from './modules/dict';
+import settings from './modules/settings';
 import getters from './getters';
 
 const store = createStore({
@@ -13,6 +14,7 @@ const store = createStore({
     logs,
     tags,
     dict,
+    settings,
   },
   getters,
 });
