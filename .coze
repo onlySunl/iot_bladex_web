@@ -1,0 +1,21 @@
+[project]
+name = "saber"
+type = "web"
+language = "typescript"
+framework = "vue3"
+
+[build]
+command = "pnpm run build"
+output_dir = "dist"
+
+[dev]
+command = "pnpm run dev"
+port = 5173
+
+[preview]
+enable = true
+port = 5173
+
+[deploy]
+build_command = "pnpm run build"
+output_dir = "dist"
