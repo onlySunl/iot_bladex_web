@@ -95,12 +95,12 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { saveAs } from 'file-saver';
 
 // 导入子组件
-import DeviceSearchForm from './DeviceSearchForm.vue';
-import DeviceTable from './DeviceTable.vue';
-import DeviceCards from './DeviceCards.vue';
-import DeviceFormDialog from './DeviceFormDialog.vue';
-import DevicePlayerDialog from './DevicePlayerDialog.vue';
-import DeviceConfigDialog from './DeviceConfigDialog.vue';
+import DeviceSearchForm from './components/DeviceSearchForm.vue';
+import DeviceTable from './components/DeviceTable.vue';
+import DeviceCards from './components/DeviceCards.vue';
+import DeviceFormDialog from './components/DeviceFormDialog.vue';
+import DevicePlayerDialog from './components/DevicePlayerDialog.vue';
+import DeviceConfigDialog from './components/DeviceConfigDialog.vue';
 
 // 导入 API
 import {
