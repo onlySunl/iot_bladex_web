@@ -2,106 +2,106 @@
   <div class="app-container">
     <div class="search-box">
       <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px" class="query-form">
-      <el-form-item label="设备名称" prop="deviceName">
-        <el-input
-            v-model="queryParams.deviceName"
-            placeholder="请输入设备名称"
-            clearable
-            @keyup.enter="handleQuery"
-            prefix-icon="VideoCamera"
-        />
-      </el-form-item>
-      <el-form-item label="IP地址" prop="ipAddress">
-        <el-input
-            v-model="queryParams.ipAddress"
-            placeholder="请输入IP地址"
-            clearable
-            @keyup.enter="handleQuery"
-            prefix-icon="MapLocation"
-        />
-      </el-form-item>
-      <el-form-item label="接入类型" prop="type">
-        <el-select v-model="queryParams.type" placeholder="请选择直播流接入类型" clearable style="width: 240px;">
-          <el-option
-              v-for="dict in qs_live_stream_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
+        <el-form-item label="设备名称" prop="deviceName">
+          <el-input
+              v-model="queryParams.deviceName"
+              placeholder="请输入设备名称"
+              clearable
+              @keyup.enter="handleQuery"
+              prefix-icon="VideoCamera"
           />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 240px;">
-          <el-option
-              v-for="dict in qs_status"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
+        </el-form-item>
+        <el-form-item label="IP地址" prop="ipAddress">
+          <el-input
+              v-model="queryParams.ipAddress"
+              placeholder="请输入IP地址"
+              clearable
+              @keyup.enter="handleQuery"
+              prefix-icon="MapLocation"
           />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="设备状态" prop="deviceStatus">
-        <el-select v-model="queryParams.deviceStatus" placeholder="请选择设备状态" clearable style="width: 240px;">
-          <el-option
-              v-for="dict in qs_device_status"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item class="form-actions">
-        <div class="button-group">
-          <el-button type="primary" icon="Search" @click="handleQuery" class="search-btn">搜索</el-button>
-          <el-button icon="Refresh" @click="resetQuery" class="reset-btn">重置</el-button>
-        </div>
-      </el-form-item>
-    </el-form>
+        </el-form-item>
+        <el-form-item label="接入类型" prop="type">
+          <el-select v-model="queryParams.type" placeholder="请选择直播流接入类型" clearable style="width: 240px;">
+            <el-option
+                v-for="dict in qs_live_stream_type"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 240px;">
+            <el-option
+                v-for="dict in qs_status"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="设备状态" prop="deviceStatus">
+          <el-select v-model="queryParams.deviceStatus" placeholder="请选择设备状态" clearable style="width: 240px;">
+            <el-option
+                v-for="dict in qs_device_status"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item class="form-actions">
+          <div class="button-group">
+            <el-button type="primary" icon="Search" @click="handleQuery" class="search-btn">搜索</el-button>
+            <el-button icon="Refresh" @click="resetQuery" class="reset-btn">重置</el-button>
+          </div>
+        </el-form-item>
+      </el-form>
 
-    <el-row :gutter="10" class="mb8 toolbar-row action-buttons">
-      <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="Plus"
-            @click="handleAdd"
-            class="action-btn add-btn"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="success"
-            plain
-            icon="Edit"
-            :disabled="single"
-            @click="handleUpdate"
-            class="action-btn edit-btn"
-        >修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="Delete"
-            :disabled="multiple"
-            @click="handleDelete"
-            class="action-btn delete-btn"
-        >删除
-        </el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" v-model:viewMode="viewMode" :showViewSwitch="true" @queryTable="getList"></right-toolbar>
-    </el-row>
+      <el-row :gutter="10" class="mb8 toolbar-row action-buttons">
+        <el-col :span="1.5">
+          <el-button
+              type="primary"
+              plain
+              icon="Plus"
+              @click="handleAdd"
+              class="action-btn add-btn"
+          >新增
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+              type="success"
+              plain
+              icon="Edit"
+              :disabled="single"
+              @click="handleUpdate"
+              class="action-btn edit-btn"
+          >修改
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+              type="danger"
+              plain
+              icon="Delete"
+              :disabled="multiple"
+              @click="handleDelete"
+              class="action-btn delete-btn"
+          >删除
+          </el-button>
+        </el-col>
+        <right-toolbar v-model:showSearch="showSearch" v-model:viewMode="viewMode" :showViewSwitch="true" @queryTable="getList"></right-toolbar>
+      </el-row>
     </div>
 
     <div v-if="viewMode === 'list'" class="table-wrapper">
       <el-table
-        v-loading="loading"
-        :data="deviceList"
-        @selection-change="handleSelectionChange"
-        class="custom-table"
-        highlight-current-row
+          v-loading="loading"
+          :data="deviceList"
+          @selection-change="handleSelectionChange"
+          class="custom-table"
+          highlight-current-row
       >
         <el-table-column type="selection" width="55" align="center" fixed/>
         <el-table-column label="编号" align="center" prop="id" width="70">
@@ -110,158 +110,158 @@
           </template>
         </el-table-column>
         <el-table-column label="设备名称" align="center" prop="deviceName" fixed/>
-      <el-table-column label="IP地址" align="center" prop="ipAddress"/>
-      <el-table-column label="接入类型" align="center" prop="type" width="100">
-        <template #default="scope">
-          <dict-tag :options="qs_live_stream_type" :value="scope.row.type"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="直播流地址" align="center" prop="liveAddress" min-width="180">
-        <template #default="scope">
-          <div v-if="scope.row.liveAddress">
-            <span>{{ scope.row.liveAddress }}</span>
-            <el-button link type="primary" @click="handleCopy(scope.row.liveAddress)">复制</el-button>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="通道号" align="center" width="150">
-        <template #default="scope">
-          <div v-if="scope.row.channel !== '' && scope.row.channel !== null">
-            {{scope.row.channel}}
-          </div>
-          <div v-else>
-            {{scope.row.gbChannelId}}
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="截图" align="center" prop="snap" width="150">
-        <template #default="scope">
-          <image-preview v-if="scope.row.snap" :src="scope.row.snap" :width="100" :height="50"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" align="center" prop="status" width="100">
-        <template #default="scope">
-          <el-switch
-              v-model="scope.row.status"
-              active-value="ENABLE"
-              inactive-value="DEACTIVATE"
-              @change="handleStatusChange(scope.row)"
-          ></el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column label="设备状态" align="center" prop="deviceStatus" width="100">
-        <template #default="scope">
-          <dict-tag :options="qs_device_status" :value="scope.row.deviceStatus"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" width="180"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="350" fixed="right">
-        <template #default="scope">
-          <div class="table-actions">
-            <el-tooltip content="播放" v-if="scope.row.deviceStatus === 'ON'">
-              <el-button
-                type="primary"
-                text
-                bg
-                size="small"
-                icon="VideoPlay"
-                @click="handlePlay(scope.row)"
-                :loading="scope.row.loading"
-              />
-            </el-tooltip>
-            <el-tooltip content="停止" v-if="scope.row.streamStatus === '1' && scope.row.type !== '13'">
-              <el-button
-                type="danger"
-                text
-                bg
-                size="small"
-                icon="SwitchButton"
-                @click="handleStopPlay(scope.row)"
-              />
-            </el-tooltip>
-            <el-tooltip content="接入地址" v-if="scope.row.type === '13'">
-              <el-button
-                type="primary"
-                text
-                bg
-                size="small"
-                icon="Position"
-                @click="handleAccessAddress(scope.row)"
-              />
-            </el-tooltip>
-            <el-tooltip content="云端录像">
-              <el-button
-                type="primary"
-                text
-                bg
-                size="small"
-                icon="VideoCamera"
-                @click="handleCloudRecord(scope.row)"
-              />
-            </el-tooltip>
-            <el-tooltip content="设备录像" v-if="!['1', '2', '3', '4', '6', '13'].includes(scope.row.type)">
-              <el-button
-                type="primary"
-                text
-                bg
-                size="small"
-                icon="Monitor"
-                @click="handleDeviceRecord(scope.row)"
-              />
-            </el-tooltip>
-            
-            <!-- 刷新设备状态和通道（GB28181） -->
-            <el-tooltip content="刷新" v-if="scope.row.type === '12'">
-              <el-button
-                type="success"
-                text
-                bg
-                size="small"
-                icon="Refresh"
-                :loading="scope.row.refreshing"
-                @click="handleRefreshDevice(scope.row)"
-              />
-            </el-tooltip>
-            
-            <!-- 更多操作下拉菜单 -->
-            <el-dropdown @command="(command) => handleMoreAction(command, scope.row)" trigger="click" style="margin-left: 12px;">
-              <el-button
-                type="primary"
-                text
-                bg
-                size="small"
-                icon="More"
-              >
-                更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
-              </el-button>
-              <template #dropdown>
-                <el-dropdown-menu class="device-dropdown-menu">
-                  <el-dropdown-item command="edit" icon="Edit">编辑</el-dropdown-item>
-                  <el-dropdown-item command="viewSnapshots" icon="Picture">查看抓图</el-dropdown-item>
-                  <el-dropdown-item command="delete" icon="Delete" class="is-danger">删除</el-dropdown-item>
-                  <!-- 目录订阅/取消订阅（GB28181） -->
-                  <el-dropdown-item v-if="scope.row.type === '12' && scope.row.subscribeCatalogStatus !== 1" :disabled="scope.row.deviceStatus !== 'ON'" command="subscribeCatalog" icon="Connection">目录订阅</el-dropdown-item>
-                  <el-dropdown-item v-if="scope.row.type === '12' && scope.row.subscribeCatalogStatus === 1" :disabled="scope.row.deviceStatus !== 'ON'" command="unsubscribeCatalog" icon="SwitchButton">取消目录订阅</el-dropdown-item>
-                  <!-- 设备校时（海康/大华/海康ISUP/ONVIF） -->
-                  <el-dropdown-item v-if="scope.row.type === '5' || scope.row.type === '7' || scope.row.type === '8' || scope.row.type === '9'" :disabled="scope.row.deviceStatus !== 'ON'" command="timeSync" icon="Clock" class="time-sync-item">校时</el-dropdown-item>
-                  <!-- 设备信息（大华/海康/海康ISUP/GB28181/ONVIF） -->
-                  <el-dropdown-item v-if="scope.row.type === '5' || scope.row.type === '7' || scope.row.type === '8' || scope.row.type === '9' || scope.row.type === '12' || scope.row.type === '14'" :disabled="scope.row.deviceStatus !== 'ON'" command="deviceInfo" icon="InfoFilled" class="time-sync-item">设备信息</el-dropdown-item>
-                  <!-- 设备抓图（海康/海康ISUP/大华/ONVIF） -->
-                  <el-dropdown-item v-if="scope.row.type === '5' || scope.row.type === '7' || scope.row.type === '8' || scope.row.type === '9'" :disabled="scope.row.deviceStatus !== 'ON'" command="capture" icon="Camera">抓图</el-dropdown-item>
-                  <!-- 设备重启（海康/大华/海康ISUP/GB28181/JT1078/ONVIF） -->
-                  <el-dropdown-item v-if="scope.row.type === '5' || scope.row.type === '7' || scope.row.type === '8' || scope.row.type === '9' || scope.row.type === '12' || scope.row.type === '14'" :disabled="scope.row.deviceStatus !== 'ON'" command="reboot" icon="Refresh" class="is-danger">重启</el-dropdown-item>
-                  <!-- GB28181录像控制 -->
-                  <el-dropdown-item v-if="scope.row.type === '12'" :disabled="scope.row.deviceStatus !== 'ON'" command="recordControl" icon="VideoCamera">录像控制</el-dropdown-item>
-                  <!-- 设备配置查询 -->
-                  <el-dropdown-item v-if="scope.row.type === '12'" :disabled="scope.row.deviceStatus !== 'ON'" command="deviceConfig" icon="Setting">设备配置</el-dropdown-item>
-                  <!-- 录像下载 -->
-                  <el-dropdown-item v-if="scope.row.type === '7' || scope.row.type === '8' || scope.row.type === '9'" :disabled="scope.row.deviceStatus !== 'ON'" command="downloadRecord" icon="Download">录像下载</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </div>
-        </template>
-      </el-table-column>
+        <el-table-column label="IP地址" align="center" prop="ipAddress"/>
+        <el-table-column label="接入类型" align="center" prop="type" width="100">
+          <template #default="scope">
+            <dict-tag :options="qs_live_stream_type" :value="scope.row.type"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="直播流地址" align="center" prop="liveAddress" min-width="180">
+          <template #default="scope">
+            <div v-if="scope.row.liveAddress">
+              <span>{{ scope.row.liveAddress }}</span>
+              <el-button link type="primary" @click="handleCopy(scope.row.liveAddress)">复制</el-button>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="通道号" align="center" width="150">
+          <template #default="scope">
+            <div v-if="scope.row.channel !== '' && scope.row.channel !== null">
+              {{scope.row.channel}}
+            </div>
+            <div v-else>
+              {{scope.row.gbChannelId}}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="截图" align="center" prop="snap" width="150">
+          <template #default="scope">
+            <image-preview v-if="scope.row.snap" :src="scope.row.snap" :width="100" :height="50"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" align="center" prop="status" width="100">
+          <template #default="scope">
+            <el-switch
+                v-model="scope.row.status"
+                active-value="ENABLE"
+                inactive-value="DEACTIVATE"
+                @change="handleStatusChange(scope.row)"
+            ></el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="设备状态" align="center" prop="deviceStatus" width="100">
+          <template #default="scope">
+            <dict-tag :options="qs_device_status" :value="scope.row.deviceStatus"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" align="center" prop="remark" width="180"/>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="350" fixed="right">
+          <template #default="scope">
+            <div class="table-actions">
+              <el-tooltip content="播放" v-if="scope.row.deviceStatus === 'ON'">
+                <el-button
+                    type="primary"
+                    text
+                    bg
+                    size="small"
+                    icon="VideoPlay"
+                    @click="handlePlay(scope.row)"
+                    :loading="scope.row.loading"
+                />
+              </el-tooltip>
+              <el-tooltip content="停止" v-if="scope.row.streamStatus === '1' && scope.row.type !== '13'">
+                <el-button
+                    type="danger"
+                    text
+                    bg
+                    size="small"
+                    icon="SwitchButton"
+                    @click="handleStopPlay(scope.row)"
+                />
+              </el-tooltip>
+              <el-tooltip content="接入地址" v-if="scope.row.type === '13'">
+                <el-button
+                    type="primary"
+                    text
+                    bg
+                    size="small"
+                    icon="Position"
+                    @click="handleAccessAddress(scope.row)"
+                />
+              </el-tooltip>
+              <el-tooltip content="云端录像">
+                <el-button
+                    type="primary"
+                    text
+                    bg
+                    size="small"
+                    icon="VideoCamera"
+                    @click="handleCloudRecord(scope.row)"
+                />
+              </el-tooltip>
+              <el-tooltip content="设备录像" v-if="!['1', '2', '3', '4', '6', '13'].includes(scope.row.type)">
+                <el-button
+                    type="primary"
+                    text
+                    bg
+                    size="small"
+                    icon="Monitor"
+                    @click="handleDeviceRecord(scope.row)"
+                />
+              </el-tooltip>
+
+              <!-- 刷新设备状态和通道（GB28181） -->
+              <el-tooltip content="刷新" v-if="scope.row.type === '12'">
+                <el-button
+                    type="success"
+                    text
+                    bg
+                    size="small"
+                    icon="Refresh"
+                    :loading="scope.row.refreshing"
+                    @click="handleRefreshDevice(scope.row)"
+                />
+              </el-tooltip>
+
+              <!-- 更多操作下拉菜单 -->
+              <el-dropdown @command="(command) => handleMoreAction(command, scope.row)" trigger="click" style="margin-left: 12px;">
+                <el-button
+                    type="primary"
+                    text
+                    bg
+                    size="small"
+                    icon="More"
+                >
+                  更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu class="device-dropdown-menu">
+                    <el-dropdown-item command="edit" icon="Edit">编辑</el-dropdown-item>
+                    <el-dropdown-item command="viewSnapshots" icon="Picture">查看抓图</el-dropdown-item>
+                    <el-dropdown-item command="delete" icon="Delete" class="is-danger">删除</el-dropdown-item>
+                    <!-- 目录订阅/取消订阅（GB28181） -->
+                    <el-dropdown-item v-if="scope.row.type === '12' && scope.row.subscribeCatalogStatus !== 1" :disabled="scope.row.deviceStatus !== 'ON'" command="subscribeCatalog" icon="Connection">目录订阅</el-dropdown-item>
+                    <el-dropdown-item v-if="scope.row.type === '12' && scope.row.subscribeCatalogStatus === 1" :disabled="scope.row.deviceStatus !== 'ON'" command="unsubscribeCatalog" icon="SwitchButton">取消目录订阅</el-dropdown-item>
+                    <!-- 设备校时（海康/大华/海康ISUP/ONVIF） -->
+                    <el-dropdown-item v-if="scope.row.type === '5' || scope.row.type === '7' || scope.row.type === '8' || scope.row.type === '9'" :disabled="scope.row.deviceStatus !== 'ON'" command="timeSync" icon="Clock" class="time-sync-item">校时</el-dropdown-item>
+                    <!-- 设备信息（大华/海康/海康ISUP/GB28181/ONVIF） -->
+                    <el-dropdown-item v-if="scope.row.type === '5' || scope.row.type === '7' || scope.row.type === '8' || scope.row.type === '9' || scope.row.type === '12' || scope.row.type === '14'" :disabled="scope.row.deviceStatus !== 'ON'" command="deviceInfo" icon="InfoFilled" class="time-sync-item">设备信息</el-dropdown-item>
+                    <!-- 设备抓图（海康/海康ISUP/大华/ONVIF） -->
+                    <el-dropdown-item v-if="scope.row.type === '5' || scope.row.type === '7' || scope.row.type === '8' || scope.row.type === '9'" :disabled="scope.row.deviceStatus !== 'ON'" command="capture" icon="Camera">抓图</el-dropdown-item>
+                    <!-- 设备重启（海康/大华/海康ISUP/GB28181/JT1078/ONVIF） -->
+                    <el-dropdown-item v-if="scope.row.type === '5' || scope.row.type === '7' || scope.row.type === '8' || scope.row.type === '9' || scope.row.type === '12' || scope.row.type === '14'" :disabled="scope.row.deviceStatus !== 'ON'" command="reboot" icon="Refresh" class="is-danger">重启</el-dropdown-item>
+                    <!-- GB28181录像控制 -->
+                    <el-dropdown-item v-if="scope.row.type === '12'" :disabled="scope.row.deviceStatus !== 'ON'" command="recordControl" icon="VideoCamera">录像控制</el-dropdown-item>
+                    <!-- 设备配置查询 -->
+                    <el-dropdown-item v-if="scope.row.type === '12'" :disabled="scope.row.deviceStatus !== 'ON'" command="deviceConfig" icon="Setting">设备配置</el-dropdown-item>
+                    <!-- 录像下载 -->
+                    <el-dropdown-item v-if="scope.row.type === '7' || scope.row.type === '8' || scope.row.type === '9'" :disabled="scope.row.deviceStatus !== 'ON'" command="downloadRecord" icon="Download">录像下载</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
 
@@ -269,63 +269,63 @@
     <div v-else class="card-view" v-loading="loading">
       <div v-if="deviceList.length > 0" class="card-grid">
         <div class="device-card" :class="{ 'is-selected': item.checked, 'is-online': item.deviceStatus === 'ON' }" v-for="item in deviceList" :key="item.id">
-            <!-- 媒体区 -->
-            <div class="card-media">
-              <div class="media-inner">
-                <image-preview v-if="item.snap" :src="item.snap" :width="'100%'" :height="'100%'" />
-                <div v-else class="snapshot-placeholder">
-                  <el-icon><Picture /></el-icon>
-                  <span>暂无截图</span>
-                </div>
-              </div>
-
-              <!-- 左上角复选框 -->
-              <el-checkbox v-model="item.checked" @change="handleCardSelection" class="card-checkbox" />
-
-              <!-- 底部玻璃信息条 -->
-              <div class="media-glass-bar">
-                <h3 class="bar-device-name" :title="item.deviceName">{{ item.deviceName }}</h3>
-                <div class="status-indicator" :class="item.deviceStatus === 'ON' ? 'online' : 'offline'">
-                  <span class="status-dot" :class="item.deviceStatus === 'ON' ? 'pulse' : 'breathe'"></span>
-                  <span class="status-text">{{ item.deviceStatus === 'ON' ? '在线' : '离线' }}</span>
-                </div>
+          <!-- 媒体区 -->
+          <div class="card-media">
+            <div class="media-inner">
+              <image-preview v-if="item.snap" :src="item.snap" :width="'100%'" :height="'100%'" />
+              <div v-else class="snapshot-placeholder">
+                <el-icon><Picture /></el-icon>
+                <span>暂无截图</span>
               </div>
             </div>
 
-            <!-- 信息区 -->
-            <div class="card-info">
-              <div class="info-tags">
+            <!-- 左上角复选框 -->
+            <el-checkbox v-model="item.checked" @change="handleCardSelection" class="card-checkbox" />
+
+            <!-- 底部玻璃信息条 -->
+            <div class="media-glass-bar">
+              <h3 class="bar-device-name" :title="item.deviceName">{{ item.deviceName }}</h3>
+              <div class="status-indicator" :class="item.deviceStatus === 'ON' ? 'online' : 'offline'">
+                <span class="status-dot" :class="item.deviceStatus === 'ON' ? 'pulse' : 'breathe'"></span>
+                <span class="status-text">{{ item.deviceStatus === 'ON' ? '在线' : '离线' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 信息区 -->
+          <div class="card-info">
+            <div class="info-tags">
                 <span class="info-tag">
                   <span class="tag-label">ID</span>
                   <span class="tag-val">{{ item.id }}</span>
                 </span>
-                <span class="info-tag">
+              <span class="info-tag">
                   <span class="tag-label">IP</span>
                   <span class="tag-val">{{ item.ipAddress || '-' }}</span>
                 </span>
-                <dict-tag :options="qs_live_stream_type" :value="item.type" size="small" class="type-tag" />
-              </div>
+              <dict-tag :options="qs_live_stream_type" :value="item.type" size="small" class="type-tag" />
+            </div>
 
-              <div class="info-channel">
-                <span class="channel-label">通道</span>
-                <span class="channel-val">{{ item.channel !== '' && item.channel !== null ? item.channel : item.gbChannelId || '-' }}</span>
-              </div>
+            <div class="info-channel">
+              <span class="channel-label">通道</span>
+              <span class="channel-val">{{ item.channel !== '' && item.channel !== null ? item.channel : item.gbChannelId || '-' }}</span>
+            </div>
 
-              <div class="info-footer">
-                <el-switch
+            <div class="info-footer">
+              <el-switch
                   v-model="item.status"
                   active-value="ENABLE"
                   inactive-value="DEACTIVATE"
                   @change="handleStatusChange(item)"
                   size="small"
-                />
-                <span class="remark" v-if="item.remark" :title="item.remark">{{ item.remark }}</span>
-              </div>
+              />
+              <span class="remark" v-if="item.remark" :title="item.remark">{{ item.remark }}</span>
             </div>
+          </div>
 
-            <!-- 操作栏 -->
-            <div class="card-toolbar">
-              <el-button
+          <!-- 操作栏 -->
+          <div class="card-toolbar">
+            <el-button
                 type="primary"
                 size="small"
                 icon="VideoPlay"
@@ -333,54 +333,54 @@
                 :loading="item.loading"
                 :disabled="item.deviceStatus !== 'ON'"
                 class="btn-play"
-              >
-                播放
-              </el-button>
-              <div class="toolbar-actions">
-                <el-tooltip content="停止" v-if="item.streamStatus === '1' && item.type !== '13'">
-                  <el-button
+            >
+              播放
+            </el-button>
+            <div class="toolbar-actions">
+              <el-tooltip content="停止" v-if="item.streamStatus === '1' && item.type !== '13'">
+                <el-button
                     type="danger"
                     text
                     bg
                     size="small"
                     icon="SwitchButton"
                     @click="handleStopPlay(item)"
-                  />
-                </el-tooltip>
-                <el-tooltip content="接入地址" v-if="item.type === '13'">
-                  <el-button
+                />
+              </el-tooltip>
+              <el-tooltip content="接入地址" v-if="item.type === '13'">
+                <el-button
                     type="success"
                     text
                     bg
                     size="small"
                     icon="Position"
                     @click="handleAccessAddress(item)"
-                  />
-                </el-tooltip>
-                <el-tooltip content="云端录像">
-                  <el-button
+                />
+              </el-tooltip>
+              <el-tooltip content="云端录像">
+                <el-button
                     type="primary"
                     text
                     bg
                     size="small"
                     icon="VideoCamera"
                     @click="handleCloudRecord(item)"
-                  />
-                </el-tooltip>
-                <el-tooltip content="设备录像" v-if="!['1', '2', '3', '4', '6', '13'].includes(item.type)">
-                  <el-button
+                />
+              </el-tooltip>
+              <el-tooltip content="设备录像" v-if="!['1', '2', '3', '4', '6', '13'].includes(item.type)">
+                <el-button
                     type="primary"
                     text
                     bg
                     size="small"
                     icon="Monitor"
                     @click="handleDeviceRecord(item)"
-                  />
-                </el-tooltip>
+                />
+              </el-tooltip>
 
-                <!-- 刷新设备状态和通道（GB28181） -->
-                <el-tooltip content="刷新" v-if="item.type === '12'">
-                  <el-button
+              <!-- 刷新设备状态和通道（GB28181） -->
+              <el-tooltip content="刷新" v-if="item.type === '12'">
+                <el-button
                     type="success"
                     text
                     bg
@@ -388,46 +388,46 @@
                     icon="Refresh"
                     :loading="item.refreshing"
                     @click="handleRefreshDevice(item)"
-                  />
-                </el-tooltip>
+                />
+              </el-tooltip>
 
-                <!-- 更多操作下拉菜单 -->
-                <el-dropdown @command="(command) => handleMoreAction(command, item)" trigger="click" style="margin-left: 12px;">
-                  <el-button
+              <!-- 更多操作下拉菜单 -->
+              <el-dropdown @command="(command) => handleMoreAction(command, item)" trigger="click" style="margin-left: 12px;">
+                <el-button
                     type="primary"
                     text
                     bg
                     size="small"
                     icon="More"
-                  />
-                  <template #dropdown>
-                    <el-dropdown-menu class="device-dropdown-menu">
-                      <el-dropdown-item command="edit" icon="Edit">编辑</el-dropdown-item>
-                      <el-dropdown-item command="viewSnapshots" icon="Picture">查看抓图</el-dropdown-item>
-                      <el-dropdown-item command="delete" icon="Delete" class="is-danger">删除</el-dropdown-item>
-                      <!-- 目录订阅/取消订阅（GB28181） -->
-                      <el-dropdown-item v-if="item.type === '12' && item.subscribeCatalogStatus !== 1" :disabled="item.deviceStatus !== 'ON'" command="subscribeCatalog" icon="Connection">目录订阅</el-dropdown-item>
-                      <el-dropdown-item v-if="item.type === '12' && item.subscribeCatalogStatus === 1" :disabled="item.deviceStatus !== 'ON'" command="unsubscribeCatalog" icon="SwitchButton">取消目录订阅</el-dropdown-item>
-                      <!-- 设备校时（海康/大华/海康ISUP/ONVIF） -->
-                      <el-dropdown-item v-if="item.type === '5' || item.type === '7' || item.type === '8' || item.type === '9'" :disabled="item.deviceStatus !== 'ON'" command="timeSync" icon="Clock" class="time-sync-item">校时</el-dropdown-item>
-                      <!-- 设备信息（大华/海康/海康ISUP/GB28181/ONVIF） -->
-                      <el-dropdown-item v-if="item.type === '5' || item.type === '7' || item.type === '8' || item.type === '9' || item.type === '12' || item.type === '14'" :disabled="item.deviceStatus !== 'ON'" command="deviceInfo" icon="InfoFilled" class="time-sync-item">设备信息</el-dropdown-item>
-                      <!-- 设备抓图（海康/海康ISUP/大华/ONVIF） -->
-                      <el-dropdown-item v-if="item.type === '5' || item.type === '7' || item.type === '8' || item.type === '9'" :disabled="item.deviceStatus !== 'ON'" command="capture" icon="Camera">抓图</el-dropdown-item>
-                      <!-- 设备重启（海康/大华/海康ISUP/GB28181/JT1078/ONVIF） -->
-                  <el-dropdown-item v-if="item.type === '5' || item.type === '7' || item.type === '8' || item.type === '9' || item.type === '12' || item.type === '14'" :disabled="item.deviceStatus !== 'ON'" command="reboot" icon="Refresh" class="is-danger">重启</el-dropdown-item>
-                      <!-- GB28181录像控制 -->
-                  <el-dropdown-item v-if="item.type === '12'" :disabled="item.deviceStatus !== 'ON'" command="recordControl" icon="VideoCamera">录像控制</el-dropdown-item>
-                  <!-- 设备配置查询 -->
-                  <el-dropdown-item v-if="item.type === '12'" :disabled="item.deviceStatus !== 'ON'" command="deviceConfig" icon="Setting">设备配置</el-dropdown-item>
-                  <!-- 录像下载 -->
-                      <el-dropdown-item v-if="item.type === '7' || item.type === '8' || item.type === '9'" :disabled="item.deviceStatus !== 'ON'" command="downloadRecord" icon="Download">录像下载</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
-              </div>
+                />
+                <template #dropdown>
+                  <el-dropdown-menu class="device-dropdown-menu">
+                    <el-dropdown-item command="edit" icon="Edit">编辑</el-dropdown-item>
+                    <el-dropdown-item command="viewSnapshots" icon="Picture">查看抓图</el-dropdown-item>
+                    <el-dropdown-item command="delete" icon="Delete" class="is-danger">删除</el-dropdown-item>
+                    <!-- 目录订阅/取消订阅（GB28181） -->
+                    <el-dropdown-item v-if="item.type === '12' && item.subscribeCatalogStatus !== 1" :disabled="item.deviceStatus !== 'ON'" command="subscribeCatalog" icon="Connection">目录订阅</el-dropdown-item>
+                    <el-dropdown-item v-if="item.type === '12' && item.subscribeCatalogStatus === 1" :disabled="item.deviceStatus !== 'ON'" command="unsubscribeCatalog" icon="SwitchButton">取消目录订阅</el-dropdown-item>
+                    <!-- 设备校时（海康/大华/海康ISUP/ONVIF） -->
+                    <el-dropdown-item v-if="item.type === '5' || item.type === '7' || item.type === '8' || item.type === '9'" :disabled="item.deviceStatus !== 'ON'" command="timeSync" icon="Clock" class="time-sync-item">校时</el-dropdown-item>
+                    <!-- 设备信息（大华/海康/海康ISUP/GB28181/ONVIF） -->
+                    <el-dropdown-item v-if="item.type === '5' || item.type === '7' || item.type === '8' || item.type === '9' || item.type === '12' || item.type === '14'" :disabled="item.deviceStatus !== 'ON'" command="deviceInfo" icon="InfoFilled" class="time-sync-item">设备信息</el-dropdown-item>
+                    <!-- 设备抓图（海康/海康ISUP/大华/ONVIF） -->
+                    <el-dropdown-item v-if="item.type === '5' || item.type === '7' || item.type === '8' || item.type === '9'" :disabled="item.deviceStatus !== 'ON'" command="capture" icon="Camera">抓图</el-dropdown-item>
+                    <!-- 设备重启（海康/大华/海康ISUP/GB28181/JT1078/ONVIF） -->
+                    <el-dropdown-item v-if="item.type === '5' || item.type === '7' || item.type === '8' || item.type === '9' || item.type === '12' || item.type === '14'" :disabled="item.deviceStatus !== 'ON'" command="reboot" icon="Refresh" class="is-danger">重启</el-dropdown-item>
+                    <!-- GB28181录像控制 -->
+                    <el-dropdown-item v-if="item.type === '12'" :disabled="item.deviceStatus !== 'ON'" command="recordControl" icon="VideoCamera">录像控制</el-dropdown-item>
+                    <!-- 设备配置查询 -->
+                    <el-dropdown-item v-if="item.type === '12'" :disabled="item.deviceStatus !== 'ON'" command="deviceConfig" icon="Setting">设备配置</el-dropdown-item>
+                    <!-- 录像下载 -->
+                    <el-dropdown-item v-if="item.type === '7' || item.type === '8' || item.type === '9'" :disabled="item.deviceStatus !== 'ON'" command="downloadRecord" icon="Download">录像下载</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </div>
           </div>
+        </div>
       </div>
       <el-empty v-else description="暂无设备数据" />
     </div>
@@ -450,10 +450,10 @@
               <el-form-item label="接入类型" prop="type">
                 <el-select v-model="form.type" placeholder="请选择接入类型" @change="liveStreamChange" filterable style="width: 100%;">
                   <el-option
-                    v-for="dict in qs_live_stream_type"
-                    :key="dict.value"
-                    :label="dict.label"
-                    :value="dict.value"
+                      v-for="dict in qs_live_stream_type"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
                   ></el-option>
                 </el-select>
               </el-form-item>
@@ -468,12 +468,12 @@
           <!-- 动态连接配置 -->
           <!-- 通用流地址 -->
           <el-form-item label="流地址"
-                      prop="liveAddress"
-                      v-if="form.type === '1' || form.type === '2' || form.type === '3' || form.type === '4'"
+                        prop="liveAddress"
+                        v-if="form.type === '1' || form.type === '2' || form.type === '3' || form.type === '4'"
           >
             <el-input v-model="form.liveAddress" placeholder="请输入流地址" :maxlength="1024" show-word-limit/>
           </el-form-item>
-          
+
           <!-- 视频文件 -->
           <el-form-item label="视频文件" prop="liveAddress"
                         v-if="form.type === '6'"
@@ -996,7 +996,7 @@
                     </el-button>
                   </div>
                 </el-tab-pane>
-                
+
                 <!-- 灯光控制 -->
                 <el-tab-pane label="灯光">
                   <div class="control-panel">
@@ -1008,7 +1008,7 @@
                     </el-button>
                   </div>
                 </el-tab-pane>
-                
+
                 <!-- 雨刷控制 -->
                 <el-tab-pane label="雨刷">
                   <div class="control-panel">
@@ -1020,7 +1020,7 @@
                     </el-button>
                   </div>
                 </el-tab-pane>
-                
+
                 <!-- 看守位控制 - 仅 GB28181 -->
                 <el-tab-pane v-if="isGb28181Device" label="看守位">
                   <div class="control-panel">
@@ -1045,7 +1045,7 @@
                     </div>
                   </div>
                 </el-tab-pane>
-                
+
                 <!-- 巡航轨迹管理 - 仅 GB28181 -->
                 <el-tab-pane v-if="isGb28181Device" label="巡航轨迹">
                   <div class="control-panel">
@@ -1077,7 +1077,7 @@
                     </div>
                   </div>
                 </el-tab-pane>
-                
+
                 <!-- PTZ精准控制 - 仅 GB28181 -->
                 <el-tab-pane v-if="isGb28181Device" label="精准控制">
                   <div class="control-panel">
@@ -1136,9 +1136,9 @@
             <div v-loading="deviceSnapshotLoading">
               <div v-if="deviceSnapshotList.length > 0" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;">
                 <div
-                  v-for="item in deviceSnapshotList"
-                  :key="item.id"
-                  style="position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); aspect-ratio: 1/1;"
+                    v-for="item in deviceSnapshotList"
+                    :key="item.id"
+                    style="position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); aspect-ratio: 1/1;"
                 >
                   <!-- 图片 -->
                   <image-preview v-if="item.fileUrl" :src="item.fileUrl" :width="'100%'" :height="'100%'"/>
@@ -1146,22 +1146,22 @@
                   <div class="snapshot-actions" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px;">
                     <el-tooltip content="下载">
                       <el-button
-                        type="success"
-                        text
-                        bg
-                        size="small"
-                        :icon="Download"
-                        @click.stop="handleDownloadDeviceSnapshot(item)"
+                          type="success"
+                          text
+                          bg
+                          size="small"
+                          :icon="Download"
+                          @click.stop="handleDownloadDeviceSnapshot(item)"
                       />
                     </el-tooltip>
                     <el-tooltip content="删除">
                       <el-button
-                        type="danger"
-                        text
-                        bg
-                        size="small"
-                        :icon="Delete"
-                        @click.stop="handleDeleteDeviceSnapshot(item)"
+                          type="danger"
+                          text
+                          bg
+                          size="small"
+                          :icon="Delete"
+                          @click.stop="handleDeleteDeviceSnapshot(item)"
                       />
                     </el-tooltip>
                   </div>
@@ -1172,17 +1172,17 @@
 
             <!-- 分页 -->
             <pagination
-              v-show="deviceSnapshotTotal > 0"
-              :total="deviceSnapshotTotal"
-              v-model:page="deviceSnapshotQuery.pageNum"
-              v-model:limit="deviceSnapshotQuery.pageSize"
-              @pagination="getDeviceSnapshotList"
+                v-show="deviceSnapshotTotal > 0"
+                :total="deviceSnapshotTotal"
+                v-model:page="deviceSnapshotQuery.pageNum"
+                v-model:limit="deviceSnapshotQuery.pageSize"
+                @pagination="getDeviceSnapshotList"
             />
           </div>
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
-    
+
     <el-dialog :title="`接入地址-${deviceRow.deviceName}`" v-model="accessAddressOpen" width="600px" append-to-body
                draggable
                class="glass-dialog access-dialog">
@@ -1232,12 +1232,12 @@
         </el-form-item>
         <el-form-item label="同步时间">
           <el-date-picker
-            v-model="timeSyncForm.syncTime"
-            type="datetime"
-            placeholder="选择同步时间"
-            format="YYYY-MM-DD HH:mm:ss"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            style="width: 100%;"
+              v-model="timeSyncForm.syncTime"
+              type="datetime"
+              placeholder="选择同步时间"
+              format="YYYY-MM-DD HH:mm:ss"
+              value-format="YYYY-MM-DD HH:mm:ss"
+              style="width: 100%;"
           />
           <el-button type="primary" @click="handleSetCurrentTime" style="margin-left: 10px;">设置为当前时间</el-button>
         </el-form-item>
@@ -1367,16 +1367,16 @@
               <span>系统参数配置</span>
             </div>
             <el-form :model="systemParam" label-width="120px" class="data-form">
-            <el-form-item label="视频制式">
-              <el-select v-model="systemParam.videoStandard" style="width: 100%;">
-                <el-option label="PAL" :value="0" />
-                <el-option label="NTSC" :value="1" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="国家/地区">
-              <el-input v-model="systemParam.country" />
-            </el-form-item>
-          </el-form>
+              <el-form-item label="视频制式">
+                <el-select v-model="systemParam.videoStandard" style="width: 100%;">
+                  <el-option label="PAL" :value="0" />
+                  <el-option label="NTSC" :value="1" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="国家/地区">
+                <el-input v-model="systemParam.country" />
+              </el-form-item>
+            </el-form>
           </div>
           <div class="dialog-footer" style="margin-top: 20px;">
             <el-button @click="deviceInfoDialogVisible = false">关闭</el-button>
@@ -1392,80 +1392,80 @@
               <span>视频参数配置</span>
             </div>
             <el-form :model="videoParam" label-width="120px" class="data-form">
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form-item label="通道ID">
-                  <el-input-number v-model="videoParam.channelId" :min="0" style="width: 100%;" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="码流类型">
-                  <el-select v-model="videoParam.streamType" style="width: 100%;">
-                    <el-option label="主码流" :value="0" />
-                    <el-option label="辅码流1" :value="1" />
-                    <el-option label="辅码流2" :value="2" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-form-item label="视频使能">
-              <el-select v-model="videoParam.videoEnable" style="width: 100%;">
-                <el-option label="关闭" :value="0" />
-                <el-option label="开启" :value="1" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="压缩格式">
-              <el-select v-model="videoParam.compression" style="width: 100%;">
-                <el-option label="MPEG4" :value="0" />
-                <el-option label="MS-MPEG4" :value="1" />
-                <el-option label="MPEG2" :value="2" />
-                <el-option label="MPEG1" :value="3" />
-                <el-option label="H.263" :value="4" />
-                <el-option label="MJPG" :value="5" />
-                <el-option label="FCC-MPEG4" :value="6" />
-                <el-option label="H.264" :value="7" />
-                <el-option label="H.265" :value="8" />
-                <el-option label="SVAC" :value="9" />
-              </el-select>
-            </el-form-item>
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form-item label="宽度">
-                  <el-input-number v-model="videoParam.width" style="width: 100%;" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="高度">
-                  <el-input-number v-model="videoParam.height" style="width: 100%;" />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-form-item label="码率控制">
-              <el-select v-model="videoParam.bitRateControl" style="width: 100%;">
-                <el-option label="固定码流(CBR)" :value="0" />
-                <el-option label="可变码流(VBR)" :value="1" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="码率(kbps)">
-              <el-input-number v-model="videoParam.bitRate" style="width: 100%;" />
-            </el-form-item>
-            <el-form-item label="帧率">
-              <el-input-number v-model="videoParam.frameRate" :step="0.1" style="width: 100%;" />
-            </el-form-item>
-            <el-form-item label="I帧间隔">
-              <el-input-number v-model="videoParam.iframeInterval" style="width: 100%;" />
-            </el-form-item>
-            <el-form-item label="图像质量">
-              <el-select v-model="videoParam.imageQuality" style="width: 100%;">
-                <el-option label="图像质量10%" :value="1" />
-                <el-option label="图像质量30%" :value="2" />
-                <el-option label="图像质量50%" :value="3" />
-                <el-option label="图像质量60%" :value="4" />
-                <el-option label="图像质量80%" :value="5" />
-                <el-option label="图像质量100%" :value="6" />
-              </el-select>
-            </el-form-item>
-          </el-form>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <el-form-item label="通道ID">
+                    <el-input-number v-model="videoParam.channelId" :min="0" style="width: 100%;" />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="码流类型">
+                    <el-select v-model="videoParam.streamType" style="width: 100%;">
+                      <el-option label="主码流" :value="0" />
+                      <el-option label="辅码流1" :value="1" />
+                      <el-option label="辅码流2" :value="2" />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-form-item label="视频使能">
+                <el-select v-model="videoParam.videoEnable" style="width: 100%;">
+                  <el-option label="关闭" :value="0" />
+                  <el-option label="开启" :value="1" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="压缩格式">
+                <el-select v-model="videoParam.compression" style="width: 100%;">
+                  <el-option label="MPEG4" :value="0" />
+                  <el-option label="MS-MPEG4" :value="1" />
+                  <el-option label="MPEG2" :value="2" />
+                  <el-option label="MPEG1" :value="3" />
+                  <el-option label="H.263" :value="4" />
+                  <el-option label="MJPG" :value="5" />
+                  <el-option label="FCC-MPEG4" :value="6" />
+                  <el-option label="H.264" :value="7" />
+                  <el-option label="H.265" :value="8" />
+                  <el-option label="SVAC" :value="9" />
+                </el-select>
+              </el-form-item>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <el-form-item label="宽度">
+                    <el-input-number v-model="videoParam.width" style="width: 100%;" />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="高度">
+                    <el-input-number v-model="videoParam.height" style="width: 100%;" />
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-form-item label="码率控制">
+                <el-select v-model="videoParam.bitRateControl" style="width: 100%;">
+                  <el-option label="固定码流(CBR)" :value="0" />
+                  <el-option label="可变码流(VBR)" :value="1" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="码率(kbps)">
+                <el-input-number v-model="videoParam.bitRate" style="width: 100%;" />
+              </el-form-item>
+              <el-form-item label="帧率">
+                <el-input-number v-model="videoParam.frameRate" :step="0.1" style="width: 100%;" />
+              </el-form-item>
+              <el-form-item label="I帧间隔">
+                <el-input-number v-model="videoParam.iframeInterval" style="width: 100%;" />
+              </el-form-item>
+              <el-form-item label="图像质量">
+                <el-select v-model="videoParam.imageQuality" style="width: 100%;">
+                  <el-option label="图像质量10%" :value="1" />
+                  <el-option label="图像质量30%" :value="2" />
+                  <el-option label="图像质量50%" :value="3" />
+                  <el-option label="图像质量60%" :value="4" />
+                  <el-option label="图像质量80%" :value="5" />
+                  <el-option label="图像质量100%" :value="6" />
+                </el-select>
+              </el-form-item>
+            </el-form>
           </div>
           <div class="dialog-footer" style="margin-top: 20px;">
             <el-button @click="deviceInfoDialogVisible = false">关闭</el-button>
@@ -1482,37 +1482,37 @@
               <span>设备视频参数</span>
             </div>
             <el-form :model="deviceVideoParam" label-width="120px" class="data-form">
-            <el-form-item label="通道ID">
-              <el-input-number v-model="deviceVideoParam.channelId" :min="0" style="width: 100%;" />
-            </el-form-item>
-            <el-form-item label="亮度">
-              <el-input-number v-model="deviceVideoParam.brightness" :min="0" :max="100" style="width: 100%;" />
-            </el-form-item>
-            <el-form-item label="对比度">
-              <el-input-number v-model="deviceVideoParam.contrast" :min="0" :max="100" style="width: 100%;" />
-            </el-form-item>
-            <el-form-item label="饱和度">
-              <el-input-number v-model="deviceVideoParam.saturation" :min="0" :max="100" style="width: 100%;" />
-            </el-form-item>
-            <el-form-item label="色度">
-              <el-input-number v-model="deviceVideoParam.chroma" :min="0" :max="100" style="width: 100%;" />
-            </el-form-item>
-            <el-form-item label="锐度">
-              <el-input-number v-model="deviceVideoParam.sharpness" :min="0" :max="100" style="width: 100%;" />
-            </el-form-item>
-            <el-form-item label="色调">
-              <el-input-number v-model="deviceVideoParam.hue" :min="0" :max="100" style="width: 100%;" />
-            </el-form-item>
-            <el-form-item label="增益">
-              <el-input-number v-model="deviceVideoParam.gain" style="width: 100%;" />
-            </el-form-item>
-            <el-form-item label="黑白模式">
-              <el-select v-model="deviceVideoParam.blackWhiteMode" style="width: 100%;">
-                <el-option label="关闭" :value="0" />
-                <el-option label="开启" :value="1" />
-              </el-select>
-            </el-form-item>
-          </el-form>
+              <el-form-item label="通道ID">
+                <el-input-number v-model="deviceVideoParam.channelId" :min="0" style="width: 100%;" />
+              </el-form-item>
+              <el-form-item label="亮度">
+                <el-input-number v-model="deviceVideoParam.brightness" :min="0" :max="100" style="width: 100%;" />
+              </el-form-item>
+              <el-form-item label="对比度">
+                <el-input-number v-model="deviceVideoParam.contrast" :min="0" :max="100" style="width: 100%;" />
+              </el-form-item>
+              <el-form-item label="饱和度">
+                <el-input-number v-model="deviceVideoParam.saturation" :min="0" :max="100" style="width: 100%;" />
+              </el-form-item>
+              <el-form-item label="色度">
+                <el-input-number v-model="deviceVideoParam.chroma" :min="0" :max="100" style="width: 100%;" />
+              </el-form-item>
+              <el-form-item label="锐度">
+                <el-input-number v-model="deviceVideoParam.sharpness" :min="0" :max="100" style="width: 100%;" />
+              </el-form-item>
+              <el-form-item label="色调">
+                <el-input-number v-model="deviceVideoParam.hue" :min="0" :max="100" style="width: 100%;" />
+              </el-form-item>
+              <el-form-item label="增益">
+                <el-input-number v-model="deviceVideoParam.gain" style="width: 100%;" />
+              </el-form-item>
+              <el-form-item label="黑白模式">
+                <el-select v-model="deviceVideoParam.blackWhiteMode" style="width: 100%;">
+                  <el-option label="关闭" :value="0" />
+                  <el-option label="开启" :value="1" />
+                </el-select>
+              </el-form-item>
+            </el-form>
           </div>
           <div class="dialog-footer" style="margin-top: 20px;">
             <el-button @click="deviceInfoDialogVisible = false">关闭</el-button>
@@ -1631,7 +1631,7 @@
                 </el-descriptions-item>
                 <el-descriptions-item label="硬盘数量" v-if="sdCardInfo.diskCount !== undefined">{{ sdCardInfo.diskCount }}</el-descriptions-item>
               </el-descriptions>
-              
+
               <div v-if="sdCardInfo.diskList && sdCardInfo.diskList.length > 0">
                 <div class="panel-section-title">硬盘详细信息:</div>
                 <el-table :data="sdCardInfo.diskList" border size="small" style="width: 100%">
@@ -1961,19 +1961,19 @@
               <el-form-item label=" ">
                 <div class="query-actions">
                   <el-button
-                    type="primary"
-                    icon="Search"
-                    @click="handleQueryDeviceConfig"
-                    :loading="deviceConfigLoading"
+                      type="primary"
+                      icon="Search"
+                      @click="handleQueryDeviceConfig"
+                      :loading="deviceConfigLoading"
                   >
                     查询配置
                   </el-button>
                   <el-button
-                    link
-                    type="info"
-                    icon="RefreshRight"
-                    :disabled="!selectedConfigTypes.length"
-                    @click="selectedConfigTypes = []"
+                      link
+                      type="info"
+                      icon="RefreshRight"
+                      :disabled="!selectedConfigTypes.length"
+                      @click="selectedConfigTypes = []"
                   >
                     清空
                   </el-button>
@@ -2034,22 +2034,22 @@
         </el-form-item>
         <el-form-item label="开始时间">
           <el-date-picker
-            v-model="downloadRecordForm.startTime"
-            type="datetime"
-            placeholder="选择开始时间"
-            format="YYYY-MM-DD HH:mm:ss"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            style="width: 100%;"
+              v-model="downloadRecordForm.startTime"
+              type="datetime"
+              placeholder="选择开始时间"
+              format="YYYY-MM-DD HH:mm:ss"
+              value-format="YYYY-MM-DD HH:mm:ss"
+              style="width: 100%;"
           />
         </el-form-item>
         <el-form-item label="结束时间">
           <el-date-picker
-            v-model="downloadRecordForm.endTime"
-            type="datetime"
-            placeholder="选择结束时间"
-            format="YYYY-MM-DD HH:mm:ss"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            style="width: 100%;"
+              v-model="downloadRecordForm.endTime"
+              type="datetime"
+              placeholder="选择结束时间"
+              format="YYYY-MM-DD HH:mm:ss"
+              value-format="YYYY-MM-DD HH:mm:ss"
+              style="width: 100%;"
           />
         </el-form-item>
         <el-form-item label="码流类型">
@@ -2083,11 +2083,11 @@
 
       <!-- 错误提示 -->
       <el-alert
-        v-if="downloadResult && !downloadResult.success"
-        type="error"
-        :title="downloadResult.errorMessage || '下载失败'"
-        style="margin-top: 15px;"
-        show-icon
+          v-if="downloadResult && !downloadResult.success"
+          type="error"
+          :title="downloadResult.errorMessage || '下载失败'"
+          style="margin-top: 15px;"
+          show-icon
       />
 
       <template #footer>
@@ -2615,7 +2615,7 @@
             <el-button type="primary" @click="handleRefreshHaikangIsupDeviceInfo" :loading="haikangIsupDeviceInfoLoading" icon="Refresh">刷新</el-button>
           </div>
         </el-tab-pane>
-        
+
         <!-- 存储信息标签页 -->
         <el-tab-pane label="存储信息" name="storageInfo" @tab-click="handleGetHaikangIsupStorageInfo">
           <div class="tab-content-wrapper" v-loading="haikangIsupDeviceInfoLoading">
@@ -2642,7 +2642,7 @@
             <el-button type="primary" @click="handleGetHaikangIsupStorageInfo" :loading="haikangIsupDeviceInfoLoading" icon="Refresh">刷新</el-button>
           </div>
         </el-tab-pane>
-        
+
         <!-- SD卡信息标签页 -->
         <el-tab-pane label="SD卡信息" name="sdCardInfo" @tab-click="handleGetHaikangIsupSdCardInfo">
           <div class="tab-content-wrapper" v-loading="haikangIsupDeviceInfoLoading">
@@ -2661,7 +2661,7 @@
             <el-button type="primary" @click="handleGetHaikangIsupSdCardInfo" :loading="haikangIsupDeviceInfoLoading" icon="Refresh">刷新</el-button>
           </div>
         </el-tab-pane>
-        
+
         <!-- 码率信息标签页 -->
         <el-tab-pane label="码率信息" name="bitrateInfo" @tab-click="handleGetHaikangIsupBitrateInfo">
           <div class="tab-content-wrapper" v-loading="haikangIsupDeviceInfoLoading">
@@ -2680,7 +2680,7 @@
             <el-button type="primary" @click="handleGetHaikangIsupBitrateInfo" :loading="haikangIsupDeviceInfoLoading" icon="Refresh">刷新</el-button>
           </div>
         </el-tab-pane>
-        
+
         <!-- 网络状态标签页 -->
         <el-tab-pane label="网络状态" name="networkStatus" @tab-click="handleGetHaikangIsupNetworkStatusInfo">
           <div class="tab-content-wrapper" v-loading="haikangIsupDeviceInfoLoading">
@@ -2711,7 +2711,7 @@
             <el-button type="primary" @click="handleGetHaikangIsupNetworkStatusInfo" :loading="haikangIsupDeviceInfoLoading" icon="Refresh">刷新</el-button>
           </div>
         </el-tab-pane>
-        
+
         <!-- 软件版本标签页 -->
         <el-tab-pane label="设备状态" name="softwareVersion" @tab-click="handleGetHaikangIsupSoftwareVersionInfo">
           <div class="tab-content-wrapper" v-loading="haikangIsupDeviceInfoLoading">
@@ -2734,7 +2734,7 @@
             <el-button type="primary" @click="handleGetHaikangIsupSoftwareVersionInfo" :loading="haikangIsupDeviceInfoLoading" icon="Refresh">刷新</el-button>
           </div>
         </el-tab-pane>
-        
+
         <!-- 电源状态标签页 -->
         <el-tab-pane label="电源状态" name="powerState" @tab-click="handleGetHaikangIsupPowerStateInfo">
           <div class="tab-content-wrapper" v-loading="haikangIsupDeviceInfoLoading">
@@ -2757,7 +2757,7 @@
             <el-button type="primary" @click="handleGetHaikangIsupPowerStateInfo" :loading="haikangIsupDeviceInfoLoading" icon="Refresh">刷新</el-button>
           </div>
         </el-tab-pane>
-        
+
         <!-- 摄像头属性标签页 -->
         <el-tab-pane label="摄像头属性" name="cameraInfo" @tab-click="handleGetHaikangIsupCameraInfo">
           <div class="tab-content-wrapper" v-loading="haikangIsupDeviceInfoLoading">
@@ -2793,7 +2793,7 @@
             <el-button type="primary" @click="handleGetHaikangIsupCameraInfo" :loading="haikangIsupDeviceInfoLoading" icon="Refresh">刷新</el-button>
           </div>
         </el-tab-pane>
-        
+
         <!-- 设备配置标签页 -->
         <el-tab-pane label="设备配置" name="deviceConfig" @tab-click="handleGetHaikangIsupDeviceConfig">
           <div class="tab-content-wrapper" v-loading="haikangIsupDeviceInfoLoading">
@@ -2815,7 +2815,7 @@
                   <el-descriptions-item label="固件版本">{{ haikangIsupDeviceConfig.firmwareVersion || '-' }}</el-descriptions-item>
                 </el-descriptions>
               </div>
-              
+
               <!-- 可编辑配置 -->
               <div style="margin-bottom: 20px;">
                 <div class="panel-section-title">设备配置</div>
@@ -2925,7 +2925,7 @@
             <el-button type="primary" @click="handleGetHaikangIsupSystemStatus" :loading="haikangIsupDeviceInfoLoading" icon="Refresh">刷新</el-button>
           </div>
         </el-tab-pane>
-        
+
         <!-- 远程升级标签页 -->
         <el-tab-pane label="远程升级" name="remoteUpgrade">
           <div class="tab-content-wrapper">
@@ -2953,14 +2953,14 @@
                 <el-input-number v-model="haikangIsupUpgradeForm.channel" :min="0" style="width: 100%" />
               </el-form-item>
             </el-form>
-            
+
             <div v-if="haikangIsupUpgradeResult.success" style="margin-top: 20px;">
               <div class="panel-section-title">升级结果:</div>
               <el-descriptions :column="1" border>
                 <el-descriptions-item label="消息">{{ haikangIsupUpgradeResult.message }}</el-descriptions-item>
                 <el-descriptions-item v-if="haikangIsupUpgradeResult.upgradeResult" label="升级响应">{{ haikangIsupUpgradeResult.upgradeResult }}</el-descriptions-item>
               </el-descriptions>
-              
+
               <div v-if="haikangIsupUpgradeResult.beforeInfo && haikangIsupUpgradeResult.beforeInfo.success" style="margin-top: 20px;">
                 <div class="panel-section-title">升级前版本信息:</div>
                 <el-descriptions :column="2" border>
@@ -2977,7 +2977,7 @@
             <el-button type="primary" @click="handleHaikangIsupUpgrade" :loading="haikangIsupUpgradeLoading" icon="Tools">执行升级</el-button>
           </div>
         </el-tab-pane>
-        
+
 
       </el-tabs>
     </el-dialog>
@@ -2988,14 +2988,14 @@
 
     <!-- GB28181设备刷新进度对话框 -->
     <el-dialog
-      v-model="refreshProgressDialogVisible"
-      width="400px"
-      title="设备刷新"
-      append-to-body
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      class="refresh-progress-dialog"
-      :show-close="false"
+        v-model="refreshProgressDialogVisible"
+        width="400px"
+        title="设备刷新"
+        append-to-body
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        class="refresh-progress-dialog"
+        :show-close="false"
     >
       <div class="refresh-progress-center">
         <div class="refresh-header">
@@ -3004,22 +3004,22 @@
           </div>
           <h3 class="refresh-title">{{ refreshProgress < 100 ? '设备刷新中' : '刷新完成' }}</h3>
         </div>
-        
+
         <div class="progress-circle-wrapper">
           <el-progress
-            type="circle"
-            :percentage="refreshProgress"
-            :stroke-width="10"
-            :width="180"
-            :color="refreshProgressColor"
-            :format="() => ''"
+              type="circle"
+              :percentage="refreshProgress"
+              :stroke-width="10"
+              :width="180"
+              :color="refreshProgressColor"
+              :format="() => ''"
           />
           <div class="progress-percent">
             <span class="percent-num">{{ refreshProgress }}</span>
             <span class="percent-unit">%</span>
           </div>
         </div>
-        
+
         <div class="refresh-steps">
           <div class="step-item" :class="{ active: true, completed: refreshProgress >= 30 }">
             <el-icon class="step-icon">
@@ -3042,7 +3042,7 @@
             <span class="step-text">通道刷新</span>
           </div>
         </div>
-        
+
         <div class="refresh-tip" v-if="refreshProgress < 100">
           <p class="tip-content">正在与设备通信，请稍候...</p>
         </div>
@@ -3051,10 +3051,10 @@
 
     <!-- GB28181录像控制对话框 -->
     <el-dialog
-      v-model="recordDialogVisible"
-      width="500px"
-      title="录像控制"
-      append-to-body
+        v-model="recordDialogVisible"
+        width="500px"
+        title="录像控制"
+        append-to-body
     >
       <el-form :model="recordDialogForm" label-width="100px">
         <el-form-item label="通道ID">
@@ -3257,17 +3257,17 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- 异常原因 -->
             <div v-if="gb28181DeviceStatus.reason" style="margin-top: 20px;">
               <el-alert
-                title="异常原因"
-                type="warning"
-                :closable="false"
-                :description="gb28181DeviceStatus.reason"
+                  title="异常原因"
+                  type="warning"
+                  :closable="false"
+                  :description="gb28181DeviceStatus.reason"
               />
             </div>
-            
+
             <!-- 报警状态列表 -->
             <div v-if="gb28181DeviceStatus.alarmStatus && gb28181DeviceStatus.alarmStatus.length > 0" style="margin-top: 20px;">
               <h4 style="margin-bottom: 10px;">报警设备状态</h4>
@@ -3302,14 +3302,14 @@
                 <span>存储卡管理</span>
               </div>
             </div>
-            
+
             <el-form :model="gb28181SdCardForm" label-width="120px" class="data-form" style="margin-top: 20px; padding: 20px;">
               <el-form-item label="SD卡编号">
                 <el-input-number v-model="gb28181SdCardForm.sdCardId" :min="0" style="width: 100%;" />
                 <div style="font-size: 12px; color: #909399; margin-top: 5px;">0 表示所有存储卡</div>
               </el-form-item>
             </el-form>
-            
+
             <div v-if="gb28181SdCardInfo && Object.keys(gb28181SdCardInfo).length > 0" style="margin-top: 20px; padding: 0 20px;">
               <div class="panel-section-title" style="font-weight: bold; font-size: 16px; margin-bottom: 15px;">存储卡状态:</div>
               <el-descriptions :column="2" border size="small">
@@ -3537,8 +3537,8 @@
                     </div>
                   </div>
                   <div v-if="state.totalCapacity && state.usedCapacity" class="storage-progress">
-                    <el-progress :percentage="calculateStoragePercentage(state.usedCapacity, state.totalCapacity)" 
-                                 :color="getStorageColor(state.usedCapacity, state.totalCapacity)" 
+                    <el-progress :percentage="calculateStoragePercentage(state.usedCapacity, state.totalCapacity)"
+                                 :color="getStorageColor(state.usedCapacity, state.totalCapacity)"
                                  :stroke-width="12" />
                   </div>
                   <div v-if="state.lastUpdated" class="storage-updated">
@@ -3811,7 +3811,7 @@
           <el-descriptions-item label="设备ID">{{ jt1078CurrentDevice.deviceId || '-' }}</el-descriptions-item>
           <el-descriptions-item label="手机号">{{ jt1078CurrentDevice.mobileNo || '-' }}</el-descriptions-item>
         </el-descriptions>
-        
+
         <el-tabs v-model="jt1078ParamsTabActive" @tab-change="handleJt1078TabChange">
           <!-- 终端参数查询和设置标签页 -->
           <el-tab-pane label="终端参数" name="params">
@@ -3826,41 +3826,41 @@
                   <el-table-column prop="value" label="参数值">
                     <template #default="{ row }">
                       <el-input
-                        v-if="typeof row.originalValue === 'number'"
-                        v-model.number="row.editableValue"
-                        type="number"
-                        size="small"
-                        placeholder="请输入数值"
+                          v-if="typeof row.originalValue === 'number'"
+                          v-model.number="row.editableValue"
+                          type="number"
+                          size="small"
+                          placeholder="请输入数值"
                       />
                       <div v-else-if="typeof row.originalValue === 'object'" style="width: 100%;">
                         <el-input
-                          v-model="row.editableValue"
-                          type="textarea"
-                          :rows="4"
-                          size="small"
-                          placeholder="请输入JSON格式数据"
-                          readonly
+                            v-model="row.editableValue"
+                            type="textarea"
+                            :rows="4"
+                            size="small"
+                            placeholder="请输入JSON格式数据"
+                            readonly
                         />
                         <div style="font-size: 12px; color: var(--el-text-color-secondary); margin-top: 4px;">
                           ⚠️ 对象类型参数暂不支持编辑
                         </div>
                       </div>
                       <el-input
-                        v-else
-                        v-model="row.editableValue"
-                        size="small"
-                        placeholder="请输入字符"
+                          v-else
+                          v-model="row.editableValue"
+                          size="small"
+                          placeholder="请输入字符"
                       />
                     </template>
                   </el-table-column>
                   <el-table-column label="操作" width="100">
                     <template #default="{ row }">
-                      <el-button 
-                        v-if="typeof row.originalValue !== 'object'"
-                        type="primary" 
-                        size="small" 
-                        @click="removeParam(row.key)" 
-                        icon="Delete"
+                      <el-button
+                          v-if="typeof row.originalValue !== 'object'"
+                          type="primary"
+                          size="small"
+                          @click="removeParam(row.key)"
+                          icon="Delete"
                       >删除</el-button>
                     </template>
                   </el-table-column>
@@ -3868,7 +3868,7 @@
               </div>
             </div>
             <el-empty v-else description="暂无参数数据，请点击查询按钮获取参数" style="padding: 40px 0;" />
-            
+
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--el-border-color-lighter);">
               <div class="panel-section-title" style="font-weight: bold; font-size: 14px; margin-bottom: 15px;">添加新参数</div>
               <el-form :model="jt1078SetParamsForm" label-width="100px" class="data-form">
@@ -3901,7 +3901,7 @@
               </el-form>
             </div>
           </el-tab-pane>
-          
+
           <!-- 终端音视频属性标签页 -->
           <el-tab-pane label="终端音视频属性" name="terminalAVProperties">
             <div class="panel-section-title" style="font-weight: bold; font-size: 16px; margin-bottom: 15px;">
@@ -3930,16 +3930,16 @@
               <el-button type="primary" @click="handleQueryTerminalAVProperties" :loading="jt1078ParamsLoading">查询终端音视频属性</el-button>
             </div>
           </el-tab-pane>
-          
+
           <!-- 查询指定终端参数标签页 -->
           <el-tab-pane label="查询指定参数" name="querySpecific">
             <el-form :model="jt1078QuerySpecificForm" label-width="100px" class="data-form" style="margin-top: 20px;">
               <el-form-item label="参数ID列表">
-                <el-input 
-                  v-model="jt1078QuerySpecificForm.ids" 
-                  type="textarea" 
-                  :rows="4" 
-                  placeholder="请输入参数ID，多个用逗号分隔，如：0,1,2,3" 
+                <el-input
+                    v-model="jt1078QuerySpecificForm.ids"
+                    type="textarea"
+                    :rows="4"
+                    placeholder="请输入参数ID，多个用逗号分隔，如：0,1,2,3"
                 />
               </el-form-item>
               <el-form-item>
@@ -3947,7 +3947,7 @@
                 <el-button type="success" @click="handleSetQuerySpecificParams" :loading="jt1078ParamsLoading" icon="Check" :disabled="!hasQuerySpecificModifiedParams">保存修改</el-button>
               </el-form-item>
             </el-form>
-            
+
             <div v-if="jt1078QuerySpecificEditableParams && jt1078QuerySpecificEditableParams.length > 0" style="margin-top: 20px;">
               <div class="panel-section-title" style="font-weight: bold; font-size: 16px; margin-bottom: 15px;">查询结果（可编辑）</div>
               <div class="terminal-params-table-wrapper">
@@ -3956,30 +3956,30 @@
                   <el-table-column prop="value" label="参数值">
                     <template #default="{ row }">
                       <el-input
-                        v-if="typeof row.originalValue === 'number'"
-                        v-model.number="row.editableValue"
-                        type="number"
-                        size="small"
-                        placeholder="请输入数值"
+                          v-if="typeof row.originalValue === 'number'"
+                          v-model.number="row.editableValue"
+                          type="number"
+                          size="small"
+                          placeholder="请输入数值"
                       />
                       <div v-else-if="typeof row.originalValue === 'object'" style="width: 100%;">
                         <el-input
-                          v-model="row.editableValue"
-                          type="textarea"
-                          :rows="4"
-                          size="small"
-                          placeholder="请输入JSON格式数据"
-                          readonly
+                            v-model="row.editableValue"
+                            type="textarea"
+                            :rows="4"
+                            size="small"
+                            placeholder="请输入JSON格式数据"
+                            readonly
                         />
                         <div style="font-size: 12px; color: var(--el-text-color-secondary); margin-top: 4px;">
                           ⚠️ 对象类型参数暂不支持编辑
                         </div>
                       </div>
                       <el-input
-                        v-else
-                        v-model="row.editableValue"
-                        size="small"
-                        placeholder="请输入字符"
+                          v-else
+                          v-model="row.editableValue"
+                          size="small"
+                          placeholder="请输入字符"
                       />
                     </template>
                   </el-table-column>
@@ -3987,7 +3987,7 @@
               </div>
             </div>
           </el-tab-pane>
-          
+
           <!-- 终端控制标签页 -->
           <el-tab-pane label="终端控制" name="control">
             <el-form :model="jt1078ControlForm" label-width="120px" class="data-form" style="margin-top: 20px;">
@@ -4003,27 +4003,27 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="命令参数">
-                <el-input 
-                  v-model="jt1078ControlForm.parameter" 
-                  type="textarea" 
-                  :rows="3" 
-                  placeholder="请输入命令参数（可选）" 
+                <el-input
+                    v-model="jt1078ControlForm.parameter"
+                    type="textarea"
+                    :rows="3"
+                    placeholder="请输入命令参数（可选）"
                 />
               </el-form-item>
               <el-form-item>
                 <el-button type="danger" @click="handleTerminalControl" :loading="jt1078ParamsLoading" icon="SwitchButton">执行控制</el-button>
               </el-form-item>
             </el-form>
-            
+
             <el-alert
-              v-if="jt1078ControlResult"
-              title="执行结果"
-              :type="jt1078ControlResult.success ? 'success' : 'error'"
-              :description="jt1078ControlResult.message"
-              style="margin-top: 20px;"
+                v-if="jt1078ControlResult"
+                title="执行结果"
+                :type="jt1078ControlResult.success ? 'success' : 'error'"
+                :description="jt1078ControlResult.message"
+                style="margin-top: 20px;"
             />
           </el-tab-pane>
-          
+
           <!-- 终端属性标签页 -->
           <el-tab-pane label="终端属性" name="attribute">
             <div v-if="jt1078TerminalAttribute && Object.keys(jt1078TerminalAttribute).length > 0">
@@ -4129,11 +4129,11 @@
               <el-button type="primary" @click="handleLinkCheck" :loading="jt1078ParamsLoading" icon="Connection">执行检测</el-button>
             </div>
             <el-alert
-              v-if="jt1078LinkCheckResult"
-              title="检测结果"
-              type="success"
-              :description="JSON.stringify(jt1078LinkCheckResult, null, 2)"
-              style="margin-top: 20px;"
+                v-if="jt1078LinkCheckResult"
+                title="检测结果"
+                type="success"
+                :description="JSON.stringify(jt1078LinkCheckResult, null, 2)"
+                style="margin-top: 20px;"
             />
           </el-tab-pane>
 
@@ -4354,11 +4354,11 @@
               </el-form-item>
             </el-form>
             <el-alert
-              v-if="jt1078VehicleControlResult"
-              title="控制结果"
-              type="success"
-              :description="JSON.stringify(jt1078VehicleControlResult, null, 2)"
-              style="margin-top: 20px;"
+                v-if="jt1078VehicleControlResult"
+                title="控制结果"
+                type="success"
+                :description="JSON.stringify(jt1078VehicleControlResult, null, 2)"
+                style="margin-top: 20px;"
             />
           </el-tab-pane>
 
@@ -4404,7 +4404,7 @@
                 <el-button type="primary" @click="handleSetCircleArea" :loading="jt1078ParamsLoading">设置圆形区域</el-button>
               </el-form-item>
             </el-form>
-            
+
             <div class="panel-section-title" style="font-weight: bold; font-size: 16px; margin-bottom: 15px; margin-top: 30px;">
               删除圆形区域
             </div>
@@ -4467,7 +4467,7 @@
                 <el-button type="primary" @click="handleSetRectArea" :loading="jt1078ParamsLoading">设置矩形区域</el-button>
               </el-form-item>
             </el-form>
-            
+
             <div class="panel-section-title" style="font-weight: bold; font-size: 16px; margin-bottom: 15px; margin-top: 30px;">
               删除矩形区域
             </div>
@@ -4529,7 +4529,7 @@
                 <el-button type="primary" @click="handleSetPolygonArea" :loading="jt1078ParamsLoading">设置多边形区域</el-button>
               </el-form-item>
             </el-form>
-            
+
             <div class="panel-section-title" style="font-weight: bold; font-size: 16px; margin-bottom: 15px; margin-top: 30px;">
               删除多边形区域
             </div>
@@ -4599,7 +4599,7 @@
                 <el-button type="primary" @click="handleSetRoute" :loading="jt1078ParamsLoading">设置路线</el-button>
               </el-form-item>
             </el-form>
-            
+
             <div class="panel-section-title" style="font-weight: bold; font-size: 16px; margin-bottom: 15px; margin-top: 30px;">
               删除路线
             </div>
@@ -4640,11 +4640,11 @@
               </el-form-item>
             </el-form>
             <el-alert
-              v-if="jt1078QueryAreaResult"
-              title="查询结果"
-              type="success"
-              :description="JSON.stringify(jt1078QueryAreaResult, null, 2)"
-              style="margin-top: 20px;"
+                v-if="jt1078QueryAreaResult"
+                title="查询结果"
+                type="success"
+                :description="JSON.stringify(jt1078QueryAreaResult, null, 2)"
+                style="margin-top: 20px;"
             />
           </el-tab-pane>
 
@@ -4658,7 +4658,7 @@
                 <el-button type="primary" @click="handleTachographDataCollect" :loading="jt1078ParamsLoading">发送数据采集命令</el-button>
               </el-form-item>
             </el-form>
-            
+
             <div class="panel-section-title" style="font-weight: bold; font-size: 16px; margin-bottom: 15px; margin-top: 30px;">
               行驶记录仪参数下传命令
             </div>
@@ -4808,13 +4808,13 @@
               </el-form-item>
             </el-form>
             <el-alert
-              v-if="jt1078SearchMultimediaResult"
-              title="检索结果"
-              type="success"
-              :description="JSON.stringify(jt1078SearchMultimediaResult, null, 2)"
-              style="margin-top: 20px;"
+                v-if="jt1078SearchMultimediaResult"
+                title="检索结果"
+                type="success"
+                :description="JSON.stringify(jt1078SearchMultimediaResult, null, 2)"
+                style="margin-top: 20px;"
             />
-            
+
             <div class="panel-section-title" style="font-weight: bold; font-size: 16px; margin-bottom: 15px; margin-top: 30px;">
               存储多媒体数据上传
             </div>
@@ -4980,25 +4980,25 @@ import {
   controlWiper
 } from "@/api/qs/device"
 import {
-    listHaiKangIsupDevice,
-    rebootHaiKangIsupDevice,
-    getHaiKangIsupDevTime,
-    setHaiKangIsupDevTime,
-    captureHaiKangIsupAndSave,
-    downloadHaikangIsupRecordDirect,
-    getHaiKangIsupDeviceInfo,
-    getHaiKangIsupStorageInfo,
-    getHaiKangIsupSDCardInfo,
-    getHaiKangIsupBitrateInfo,
-    getHaiKangIsupNetworkStatusInfo,
-    getHaiKangIsupSoftwareVersionInfo,
-    getHaiKangIsupPowerStateInfo,
-    getHaiKangIsupCameraInfo,
-    getHaiKangIsupSystemParam,
-    getHaiKangIsupVideoParam,
-    getHaiKangIsupSystemStatus,
-    getHaiKangIsupDeviceInfoXml,
-    upgradeHaiKangIsupDevice
+  listHaiKangIsupDevice,
+  rebootHaiKangIsupDevice,
+  getHaiKangIsupDevTime,
+  setHaiKangIsupDevTime,
+  captureHaiKangIsupAndSave,
+  downloadHaikangIsupRecordDirect,
+  getHaiKangIsupDeviceInfo,
+  getHaiKangIsupStorageInfo,
+  getHaiKangIsupSDCardInfo,
+  getHaiKangIsupBitrateInfo,
+  getHaiKangIsupNetworkStatusInfo,
+  getHaiKangIsupSoftwareVersionInfo,
+  getHaiKangIsupPowerStateInfo,
+  getHaiKangIsupCameraInfo,
+  getHaiKangIsupSystemParam,
+  getHaiKangIsupVideoParam,
+  getHaiKangIsupSystemStatus,
+  getHaiKangIsupDeviceInfoXml,
+  upgradeHaiKangIsupDevice
 } from "@/api/qs/haikang-isup";
 import {HaikangIsupDevice, PullConfig, RTPServerParam, WSDiscoveryDevice, WSOnvifDevice} from "@/types/api";
 import {
@@ -5025,10 +5025,10 @@ import {
   getDaHuaNetworkStatusInfo, getDaHuaSoftwareVersionInfo, getDaHuaRecordStateInfo, getDaHuaPowerStateInfo,
   getDaHuaAlarmArmInfo, getDaHuaCameraInfo, getDaHuaRtspUrlInfo, downloadDaHuaRecord, downloadDaHuaRecordDirect
 } from "@/api/qs/dahua";
-import { 
-  queryHaiKangRecord, 
-  downloadHaikangRecordDirect, 
-  captureHaikangAndSave, 
+import {
+  queryHaiKangRecord,
+  downloadHaikangRecordDirect,
+  captureHaikangAndSave,
   getHaiKangDeviceInfo,
   getHaiKangStorageInfo,
   getHaiKangSDCardInfo,
@@ -6074,7 +6074,7 @@ function handleUpdate(row: QsDevice) {
             form.value.deviceCode = device.deviceId
           }
         }
-        
+
         if (device) {
           if (device?.makerId) {
             form.value.manufacturer = device.makerId
@@ -6153,7 +6153,7 @@ const formatCapacity = (capacity: any) => {
   if (!capacity && capacity !== 0) return '-';
   const num = Number(capacity);
   if (isNaN(num)) return capacity;
-  
+
   if (num >= 1024 * 1024 * 1024) {
     return (num / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
   } else if (num >= 1024 * 1024) {
@@ -6668,7 +6668,7 @@ const handlePlay = (row: QsDevice) => {
     controSpeedMin.value = 1
     controSpeed.value = 50
     controSpeedMax.value = 100
-    
+
     startGb28181Play(row.id).then(async (res: any) => {
       await nextTick(async () => {
         if (location.protocol === "https:") {
@@ -6752,8 +6752,8 @@ const handlePlay = (row: QsDevice) => {
  */
 const handleCloudRecord = (row: QsDevice) => {
   proxy.$tab.openPage("[" + row.deviceName + "]云端录像", '/zlm/deviceRecordPlayback/index', {
-      deviceId: row.id,
-      type: 'cloud'
+    deviceId: row.id,
+    type: 'cloud'
   })
 }
 
@@ -6762,8 +6762,8 @@ const handleCloudRecord = (row: QsDevice) => {
  */
 const handleDeviceRecord = (row: QsDevice) => {
   proxy.$tab.openPage("[" + row.deviceName + "]设备录像", '/zlm/deviceRecordPlayback/index', {
-      deviceId: row.id,
-      type: 'device'
+    deviceId: row.id,
+    type: 'device'
   })
 }
 
@@ -6890,12 +6890,12 @@ const handlePtz = async (data: any) => {
     proxy.$modal.msgError('请先选择设备');
     return;
   }
-  
+
   if (!isPtz.value) {
     proxy.$modal.msgWarning('当前设备不支持云台控制');
     return;
   }
-  
+
   try {
     if (data === 'stop') {
       // 结束云台控制，使用上一次保存的命令
@@ -6922,12 +6922,12 @@ const ptzCamera = async (command) => {
     proxy.$modal.msgError('请先选择设备');
     return;
   }
-  
+
   if (!isPtz.value) {
     proxy.$modal.msgWarning('当前设备不支持云台控制');
     return;
   }
-  
+
   try {
     if (command !== 'stop') {
       // 开始云台控制
@@ -7314,24 +7314,24 @@ const handleFormatGb28181SdCard = async () => {
     proxy.$modal.msgError('设备未配置国标设备ID');
     return;
   }
-  
+
   try {
     await ElMessageBox.confirm(
-      '确定要格式化存储卡吗？此操作将清除所有数据！',
-      '警告',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
+        '确定要格式化存储卡吗？此操作将清除所有数据！',
+        '警告',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
     );
-    
+
     const response = await formatSDCardControl(
-      currentDeviceRow.value.gbDeviceId, 
-      currentDeviceRow.value.gbChannelId, 
-      gb28181SdCardForm.sdCardId
+        currentDeviceRow.value.gbDeviceId,
+        currentDeviceRow.value.gbChannelId,
+        gb28181SdCardForm.sdCardId
     );
-    
+
     if (response.code === 200) {
       proxy.$modal.msgSuccess('格式化存储卡成功');
     } else {
@@ -8659,22 +8659,22 @@ const handleSetJt1078Params = async () => {
   try {
     jt1078ParamsLoading.value = true;
     const requestData: any = {
-        clientId: jt1078CurrentDevice.mobileNo,
-        parametersLong: {} as Record<number, number>,
-        parametersStr: {} as Record<number, string>
-      };
+      clientId: jt1078CurrentDevice.mobileNo,
+      parametersLong: {} as Record<number, number>,
+      parametersStr: {} as Record<number, string>
+    };
 
     // 遍历可编辑参数，只发送修改过的
     jt1078EditableParams.value.forEach(param => {
       const key = Number(param.key);
       let value = param.editableValue;
-      
+
       // 检查是否是新添加的或者被修改过
       const isModified = param.isNew || String(param.originalValue) !== String(value);
       if (!isModified) {
         return; // 跳过未修改的参数
       }
-      
+
       // 尝试解析JSON字符串，但只有当originalValue是对象时才解析
       let isObject = false;
       if (typeof value === 'string' && param.originalValue && typeof param.originalValue === 'object') {
@@ -8685,13 +8685,13 @@ const handleSetJt1078Params = async () => {
           // 不是JSON，保持原样
         }
       }
-      
+
       // 对象类型的参数跳过，不发送（这些是复杂对象，需要专门处理）
       if (isObject || (value && typeof value === 'object')) {
         console.warn('跳过对象类型参数，不建议编辑:', key, value);
         return;
       }
-      
+
       // 尝试把值转换为数值，能成功就用parametersLong，否则用parametersStr
       const numValue = Number(value);
       if (!isNaN(numValue) && value !== '' && value !== null && value !== undefined) {
@@ -8707,7 +8707,7 @@ const handleSetJt1078Params = async () => {
     // 如果没有参数，直接返回
     const hasLongParams = Object.keys(requestData.parametersLong).length > 0;
     const hasStrParams = Object.keys(requestData.parametersStr).length > 0;
-    
+
     if (!hasLongParams && !hasStrParams) {
       proxy.$modal.msgWarning('没有可保存的参数（对象类型参数不支持编辑）');
       return;
@@ -8717,7 +8717,7 @@ const handleSetJt1078Params = async () => {
     const cleanRequestData: any = {
       clientId: requestData.clientId
     };
-    
+
     if (hasLongParams) {
       cleanRequestData.parametersLong = requestData.parametersLong;
     }
@@ -8726,7 +8726,7 @@ const handleSetJt1078Params = async () => {
     }
 
     console.log('发送保存请求:', cleanRequestData);
-    
+
     const response = await setTerminalParams(cleanRequestData);
 
     if (response.code === 200) {
@@ -8761,9 +8761,9 @@ const handleQuerySpecificTerminalParams = async () => {
 
     // 解析参数ID列表
     const idArray = jt1078QuerySpecificForm.ids
-      .split(',')
-      .map(id => parseInt(id.trim()))
-      .filter(id => !isNaN(id));
+        .split(',')
+        .map(id => parseInt(id.trim()))
+        .filter(id => !isNaN(id));
 
     if (idArray.length === 0) {
       proxy.$modal.msgWarning('参数ID格式无效');
@@ -8874,22 +8874,22 @@ const handleSetQuerySpecificParams = async () => {
   try {
     jt1078ParamsLoading.value = true;
     const requestData: any = {
-        clientId: jt1078CurrentDevice.mobileNo,
-        parametersLong: {} as Record<number, number>,
-        parametersStr: {} as Record<number, string>
-      };
+      clientId: jt1078CurrentDevice.mobileNo,
+      parametersLong: {} as Record<number, number>,
+      parametersStr: {} as Record<number, string>
+    };
 
     // 遍历可编辑参数，只发送修改过的
     jt1078QuerySpecificEditableParams.value.forEach(param => {
       const key = Number(param.key);
       let value = param.editableValue;
-      
+
       // 检查是否被修改过
       const isModified = String(param.originalValue) !== String(value);
       if (!isModified) {
         return; // 跳过未修改的参数
       }
-      
+
       // 尝试解析JSON字符串，但只有当originalValue是对象时才解析
       let isObject = false;
       if (typeof value === 'string' && param.originalValue && typeof param.originalValue === 'object') {
@@ -8900,13 +8900,13 @@ const handleSetQuerySpecificParams = async () => {
           // 不是JSON，保持原样
         }
       }
-      
+
       // 对象类型的参数跳过，不发送（这些是复杂对象，需要专门处理）
       if (isObject || (value && typeof value === 'object')) {
         console.warn('跳过对象类型参数，不建议编辑:', key, value);
         return;
       }
-      
+
       // 尝试把值转换为数值，能成功就用parametersLong，否则用parametersStr
       const numValue = Number(value);
       if (!isNaN(numValue) && value !== '' && value !== null && value !== undefined) {
@@ -8922,7 +8922,7 @@ const handleSetQuerySpecificParams = async () => {
     // 如果没有参数，直接返回
     const hasLongParams = Object.keys(requestData.parametersLong).length > 0;
     const hasStrParams = Object.keys(requestData.parametersStr).length > 0;
-    
+
     if (!hasLongParams && !hasStrParams) {
       proxy.$modal.msgWarning('没有可保存的参数（对象类型参数不支持编辑）');
       return;
@@ -8932,7 +8932,7 @@ const handleSetQuerySpecificParams = async () => {
     const cleanRequestData: any = {
       clientId: requestData.clientId
     };
-    
+
     if (hasLongParams) {
       cleanRequestData.parametersLong = requestData.parametersLong;
     }
@@ -8941,7 +8941,7 @@ const handleSetQuerySpecificParams = async () => {
     }
 
     console.log('发送保存查询指定参数请求:', cleanRequestData);
-    
+
     const response = await setTerminalParams(cleanRequestData);
 
     if (response.code === 200) {
@@ -9087,13 +9087,13 @@ function formatDeviceSnapshotFileSize(bytes: number | undefined): string {
 const handleCaptureFromStream = async () => {
   try {
     await proxy.$modal.confirm(`是否确认对设备"${deviceRow.value?.deviceName}"进行抓图？`);
-    
+
     captureLoading.value = true;
     let response;
     const deviceType = deviceRow.value?.type;
     const deviceId = deviceRow.value?.id!;
     const channelId = deviceRow.value?.channel || 0;
-    
+
     // 根据设备类型调用不同的API
     if (deviceType === '5') {
       // ONVIF 设备
@@ -9120,7 +9120,7 @@ const handleCaptureFromStream = async () => {
         snapshotType: 'manual'
       });
     }
-    
+
     if (response.code === 200) {
       proxy.$modal.msgSuccess('抓图成功，已保存到数据库');
       // 刷新抓图列表
@@ -9142,10 +9142,10 @@ const handleCaptureFromStream = async () => {
 const handleCapture = async (row: QsDevice) => {
   try {
     await proxy.$modal.confirm(`是否确认对设备"${row.deviceName}"进行抓图？`);
-    
+
     const channelId = row.channel || 0;
     let response;
-    
+
     // 根据设备类型调用不同的API
     if (row.type === '5') {
       // ONVIF 设备
@@ -9163,7 +9163,7 @@ const handleCapture = async (row: QsDevice) => {
       proxy.$modal.msgError('不支持的设备类型');
       return;
     }
-    
+
     if (response.code === 200) {
       proxy.$modal.msgSuccess('抓图成功，已保存到数据库');
     } else {
@@ -9181,7 +9181,7 @@ const handleCapture = async (row: QsDevice) => {
 const handleReboot = async (row: QsDevice) => {
   try {
     await proxy.$modal.confirm(`是否确认重启设备"${row.deviceName}"？`);
-    
+
     let response;
     // 根据设备类型调用不同的API
     if (row.type === '5') {
@@ -9218,7 +9218,7 @@ const handleReboot = async (row: QsDevice) => {
       proxy.$modal.msgError('不支持的设备类型');
       return;
     }
-    
+
     if (response.code === 200) {
       proxy.$modal.msgSuccess('重启命令已发送，设备正在重启...');
     } else {
@@ -9522,10 +9522,10 @@ const submitRecordControl = async () => {
   }
   try {
     const response = await recordCmd(
-      recordDialogForm.value.device.gbDeviceId!,
-      recordDialogForm.value.channelId,
-      recordDialogForm.value.recordCmd,
-      recordDialogForm.value.streamNumber
+        recordDialogForm.value.device.gbDeviceId!,
+        recordDialogForm.value.channelId,
+        recordDialogForm.value.recordCmd,
+        recordDialogForm.value.streamNumber
     );
     if (response.code === 200) {
       proxy.$modal.msgSuccess('录像控制命令已发送');
@@ -9653,8 +9653,8 @@ const haikangCameraInfo = reactive({
 
 // 海康RTSP URL信息
 const haikangRtspUrlInfo = reactive({
-    success: false,
-    rtspUrl: ''
+  success: false,
+  rtspUrl: ''
 });
 
 // 海康ISUP设备信息弹窗
@@ -9664,85 +9664,85 @@ const haikangIsupDeviceInfoLoading = ref(false);
 
 // 海康ISUP设备信息数据
 const haikangIsupDeviceInfo = reactive({
-    success: false,
-    deviceName: '',
-    deviceType: '',
-    serialNumber: '',
-    ipAddress: '',
-    channelNum: undefined as number | undefined,
-    analogChanNum: undefined as number | undefined,
-    ipChanNum: undefined as number | undefined,
-    dvrType: undefined as number | undefined,
-    devType: undefined as number | undefined,
-    devClass: undefined as number | undefined,
-    alarmInPortNum: undefined as number | undefined,
-    alarmOutPortNum: undefined as number | undefined,
-    diskNum: undefined as number | undefined
+  success: false,
+  deviceName: '',
+  deviceType: '',
+  serialNumber: '',
+  ipAddress: '',
+  channelNum: undefined as number | undefined,
+  analogChanNum: undefined as number | undefined,
+  ipChanNum: undefined as number | undefined,
+  dvrType: undefined as number | undefined,
+  devType: undefined as number | undefined,
+  devClass: undefined as number | undefined,
+  alarmInPortNum: undefined as number | undefined,
+  alarmOutPortNum: undefined as number | undefined,
+  diskNum: undefined as number | undefined
 });
 
 // 海康ISUP存储信息
 const haikangIsupStorageInfo = reactive({
-    diskList: [],
-    diskCount: 0,
-    success: false
+  diskList: [],
+  diskCount: 0,
+  success: false
 });
 
 // 海康ISUP SD卡信息
 const haikangIsupSdCardInfo = reactive({
-    success: false,
-    sdCardCount: undefined as number | undefined,
-    sdCardList: []
+  success: false,
+  sdCardCount: undefined as number | undefined,
+  sdCardList: []
 });
 
 // 海康ISUP码流信息
 const haikangIsupBitrateInfo = reactive({
-    success: false,
-    streamList: []
+  success: false,
+  streamList: []
 });
 
 // 海康ISUP网络状态信息
 const haikangIsupNetworkStatusInfo = reactive({
-    success: false,
-    clientList: [],
-    clientCount: undefined as number | undefined,
-    bitRate: undefined as number | undefined,
-    allBitRate: undefined as number | undefined,
-    ipLinkNum: undefined as number | undefined,
-    exceedMaxLink: undefined as number | undefined
+  success: false,
+  clientList: [],
+  clientCount: undefined as number | undefined,
+  bitRate: undefined as number | undefined,
+  allBitRate: undefined as number | undefined,
+  ipLinkNum: undefined as number | undefined,
+  exceedMaxLink: undefined as number | undefined
 });
 
 // 海康ISUP软件版本信息
 const haikangIsupSoftwareVersionInfo = reactive({
-    success: false,
-    deviceStatic: undefined as number | undefined,
-    deviceStaticDesc: '',
-    localDisplay: undefined as number | undefined,
-    localDisplayDesc: ''
+  success: false,
+  deviceStatic: undefined as number | undefined,
+  deviceStaticDesc: '',
+  localDisplay: undefined as number | undefined,
+  localDisplayDesc: ''
 });
 
 // 海康ISUP电源状态信息
 const haikangIsupPowerStateInfo = reactive({
-    success: false,
-    deviceStatic: undefined as number | undefined,
-    deviceStaticDesc: '',
-    devicePowerStatus: undefined as number | undefined,
-    localDisplay: undefined as number | undefined
+  success: false,
+  deviceStatic: undefined as number | undefined,
+  deviceStaticDesc: '',
+  devicePowerStatus: undefined as number | undefined,
+  localDisplay: undefined as number | undefined
 });
 
 // 海康ISUP摄像头属性信息
 const haikangIsupCameraInfo = reactive({
-    success: false,
-    cameraList: []
+  success: false,
+  cameraList: []
 });
 
 // 海康ISUP系统状态信息
 const haikangIsupSystemStatusInfo = reactive({
-    success: false,
-    currentDeviceTime: '',
-    deviceUpTime: 0,
-    cpuList: [] as Array<{ cpuUtilization: number }>,
-    memoryList: [] as Array<{ memoryDescription: string, memoryUsage: number, memoryAvailable: number }>,
-    netPortStatusList: [] as Array<{ id: number, netPortDescription: string, linkStatus: string }>
+  success: false,
+  currentDeviceTime: '',
+  deviceUpTime: 0,
+  cpuList: [] as Array<{ cpuUtilization: number }>,
+  memoryList: [] as Array<{ memoryDescription: string, memoryUsage: number, memoryAvailable: number }>,
+  netPortStatusList: [] as Array<{ id: number, netPortDescription: string, linkStatus: string }>
 });
 
 // 海康ISUP远程升级
@@ -9813,15 +9813,15 @@ const openDownloadRecordDialog = (row: QsDevice) => {
   downloadRecordForm.deviceId = row.id;
   downloadRecordForm.deviceName = row.deviceName || '';
   downloadRecordForm.channelId = row.channel || 0;
-  
+
   // 默认设置时间为过去10分钟到现在
   const now = new Date();
   const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
-  
+
   downloadRecordForm.startTime = formatDateTime(tenMinutesAgo);
   downloadRecordForm.endTime = formatDateTime(now);
   downloadRecordForm.recordFileType = 0;
-  
+
   downloadResult.value = null;
   downloadRecordDialogVisible.value = true;
 }
@@ -9851,12 +9851,12 @@ const handleDownloadRecord = async () => {
     proxy.$modal.msgError('请选择结束时间');
     return;
   }
-  
+
   // 验证时间差是否超过10分钟
   const start = new Date(downloadRecordForm.startTime);
   const end = new Date(downloadRecordForm.endTime);
   const diffMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
-  
+
   if (diffMinutes > 10) {
     proxy.$modal.msgWarning('下载时间范围不能超过10分钟');
     return;
@@ -9865,30 +9865,30 @@ const handleDownloadRecord = async () => {
     proxy.$modal.msgError('结束时间必须大于开始时间');
     return;
   }
-  
+
   if (!currentDownloadDevice) {
     proxy.$modal.msgError('请先选择设备');
     return;
   }
-  
+
   downloadRecordLoading.value = true;
   downloadResult.value = null;
-  
+
   // 显示加载提示
   const loading = ElLoading.service({
     lock: true,
     text: "正在下载录像，请稍候...",
     background: "rgba(0, 0, 0, 0.7)",
   });
-  
+
   try {
     const deviceType = String(currentDownloadDevice.type);
     const isDaHuaDevice = deviceType === '9'; // 9=大华SDK
     const isHaikangDevice = deviceType === '7' || deviceType === '8'; // 7=海康SDK,8=海康ISUP
-    
+
     let blob: any;
     let extension: string = '.dav';
-    
+
     if (isDaHuaDevice) {
       const request: DaHuaRecordDownloadRequest = {
         id: downloadRecordForm.deviceId,
@@ -9897,7 +9897,7 @@ const handleDownloadRecord = async () => {
         endTime: downloadRecordForm.endTime,
         recordFileType: downloadRecordForm.recordFileType
       };
-      
+
       blob = await downloadDaHuaRecordDirect(request);
       extension = '.dav';
     } else if (isHaikangDevice) {
@@ -9908,7 +9908,7 @@ const handleDownloadRecord = async () => {
         endTime: downloadRecordForm.endTime,
         recordFileType: downloadRecordForm.recordFileType
       };
-      
+
       if (deviceType === '8') {
         // 海康ISUP设备
         blob = await downloadHaikangIsupRecordDirect(request);
@@ -9921,7 +9921,7 @@ const handleDownloadRecord = async () => {
       proxy.$modal.msgError('仅支持大华和海康设备录像下载');
       return;
     }
-    
+
     // 如果 size > 0，直接当作文件下载
     if (blob.size > 0) {
       const fileName = `device_${downloadRecordForm.deviceId}_channel_${downloadRecordForm.channelId}_${downloadRecordForm.startTime.replace(/[:\s]/g, '-')}${extension}`;
@@ -9951,14 +9951,14 @@ const handleDownloadRecord = async () => {
 const openDeviceInfoDialog = (row: QsDevice) => {
   currentDeviceId.value = row.id;
   currentDeviceRow.value = row;
-  
+
   const isOnvifDevice = row.type === '5';
   const isHaikangSdkDevice = row.type === '7';
   const isHaikangIsupDevice = row.type === '8';
   const isDaHuaDevice = row.type === '9';
   const isGB28181Device = row.type === '12';
   const isJT1078Device = row.type === '14';
-  
+
   if (isOnvifDevice) {
     onvifDeviceInfoTabActive.value = 'deviceInfo';
     onvifDeviceInfo.success = false;
@@ -9968,7 +9968,7 @@ const openDeviceInfoDialog = (row: QsDevice) => {
     onvifDeviceInfo.streamUris = [];
     onvifDeviceInfo.profileCount = 0;
     onvifDeviceInfo.profiles = [];
-    
+
     // 重置存储信息状态
     onvifStorageDevice.value = row;
     onvifStorageConfigurations.success = false;
@@ -9989,12 +9989,12 @@ const openDeviceInfoDialog = (row: QsDevice) => {
         delete onvifStorageState[key];
       }
     });
-    
+
     onvifDeviceInfoDialogVisible.value = true;
     handleRefreshOnvifDeviceInfo();
     return;
   }
-  
+
   if (isJT1078Device) {
     // 打开JT1078终端参数对话框
     openJt1078ParamsDialog(row);
@@ -10224,13 +10224,13 @@ const handleGetSystemParam = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangSystemParam(currentDeviceId.value);
     } else if (isDaHuaDevice) {
       res = await getDaHuaSystemParam(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       Object.assign(systemParam, res.data);
       proxy.$modal.msgSuccess('获取系统参数成功');
@@ -10254,13 +10254,13 @@ const handleGetVideoParam = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangVideoParam(currentDeviceId.value, videoParam.channelId, videoParam.streamType);
     } else if (isDaHuaDevice) {
       res = await getDaHuaVideoParam(currentDeviceId.value, videoParam.channelId, videoParam.streamType);
     }
-    
+
     if (res.data) {
       Object.assign(videoParam, res.data);
       proxy.$modal.msgSuccess('获取视频参数成功');
@@ -10349,13 +10349,13 @@ const handleGetStorageInfo = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangStorageInfo(currentDeviceId.value);
     } else if (isDaHuaDevice) {
       res = await getDaHuaStorageInfo(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       storageInfo.storageDevices = res.data.storageDevices || [];
       proxy.$modal.msgSuccess('获取存储信息成功');
@@ -10379,7 +10379,7 @@ const handleGetSystemResourceInfo = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       // 海康系统资源信息暂未实现
       proxy.$modal.msgInfo('海康系统资源信息暂未实现');
@@ -10387,7 +10387,7 @@ const handleGetSystemResourceInfo = async () => {
     } else if (isDaHuaDevice) {
       res = await getDaHuaSystemResourceInfo(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       Object.assign(systemResourceInfo, res.data);
       proxy.$modal.msgSuccess('获取系统资源信息成功');
@@ -10425,7 +10425,7 @@ const getDiskStatusText = (diskStatus: number | undefined, status: number | unde
 const getDiskStatusType = (diskStatus: number | undefined, status: number | undefined) => {
   const targetStatus = diskStatus !== undefined ? diskStatus : status;
   if (targetStatus === undefined) return 'info';
-  
+
   const typeMap: Record<number, string> = {
     0: 'info',
     1: 'success',
@@ -10456,13 +10456,13 @@ const handleGetSDCardInfo = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangSDCardInfo(currentDeviceId.value);
     } else if (isDaHuaDevice) {
       res = await getDaHuaSDCardInfo(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       Object.assign(sdCardInfo, res.data);
       proxy.$modal.msgSuccess('获取SD卡信息成功');
@@ -10486,13 +10486,13 @@ const handleGetBitrateInfo = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangBitrateInfo(currentDeviceId.value);
     } else if (isDaHuaDevice) {
       res = await getDaHuaBitrateInfo(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       Object.assign(bitrateInfo, res.data);
       proxy.$modal.msgSuccess('获取码流信息成功');
@@ -10516,13 +10516,13 @@ const handleGetNetworkStatusInfo = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangNetworkStatusInfo(currentDeviceId.value);
     } else if (isDaHuaDevice) {
       res = await getDaHuaNetworkStatusInfo(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       Object.assign(networkStatusInfo, res.data);
       proxy.$modal.msgSuccess('获取网络状态信息成功');
@@ -10546,13 +10546,13 @@ const handleGetSoftwareVersionInfo = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangSoftwareVersionInfo(currentDeviceId.value);
     } else if (isDaHuaDevice) {
       res = await getDaHuaSoftwareVersionInfo(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       Object.assign(softwareVersionInfo, res.data);
       proxy.$modal.msgSuccess('获取软件版本信息成功');
@@ -10575,13 +10575,13 @@ const handleGetRecordStateInfo = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangRecordStateInfo(currentDeviceId.value);
     } else if (isDaHuaDevice) {
       res = await getDaHuaRecordStateInfo(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       Object.assign(recordStateInfo, res.data);
       proxy.$modal.msgSuccess('获取录像状态信息成功');
@@ -10604,13 +10604,13 @@ const handleGetPowerStateInfo = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangPowerStateInfo(currentDeviceId.value);
     } else if (isDaHuaDevice) {
       res = await getDaHuaPowerStateInfo(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       Object.assign(powerStateInfo, res.data);
       proxy.$modal.msgSuccess('获取电源状态信息成功');
@@ -10633,13 +10633,13 @@ const handleGetAlarmArmInfo = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangAlarmArmInfo(currentDeviceId.value);
     } else if (isDaHuaDevice) {
       res = await getDaHuaAlarmArmInfo(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       Object.assign(alarmArmInfo, res.data);
       proxy.$modal.msgSuccess('获取报警布防信息成功');
@@ -10662,13 +10662,13 @@ const handleGetCameraInfo = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangCameraInfo(currentDeviceId.value);
     } else if (isDaHuaDevice) {
       res = await getDaHuaCameraInfo(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       Object.assign(cameraInfo, res.data);
       proxy.$modal.msgSuccess('获取摄像头属性信息成功');
@@ -10691,13 +10691,13 @@ const handleGetRtspUrlInfo = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangRtspUrlInfo(currentDeviceId.value);
     } else if (isDaHuaDevice) {
       res = await getDaHuaRtspUrlInfo(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       Object.assign(rtspUrlInfo, res.data);
       proxy.$modal.msgSuccess('获取RTSP URL信息成功');
@@ -10721,13 +10721,13 @@ const handleRefreshDeviceInfo = async () => {
     const isHaikangDevice = currentDeviceRow.value.type === '7' || currentDeviceRow.value.type === '8';
     const isDaHuaDevice = currentDeviceRow.value.type === '9';
     let res;
-    
+
     if (isHaikangDevice) {
       res = await getHaiKangDeviceInfo(currentDeviceId.value);
     } else if (isDaHuaDevice) {
       res = await getDaHuaDeviceInfo(currentDeviceId.value);
     }
-    
+
     if (res.data) {
       Object.assign(deviceInfo, res.data);
       proxy.$modal.msgSuccess('获取设备信息成功');
@@ -11001,32 +11001,32 @@ const handleRefreshOnvifDeviceInfo = async () => {
   try {
     onvifDeviceInfoLoading.value = true;
     const res = await getOnvifDeviceInfo(currentDeviceId.value);
-    
+
     // 从 res.data 中获取实际数据，兼容两种返回格式
     const data = res.data || res;
-    
+
     if (data.success !== undefined ? data.success : true) {
       onvifDeviceInfo.success = true;
       onvifDeviceInfo.manufacturer = data.manufacturer || '';
       onvifDeviceInfo.model = data.model || '';
       onvifDeviceInfo.firmwareVersion = data.firmwareVersion || '';
-      
+
       // 处理流地址数据 - 后端返回的是字符串数组，需要转换为对象数组
       const streamUris = data.streamUris || [];
       onvifDeviceInfo.streamUris = streamUris.map((uri, index) => ({
         uri: uri,
         type: index === 0 ? 'main' : 'sub'  // 第一个默认是主码流，后续是子码流
       }));
-      
+
       onvifDeviceInfo.profileCount = data.profileCount || 0;
-      
+
       // 处理 Profiles 数据 - 后端返回的是字符串数组，需要转换为对象数组
       const profiles = data.profiles || [];
       onvifDeviceInfo.profiles = profiles.map((token, index) => ({
         token: token,
         name: `Profile ${index + 1}`
       }));
-      
+
       proxy.$modal.msgSuccess('获取设备信息成功');
     } else {
       proxy.$modal.msgError(data.message || '获取设备信息失败');
@@ -11048,17 +11048,17 @@ const handleGetOnvifStorageConfigurations = async () => {
   try {
     onvifStorageLoading.value = true;
     const res = await getOnvifStorageConfigurations(currentDeviceId.value);
-    
+
     // 从 res.data 中获取实际数据，兼容两种返回格式
     const data = res.data || res;
-    
+
     // 清空并设置新数据
     Object.keys(onvifStorageConfigurations).forEach(key => {
       delete onvifStorageConfigurations[key];
     });
     onvifStorageConfigurations.success = true;
     Object.assign(onvifStorageConfigurations, data);
-    
+
     proxy.$modal.msgSuccess('获取存储配置成功');
   } catch (error) {
     console.error('获取存储配置失败:', error);
@@ -11077,17 +11077,17 @@ const handleGetOnvifStorageCapabilities = async () => {
   try {
     onvifStorageLoading.value = true;
     const res = await getOnvifStorageCapabilities(currentDeviceId.value);
-    
+
     // 从 res.data 中获取实际数据，兼容两种返回格式
     const data = res.data || res;
-    
+
     // 清空并设置新数据
     Object.keys(onvifStorageCapabilities).forEach(key => {
       delete onvifStorageCapabilities[key];
     });
     onvifStorageCapabilities.success = true;
     Object.assign(onvifStorageCapabilities, data);
-    
+
     proxy.$modal.msgSuccess('获取存储能力成功');
   } catch (error) {
     console.error('获取存储能力失败:', error);
@@ -11106,17 +11106,17 @@ const handleGetOnvifStorageState = async () => {
   try {
     onvifStorageLoading.value = true;
     const res = await getOnvifStorageState(currentDeviceId.value);
-    
+
     // 从 res.data 中获取实际数据，兼容两种返回格式
     const data = res.data || res;
-    
+
     // 清空并设置新数据
     Object.keys(onvifStorageState).forEach(key => {
       delete onvifStorageState[key];
     });
     onvifStorageState.success = true;
     Object.assign(onvifStorageState, data);
-    
+
     proxy.$modal.msgSuccess('获取存储状态成功');
   } catch (error) {
     console.error('获取存储状态失败:', error);
@@ -11135,17 +11135,17 @@ const handleGetOnvifNetworkInterfaces = async () => {
   try {
     onvifStorageLoading.value = true;
     const res = await getOnvifNetworkInterfaces(currentDeviceId.value);
-    
+
     // 从 res.data 中获取实际数据，兼容两种返回格式
     const data = res.data || res;
-    
+
     // 清空并设置新数据
     Object.keys(onvifNetworkInterfaces).forEach(key => {
       delete onvifNetworkInterfaces[key];
     });
     onvifNetworkInterfaces.success = true;
     Object.assign(onvifNetworkInterfaces, data);
-    
+
     proxy.$modal.msgSuccess('获取网络接口配置成功');
   } catch (error) {
     console.error('获取网络接口配置失败:', error);
@@ -11164,17 +11164,17 @@ const handleGetOnvifNetworkProtocols = async () => {
   try {
     onvifStorageLoading.value = true;
     const res = await getOnvifNetworkProtocols(currentDeviceId.value);
-    
+
     // 从 res.data 中获取实际数据，兼容两种返回格式
     const data = res.data || res;
-    
+
     // 清空并设置新数据
     Object.keys(onvifNetworkProtocols).forEach(key => {
       delete onvifNetworkProtocols[key];
     });
     onvifNetworkProtocols.success = true;
     Object.assign(onvifNetworkProtocols, data);
-    
+
     proxy.$modal.msgSuccess('获取网络协议配置成功');
   } catch (error) {
     console.error('获取网络协议配置失败:', error);
@@ -11193,17 +11193,17 @@ const handleGetOnvifVideoSourceConfigs = async () => {
   try {
     onvifStorageLoading.value = true;
     const res = await getOnvifVideoSourceConfigs(currentDeviceId.value);
-    
+
     // 从 res.data 中获取实际数据，兼容两种返回格式
     const data = res.data || res;
-    
+
     // 清空并设置新数据
     Object.keys(onvifVideoSourceConfigs).forEach(key => {
       delete onvifVideoSourceConfigs[key];
     });
     onvifVideoSourceConfigs.success = true;
     Object.assign(onvifVideoSourceConfigs, data);
-    
+
     proxy.$modal.msgSuccess('获取视频源配置成功');
   } catch (error) {
     console.error('获取视频源配置失败:', error);
@@ -11222,17 +11222,17 @@ const handleGetOnvifVideoEncoderConfigs = async () => {
   try {
     onvifStorageLoading.value = true;
     const res = await getOnvifVideoEncoderConfigs(currentDeviceId.value);
-    
+
     // 从 res.data 中获取实际数据，兼容两种返回格式
     const data = res.data || res;
-    
+
     // 清空并设置新数据
     Object.keys(onvifVideoEncoderConfigs).forEach(key => {
       delete onvifVideoEncoderConfigs[key];
     });
     onvifVideoEncoderConfigs.success = true;
     Object.assign(onvifVideoEncoderConfigs, data);
-    
+
     proxy.$modal.msgSuccess('获取视频编码器配置成功');
   } catch (error) {
     console.error('获取视频编码器配置失败:', error);
@@ -11251,17 +11251,17 @@ const handleGetOnvifAudioSourceConfigs = async () => {
   try {
     onvifStorageLoading.value = true;
     const res = await getOnvifAudioSourceConfigs(currentDeviceId.value);
-    
+
     // 从 res.data 中获取实际数据，兼容两种返回格式
     const data = res.data || res;
-    
+
     // 清空并设置新数据
     Object.keys(onvifAudioSourceConfigs).forEach(key => {
       delete onvifAudioSourceConfigs[key];
     });
     onvifAudioSourceConfigs.success = true;
     Object.assign(onvifAudioSourceConfigs, data);
-    
+
     proxy.$modal.msgSuccess('获取音频源配置成功');
   } catch (error) {
     console.error('获取音频源配置失败:', error);
@@ -11280,17 +11280,17 @@ const handleGetOnvifAudioEncoderConfigs = async () => {
   try {
     onvifStorageLoading.value = true;
     const res = await getOnvifAudioEncoderConfigs(currentDeviceId.value);
-    
+
     // 从 res.data 中获取实际数据，兼容两种返回格式
     const data = res.data || res;
-    
+
     // 清空并设置新数据
     Object.keys(onvifAudioEncoderConfigs).forEach(key => {
       delete onvifAudioEncoderConfigs[key];
     });
     onvifAudioEncoderConfigs.success = true;
     Object.assign(onvifAudioEncoderConfigs, data);
-    
+
     proxy.$modal.msgSuccess('获取音频编码器配置成功');
   } catch (error) {
     console.error('获取音频编码器配置失败:', error);
@@ -11309,17 +11309,17 @@ const handleGetOnvifVideoOutputConfigs = async () => {
   try {
     onvifStorageLoading.value = true;
     const res = await getOnvifVideoOutputConfigs(currentDeviceId.value);
-    
+
     // 从 res.data 中获取实际数据，兼容两种返回格式
     const data = res.data || res;
-    
+
     // 清空并设置新数据
     Object.keys(onvifVideoOutputConfigs).forEach(key => {
       delete onvifVideoOutputConfigs[key];
     });
     onvifVideoOutputConfigs.success = true;
     Object.assign(onvifVideoOutputConfigs, data);
-    
+
     proxy.$modal.msgSuccess('获取视频输出配置成功');
   } catch (error) {
     console.error('获取视频输出配置失败:', error);
@@ -12178,10 +12178,10 @@ watch(tabActiveName, (newVal) => {
   animation: cardFadeIn 0.5s ease-out forwards;
   opacity: 0;
   transform: translateY(16px);
-  box-shadow: 
-    0 1px 2px rgba(0,0,0,0.04),
-    0 4px 8px rgba(0,0,0,0.04),
-    0 8px 16px rgba(0,0,0,0.02);
+  box-shadow:
+      0 1px 2px rgba(0,0,0,0.04),
+      0 4px 8px rgba(0,0,0,0.04),
+      0 8px 16px rgba(0,0,0,0.02);
 }
 
 .device-card:nth-child(1) { animation-delay: 0.02s; }
@@ -12210,10 +12210,10 @@ watch(tabActiveName, (newVal) => {
 
 .device-card.is-selected {
   border-color: var(--el-color-primary);
-  box-shadow: 
-    0 0 0 3px var(--el-color-primary-light-9),
-    0 8px 24px -4px rgba(var(--el-color-primary-rgb), 0.2),
-    0 4px 12px rgba(var(--el-color-primary-rgb), 0.1);
+  box-shadow:
+      0 0 0 3px var(--el-color-primary-light-9),
+      0 8px 24px -4px rgba(var(--el-color-primary-rgb), 0.2),
+      0 4px 12px rgba(var(--el-color-primary-rgb), 0.1);
 }
 
 /* 头部区域（替代图片区） */
@@ -13114,11 +13114,11 @@ watch(tabActiveName, (newVal) => {
   :deep(.glass-dialog.device-info-dialog .el-dialog) {
     border-color: var(--el-border-color);
   }
-  
+
   :deep(.glass-dialog.device-info-dialog .el-dialog__header) {
     border-color: var(--el-border-color);
   }
-  
+
   :deep(.glass-dialog.device-info-dialog .dialog-footer) {
     border-color: var(--el-border-color);
   }
@@ -13204,18 +13204,18 @@ watch(tabActiveName, (newVal) => {
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 16px;
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.03),
-    0 4px 12px rgba(0, 0, 0, 0.04),
-    0 8px 24px rgba(0, 0, 0, 0.02);
+      0 1px 3px rgba(0, 0, 0, 0.03),
+      0 4px 12px rgba(0, 0, 0, 0.04),
+      0 8px 24px rgba(0, 0, 0, 0.02);
   transition: all 0.3s ease;
   animation: cardEnter 0.5s cubic-bezier(0.4, 0, 0.2, 1) backwards;
 }
 
 .form-card:hover {
   box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.05),
-    0 8px 24px rgba(0, 0, 0, 0.06),
-    0 16px 48px rgba(0, 0, 0, 0.04);
+      0 4px 8px rgba(0, 0, 0, 0.05),
+      0 8px 24px rgba(0, 0, 0, 0.06),
+      0 16px 48px rgba(0, 0, 0, 0.04);
   transform: translateY(-2px);
   border-color: rgba(var(--el-color-primary-rgb), 0.25);
 }
@@ -13279,9 +13279,9 @@ watch(tabActiveName, (newVal) => {
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.08),
-    0 2px 8px rgba(0, 0, 0, 0.04),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+      0 8px 32px rgba(0, 0, 0, 0.08),
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   animation: dialogEnter 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -13422,19 +13422,19 @@ html.dark {
   }
 
   .device-card:hover {
-    box-shadow: 
-      0 4px 8px rgba(0,0,0,0.35),
-      0 12px 24px rgba(0,0,0,0.3),
-      0 24px 48px rgba(0,0,0,0.2);
+    box-shadow:
+        0 4px 8px rgba(0,0,0,0.35),
+        0 12px 24px rgba(0,0,0,0.3),
+        0 24px 48px rgba(0,0,0,0.2);
     border-color: var(--el-color-primary-light-3);
   }
 
   .device-card.is-selected {
     border-color: var(--el-color-primary);
     box-shadow:
-      0 0 0 3px var(--el-color-primary-light-9),
-      0 8px 24px -4px rgba(var(--el-color-primary-rgb), 0.25),
-      0 4px 12px rgba(var(--el-color-primary-rgb), 0.15);
+        0 0 0 3px var(--el-color-primary-light-9),
+        0 8px 24px -4px rgba(var(--el-color-primary-rgb), 0.25),
+        0 4px 12px rgba(var(--el-color-primary-rgb), 0.15);
   }
 
   .card-header-area {
@@ -13453,9 +13453,9 @@ html.dark {
     background: rgba(30, 30, 40, 0.78);
     border-color: rgba(255, 255, 255, 0.08);
     box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.25),
-      0 2px 8px rgba(0, 0, 0, 0.15),
-      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        0 8px 32px rgba(0, 0, 0, 0.25),
+        0 2px 8px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
   }
 
   .glass-dialog.device-dialog :deep(.el-dialog__header) {
@@ -13474,16 +13474,16 @@ html.dark {
     background: rgba(30, 30, 40, 0.55);
     border-color: rgba(255, 255, 255, 0.06);
     box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.2),
-      0 4px 12px rgba(0, 0, 0, 0.15),
-      0 8px 24px rgba(0, 0, 0, 0.1);
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 8px 24px rgba(0, 0, 0, 0.1);
   }
 
   .form-card:hover {
     box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.25),
-      0 8px 24px rgba(0, 0, 0, 0.2),
-      0 16px 48px rgba(0, 0, 0, 0.15);
+        0 4px 8px rgba(0, 0, 0, 0.25),
+        0 8px 24px rgba(0, 0, 0, 0.2),
+        0 16px 48px rgba(0, 0, 0, 0.15);
   }
 
   :deep(.el-card__header) {
@@ -13501,19 +13501,19 @@ html.dark {
   }
 
   .device-card:hover {
-    box-shadow: 
-      0 4px 8px rgba(0,0,0,0.35),
-      0 12px 24px rgba(0,0,0,0.3),
-      0 24px 48px rgba(0,0,0,0.2);
+    box-shadow:
+        0 4px 8px rgba(0,0,0,0.35),
+        0 12px 24px rgba(0,0,0,0.3),
+        0 24px 48px rgba(0,0,0,0.2);
     border-color: var(--el-color-primary-light-3);
   }
 
   .device-card.is-selected {
     border-color: var(--el-color-primary);
     box-shadow:
-      0 0 0 3px var(--el-color-primary-light-9),
-      0 8px 24px -4px rgba(var(--el-color-primary-rgb), 0.25),
-      0 4px 12px rgba(var(--el-color-primary-rgb), 0.15);
+        0 0 0 3px var(--el-color-primary-light-9),
+        0 8px 24px -4px rgba(var(--el-color-primary-rgb), 0.25),
+        0 4px 12px rgba(var(--el-color-primary-rgb), 0.15);
   }
 }
 
@@ -13655,10 +13655,10 @@ html.dark {
   gap: 10px;
   z-index: 3;
   background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.65) 0%,
-    rgba(0, 0, 0, 0.4) 55%,
-    transparent 100%
+          to top,
+          rgba(0, 0, 0, 0.65) 0%,
+          rgba(0, 0, 0, 0.4) 55%,
+          transparent 100%
   );
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -13781,31 +13781,31 @@ html.dark {
 
 @keyframes statusGlowOnline {
   0%, 100% {
-    box-shadow: 
-      0 0 0 1px rgba(103, 194, 58, 0.3),
-      0 4px 14px rgba(103, 194, 58, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 0 0 1px rgba(103, 194, 58, 0.3),
+        0 4px 14px rgba(103, 194, 58, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
   50% {
-    box-shadow: 
-      0 0 0 1px rgba(103, 194, 58, 0.3),
-      0 4px 22px rgba(103, 194, 58, 0.65),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 0 0 1px rgba(103, 194, 58, 0.3),
+        0 4px 22px rgba(103, 194, 58, 0.65),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 }
 
 @keyframes statusGlowOffline {
   0%, 100% {
-    box-shadow: 
-      0 0 0 1px rgba(245, 108, 108, 0.3),
-      0 4px 14px rgba(245, 108, 108, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 0 0 1px rgba(245, 108, 108, 0.3),
+        0 4px 14px rgba(245, 108, 108, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
   50% {
-    box-shadow: 
-      0 0 0 1px rgba(245, 108, 108, 0.3),
-      0 4px 22px rgba(245, 108, 108, 0.55),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 0 0 1px rgba(245, 108, 108, 0.3),
+        0 4px 22px rgba(245, 108, 108, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 }
 
@@ -14030,9 +14030,9 @@ html.dark {
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.08),
-    0 2px 8px rgba(0, 0, 0, 0.04),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+      0 8px 32px rgba(0, 0, 0, 0.08),
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   animation: dialogEnter 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -14148,9 +14148,9 @@ html.dark .glass-dialog.access-dialog :deep(.el-dialog) {
   background: rgba(30, 30, 40, 0.78);
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.25),
-    0 2px 8px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      0 8px 32px rgba(0, 0, 0, 0.25),
+      0 2px 8px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
 }
 
 html.dark .glass-dialog.play-dialog :deep(.el-dialog__header),
@@ -14605,21 +14605,21 @@ html.dark {
   .query-form {
     padding: 8px 10px;
   }
-  
+
   .form-actions {
     padding-left: 10px;
     margin-left: 8px !important;
   }
-  
+
   .button-group {
     gap: 8px;
   }
-  
+
   .action-buttons {
     gap: 8px;
     flex-wrap: wrap;
   }
-  
+
   .advanced-config {
     padding: 12px;
   }
@@ -14630,12 +14630,12 @@ html.dark {
   .expand-toggle {
     border-top-color: rgba(255, 255, 255, 0.08);
   }
-  
+
   .advanced-config {
     background: rgba(255, 255, 255, 0.03);
     border-color: rgba(255, 255, 255, 0.08);
   }
-  
+
   .config-section .section-title {
     border-bottom-color: rgba(255, 255, 255, 0.06);
   }
@@ -15379,17 +15379,17 @@ html.dark {
     background: rgba(255, 255, 255, 0.04);
     border-color: rgba(255, 255, 255, 0.06);
   }
-  
+
   .info-card:hover {
     background: rgba(255, 255, 255, 0.06);
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
   }
-  
+
   .dashboard-badge {
     background: rgba(255, 255, 255, 0.04);
     border-color: rgba(255, 255, 255, 0.06);
   }
-  
+
   .dashboard-badge:hover {
     background: rgba(var(--el-color-primary-rgb), 0.12);
   }
@@ -15823,11 +15823,11 @@ html.dark {
   border: 1px solid var(--el-border-color-lighter);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
-  
+
   &:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
@@ -15906,7 +15906,7 @@ html.dark {
   border: 1px solid var(--el-border-color-lighter);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
-  
+
   &:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
@@ -15924,15 +15924,15 @@ html.dark {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   flex-shrink: 0;
-  
+
   &.http {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   }
-  
+
   &.https {
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   }
-  
+
   &.rtsp {
     background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   }
@@ -15963,7 +15963,7 @@ html.dark {
   gap: 4px;
   font-size: 14px;
   color: var(--el-text-color-secondary);
-  
+
   .el-icon {
     font-size: 14px;
   }
