@@ -19,4 +19,5 @@ port = 5173
 
 [deploy]
 build_command = "pnpm run build"
+run = "npx serve dist -s -l $PORT"
 output_dir = "dist"
