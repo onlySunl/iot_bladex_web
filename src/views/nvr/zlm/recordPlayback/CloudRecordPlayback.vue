@@ -273,16 +273,16 @@
 </template>
 
 <script setup lang="ts" name="CloudRecordPlayback">
-import { useClipboard } from 'vue3-clipboard'
+import useClipboard from 'vue-clipboard3'
 import screenfull from 'screenfull'
 import moment from 'moment'
-import EasyPlayer from '@/components/nvr/EasyPlayer'
+import EasyPlayer from '@/components/EasyPlayer'
 import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import RegionTree from '@/views/components/common/RegionTree.vue'
 import GroupTree from '@/views/components/common/GroupTree.vue'
 import type { CloudRecordQueryParams, ZlmCloudRecord } from '@/types/api/qs/cloudRecord'
-import { closeStreams, listAllCloudRecord, loadRecord, seekCloudRecord, setCloudRecordSpeed } from '@/api/nvr/cloudRecord'
+import { closeStreams, listAllCloudRecord, loadRecord, seekCloudRecord, setCloudRecordSpeed } from '@/api/qs/cloudRecord'
 import momentDurationFormatSetup from 'moment-duration-format'
 import {
   Aim,
@@ -301,7 +301,7 @@ import {
   VideoPause,
   VideoPlay
 } from '@element-plus/icons-vue'
-import { getDevice } from '@/api/nvr/device'
+import { getDevice } from '@/api/qs/device'
 
 const { toClipboard } = useClipboard()
 momentDurationFormatSetup(moment)

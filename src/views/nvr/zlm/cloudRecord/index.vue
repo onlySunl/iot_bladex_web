@@ -389,10 +389,10 @@
 </template>
 
 <script setup lang="ts" name="CloudRecord">
-import { useClipboard } from "vue3-clipboard";
+import useClipboard from "vue-clipboard3";
 import screenfull from 'screenfull'
 import moment from 'moment'
-import EasyPlayer from "@/components/nvr/EasyPlayer";
+import EasyPlayer from "@/components/EasyPlayer";
 import type {CloudRecordQueryParams, ZlmCloudRecord} from "@/types/api/qs/cloudRecord"
 import {
   closeStreams,
@@ -401,7 +401,7 @@ import {
   loadRecord,
   seekCloudRecord,
   setCloudRecordSpeed
-} from "@/api/nvr/cloudRecord"
+} from "@/api/qs/cloudRecord"
 import momentDurationFormatSetup from 'moment-duration-format'
 import {
   DocumentCopy,
@@ -420,9 +420,9 @@ import {
   List,
   Grid
 } from '@element-plus/icons-vue'
-import StreamDropdown from "@/components/nvr/Channel/streamDropdown.vue";
-import MediaInfo from "@/components/nvr/Channel/mediaInfo.vue";
-import {getAllOnlineMediaServe} from "@/api/nvr/zlm";
+import StreamDropdown from "@/components/Channel/streamDropdown.vue";
+import MediaInfo from "@/components/Channel/mediaInfo.vue";
+import {getAllOnlineMediaServe} from "@/api/qs/zlm";
 
 const {toClipboard} = useClipboard()
 

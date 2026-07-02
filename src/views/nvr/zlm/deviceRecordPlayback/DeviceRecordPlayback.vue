@@ -165,17 +165,17 @@ import {
   VideoPause,
   VideoPlay
 } from '@element-plus/icons-vue'
-import {getDevice} from "@/api/nvr/device"
-import {queryDeviceRecord} from "@/api/nvr/gb28181"
-import {queryDaHuaRecord} from "@/api/nvr/dahua"
-import {queryHaiKangRecord} from "@/api/nvr/haikang"
-import {queryHaiKangIsupRecord} from "@/api/nvr/haikang-isup"
-import {queryOnvifRecord} from "@/api/nvr/onvif"
-import {queryJt1078Record} from "@/api/nvr/jt1078"
-import {rtpPlayback, stopRtpPlayback, onvifPlayback, stopOnvifPlayback, startGb28181Playback, stopGb28181Playback} from "@/api/nvr/zlm"
+import {getDevice} from "@/api/qs/device"
+import {queryDeviceRecord} from "@/api/qs/gb28181"
+import {queryDaHuaRecord} from "@/api/qs/dahua"
+import {queryHaiKangRecord} from "@/api/qs/haikang"
+import {queryHaiKangIsupRecord} from "@/api/qs/haikang-isup"
+import {queryOnvifRecord} from "@/api/qs/onvif"
+import {queryJt1078Record} from "@/api/qs/jt1078"
+import {rtpPlayback, stopRtpPlayback, onvifPlayback, stopOnvifPlayback, startGb28181Playback, stopGb28181Playback} from "@/api/qs/zlm"
 import moment from 'moment'
 import VideoTimeline from '@/views/components/common/VideoTimeLine/index.vue'
-import EasyPlayer from '@/components/nvr/EasyPlayer'
+import EasyPlayer from '@/components/EasyPlayer'
 
 const {proxy} = getCurrentInstance()
 

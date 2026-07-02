@@ -1,23 +1,23 @@
-import request from '@/axios'
+import request from '@/utils/request'
 import {OnvifDevice, WSDiscoveryDevice, WSOnvifDevice} from "@/types/api";
 import {AjaxResult} from "@/types";
 
 // 获取onvif设备列表
-export function getOnvifDeviceList() {
+export function getOnvifDeviceList(): Promise<AjaxResult<WSDiscoveryDevice[]>> {
     return request({
         url: '/onvif/device/getOnvifDeviceList',
         method: 'get',
-        timeout
+        timeout: 20000
     })
 }
 
 // 验证登录onvif设备
-export function onvifLogin(data) {
+export function onvifLogin(data: WSOnvifDevice): Promise<AjaxResult<OnvifDevice>> {
     return request({
         url: '/onvif/device/login',
         method: 'post',
         data,
-        timeout
+        timeout: 20000
     })
 }
 
@@ -30,12 +30,12 @@ export function onvifLogin(data) {
  * @param endTime 结束时间
  */
 export function queryOnvifRecord(
-    deviceIp,
-    username,
-    password,
-    startTime,
-    endTime
-) {
+    deviceIp: string,
+    username: string,
+    password: string,
+    startTime: string,
+    endTime: string
+): Promise<AjaxResult<any>> {
     return request({
         url: `/onvif/device/queryRecord`,
         method: 'get',
@@ -46,7 +46,7 @@ export function queryOnvifRecord(
             startTime,
             endTime
         },
-        timeout
+        timeout: 30000
     })
 }
 
@@ -57,12 +57,12 @@ export function queryOnvifRecord(
  * @param password 密码
  */
 export function restartOnvifDevice(
-  deviceId
-) {
+  deviceId: number
+): Promise<AjaxResult<any>> {
   return request({
     url: `/onvif/device/rebootOnvifDevice/${deviceId}`,
     method: 'get',
-    timeout
+    timeout: 30000
   })
 }
 
@@ -72,14 +72,14 @@ export function restartOnvifDevice(
  * @param dateTime 要设置的时间（可选，不传则使用服务器时间）
  */
 export function syncOnvifDeviceTime(
-  deviceId,
-  dateTime
-) {
+  deviceId: number,
+  dateTime?: string
+): Promise<AjaxResult<any>> {
   return request({
     url: `/onvif/device/syncOnvifDeviceTime/${deviceId}`,
     method: 'get',
-    params ? { dateTime } : undefined,
-    timeout
+    params: dateTime ? { dateTime } : undefined,
+    timeout: 30000
   })
 }
 
@@ -88,12 +88,12 @@ export function syncOnvifDeviceTime(
  * @param deviceId 设备ID
  */
 export function getOnvifDeviceTime(
-  deviceId
-) {
+  deviceId: number
+): Promise<AjaxResult<any>> {
   return request({
     url: `/onvif/device/getOnvifDeviceTime/${deviceId}`,
     method: 'get',
-    timeout
+    timeout: 30000
   })
 }
 
@@ -102,12 +102,12 @@ export function getOnvifDeviceTime(
  * @param deviceId 设备ID
  */
 export function getOnvifDeviceInfo(
-  deviceId
-) {
+  deviceId: number
+): Promise<AjaxResult<any>> {
   return request({
     url: `/onvif/device/getOnvifDeviceInfo/${deviceId}`,
     method: 'get',
-    timeout
+    timeout: 30000
   })
 }
 
@@ -118,15 +118,15 @@ export function getOnvifDeviceInfo(
  * @param snapshotType 抓图类型
  */
 export function captureOnvifAndSave(
-    deviceId,
-    channelId,
-    snapshotType = 'manual'
-) {
+    deviceId: number,
+    channelId: number,
+    snapshotType: string = 'manual'
+): Promise<AjaxResult<number>> {
     return request({
         url: `/onvif/device/captureAndSave/${deviceId}/${channelId}`,
         method: 'post',
         params: { snapshotType },
-        timeout
+        timeout: 30000
     })
 }
 
@@ -135,12 +135,12 @@ export function captureOnvifAndSave(
  * @param deviceId 设备ID
  */
 export function getOnvifStorageConfigurations(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/onvif/device/getStorageConfigurations/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
@@ -149,12 +149,12 @@ export function getOnvifStorageConfigurations(
  * @param deviceId 设备ID
  */
 export function getOnvifStorageCapabilities(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/onvif/device/getStorageCapabilities/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
@@ -163,12 +163,12 @@ export function getOnvifStorageCapabilities(
  * @param deviceId 设备ID
  */
 export function getOnvifStorageState(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/onvif/device/getStorageState/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     });
 }
 
@@ -177,12 +177,12 @@ export function getOnvifStorageState(
  * @param deviceId 设备ID
  */
 export function getOnvifNetworkInterfaces(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/onvif/device/getNetworkInterfaces/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     });
 }
 
@@ -191,12 +191,12 @@ export function getOnvifNetworkInterfaces(
  * @param deviceId 设备ID
  */
 export function getOnvifNetworkProtocols(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/onvif/device/getNetworkProtocols/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     });
 }
 
@@ -205,12 +205,12 @@ export function getOnvifNetworkProtocols(
  * @param deviceId 设备ID
  */
 export function getOnvifVideoSourceConfigs(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/onvif/device/getVideoSourceConfigs/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     });
 }
 
@@ -219,12 +219,12 @@ export function getOnvifVideoSourceConfigs(
  * @param deviceId 设备ID
  */
 export function getOnvifVideoEncoderConfigs(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/onvif/device/getVideoEncoderConfigs/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     });
 }
 
@@ -233,12 +233,12 @@ export function getOnvifVideoEncoderConfigs(
  * @param deviceId 设备ID
  */
 export function getOnvifAudioSourceConfigs(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/onvif/device/getAudioSourceConfigs/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     });
 }
 
@@ -247,12 +247,12 @@ export function getOnvifAudioSourceConfigs(
  * @param deviceId 设备ID
  */
 export function getOnvifAudioEncoderConfigs(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/onvif/device/getAudioEncoderConfigs/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     });
 }
 
@@ -261,11 +261,11 @@ export function getOnvifAudioEncoderConfigs(
  * @param deviceId 设备ID
  */
 export function getOnvifVideoOutputConfigs(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/onvif/device/getVideoOutputConfigs/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     });
 }

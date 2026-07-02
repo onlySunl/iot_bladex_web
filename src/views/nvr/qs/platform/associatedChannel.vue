@@ -120,7 +120,7 @@
 
 <script setup name="AssociatedChannel" lang="ts">
 import {getCurrentInstance, nextTick, ref, reactive, toRefs} from 'vue'
-import {listPlatformDevice, linkDevice, unlinkDevice} from '@/api/nvr/platform'
+import {listPlatformDevice, linkDevice, unlinkDevice} from '@/api/qs/platform'
 
 const {proxy} = getCurrentInstance()!
 const {

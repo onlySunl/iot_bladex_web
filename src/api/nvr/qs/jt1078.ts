@@ -1,5 +1,8 @@
-import request from '@/axios'
-export function getAllDevice() {
+import request from '@/utils/request'
+import type { AjaxResult } from '@/types'
+import type { Jt1078Device } from '@/types/api/qs/jt1078'
+
+export function getAllDevice(): Promise<AjaxResult<Jt1078Device[]>> {
   return request({
     url: '/jt1078/device/allList',
     method: 'get'
@@ -14,11 +17,11 @@ export function getAllDevice() {
  * @param endTime 结束时间
  */
 export function queryJt1078Record(
-    mobileNo,
-    channelNo,
-    startTime,
-    endTime
-) {
+    mobileNo: string,
+    channelNo: number,
+    startTime: string,
+    endTime: string
+): Promise<AjaxResult<any>> {
     return request({
         url: `/jt1078/queryRecord/${mobileNo}/${channelNo}`,
         method: 'get',
@@ -26,7 +29,7 @@ export function queryJt1078Record(
             startTime,
             endTime
         },
-        timeout
+        timeout: 30000
     })
 }
 
@@ -34,7 +37,7 @@ export function queryJt1078Record(
  * 8104 查询终端参数
  * @param data 消息体
  */
-export function queryTerminalParams(data) {
+export function queryTerminalParams(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8104',
     method: 'post',
@@ -46,7 +49,7 @@ export function queryTerminalParams(data) {
  * 8103 设置终端参数
  * @param data 参数数据
  */
-export function setTerminalParams(data) {
+export function setTerminalParams(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8103',
     method: 'post',
@@ -58,7 +61,7 @@ export function setTerminalParams(data) {
  * 8106 查询指定终端参数
  * @param data 参数数据
  */
-export function querySpecificTerminalParams(data) {
+export function querySpecificTerminalParams(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8106',
     method: 'post',
@@ -70,7 +73,7 @@ export function querySpecificTerminalParams(data) {
  * 8105 终端控制
  * @param data 控制数据
  */
-export function terminalControl(data) {
+export function terminalControl(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8105',
     method: 'post',
@@ -82,7 +85,7 @@ export function terminalControl(data) {
  * 8107 查询终端属性
  * @param data 消息体
  */
-export function queryTerminalAttribute(data) {
+export function queryTerminalAttribute(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8107',
     method: 'post',
@@ -94,7 +97,7 @@ export function queryTerminalAttribute(data) {
  * 8201 位置信息查询
  * @param data 消息体
  */
-export function queryLocation(data) {
+export function queryLocation(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8201',
     method: 'post',
@@ -106,7 +109,7 @@ export function queryLocation(data) {
  * 8202 临时位置跟踪控制
  * @param data 消息体
  */
-export function tempLocationTrack(data) {
+export function tempLocationTrack(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8202',
     method: 'post',
@@ -118,7 +121,7 @@ export function tempLocationTrack(data) {
  * 8203 人工确认报警消息
  * @param data 消息体
  */
-export function confirmAlarm(data) {
+export function confirmAlarm(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8203',
     method: 'post',
@@ -130,7 +133,7 @@ export function confirmAlarm(data) {
  * 8204 服务器向终端发起链路检测请求
  * @param data 消息体
  */
-export function linkCheck(data) {
+export function linkCheck(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8204',
     method: 'post',
@@ -142,7 +145,7 @@ export function linkCheck(data) {
  * 8300 文本信息下发
  * @param data 消息体
  */
-export function sendText(data) {
+export function sendText(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8300',
     method: 'post',
@@ -154,7 +157,7 @@ export function sendText(data) {
  * 8301 事件设置
  * @param data 消息体
  */
-export function eventSetting(data) {
+export function eventSetting(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8301',
     method: 'post',
@@ -166,7 +169,7 @@ export function eventSetting(data) {
  * 8302 提问下发
  * @param data 消息体
  */
-export function sendQuestion(data) {
+export function sendQuestion(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8302',
     method: 'post',
@@ -178,7 +181,7 @@ export function sendQuestion(data) {
  * 8303 信息点播菜单设置
  * @param data 消息体
  */
-export function menuSetting(data) {
+export function menuSetting(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8303',
     method: 'post',
@@ -190,7 +193,7 @@ export function menuSetting(data) {
  * 8304 信息服务
  * @param data 消息体
  */
-export function infoService(data) {
+export function infoService(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8304',
     method: 'post',
@@ -202,7 +205,7 @@ export function infoService(data) {
  * 8400 电话回拨
  * @param data 消息体
  */
-export function phoneCallback(data) {
+export function phoneCallback(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8400',
     method: 'post',
@@ -214,7 +217,7 @@ export function phoneCallback(data) {
  * 8401 设置电话本
  * @param data 消息体
  */
-export function setPhoneBook(data) {
+export function setPhoneBook(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8401',
     method: 'post',
@@ -226,7 +229,7 @@ export function setPhoneBook(data) {
  * 8500 车辆控制
  * @param data 消息体
  */
-export function vehicleControl(data) {
+export function vehicleControl(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8500',
     method: 'post',
@@ -238,7 +241,7 @@ export function vehicleControl(data) {
  * 8600 设置圆形区域
  * @param data 消息体
  */
-export function setCircleArea(data) {
+export function setCircleArea(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8600',
     method: 'post',
@@ -250,7 +253,7 @@ export function setCircleArea(data) {
  * 8601 删除圆形区域
  * @param data 消息体
  */
-export function deleteCircleArea(data) {
+export function deleteCircleArea(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8601',
     method: 'post',
@@ -262,7 +265,7 @@ export function deleteCircleArea(data) {
  * 8602 设置矩形区域
  * @param data 消息体
  */
-export function setRectArea(data) {
+export function setRectArea(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8602',
     method: 'post',
@@ -274,7 +277,7 @@ export function setRectArea(data) {
  * 8603 删除矩形区域
  * @param data 消息体
  */
-export function deleteRectArea(data) {
+export function deleteRectArea(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8603',
     method: 'post',
@@ -286,7 +289,7 @@ export function deleteRectArea(data) {
  * 8604 设置多边形区域
  * @param data 消息体
  */
-export function setPolygonArea(data) {
+export function setPolygonArea(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8604',
     method: 'post',
@@ -298,7 +301,7 @@ export function setPolygonArea(data) {
  * 8605 删除多边形区域
  * @param data 消息体
  */
-export function deletePolygonArea(data) {
+export function deletePolygonArea(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8605',
     method: 'post',
@@ -310,7 +313,7 @@ export function deletePolygonArea(data) {
  * 8606 设置路线
  * @param data 消息体
  */
-export function setRoute(data) {
+export function setRoute(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8606',
     method: 'post',
@@ -322,7 +325,7 @@ export function setRoute(data) {
  * 8607 删除路线
  * @param data 消息体
  */
-export function deleteRoute(data) {
+export function deleteRoute(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8607',
     method: 'post',
@@ -334,7 +337,7 @@ export function deleteRoute(data) {
  * 8608 查询区域或线路数据
  * @param data 消息体
  */
-export function queryAreaOrRoute(data) {
+export function queryAreaOrRoute(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8608',
     method: 'post',
@@ -346,7 +349,7 @@ export function queryAreaOrRoute(data) {
  * 8700 行驶记录仪数据采集命令
  * @param data 消息体
  */
-export function tachographDataCollect(data) {
+export function tachographDataCollect(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8700',
     method: 'post',
@@ -358,7 +361,7 @@ export function tachographDataCollect(data) {
  * 8701 行驶记录仪参数下传命令
  * @param data 消息体
  */
-export function tachographParamSend(data) {
+export function tachographParamSend(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8701',
     method: 'post',
@@ -370,7 +373,7 @@ export function tachographParamSend(data) {
  * 8702 上报驾驶员身份信息请求
  * @param data 消息体
  */
-export function reportDriverInfo(data) {
+export function reportDriverInfo(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8702',
     method: 'post',
@@ -382,7 +385,7 @@ export function reportDriverInfo(data) {
  * 8801 摄像头立即拍摄命令
  * @param data 消息体
  */
-export function cameraShoot(data) {
+export function cameraShoot(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8801',
     method: 'post',
@@ -394,7 +397,7 @@ export function cameraShoot(data) {
  * 8802 存储多媒体数据检索
  * @param data 消息体
  */
-export function searchMultimedia(data) {
+export function searchMultimedia(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8802',
     method: 'post',
@@ -406,7 +409,7 @@ export function searchMultimedia(data) {
  * 8803 存储多媒体数据上传
  * @param data 消息体
  */
-export function uploadMultimedia(data) {
+export function uploadMultimedia(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8803',
     method: 'post',
@@ -418,7 +421,7 @@ export function uploadMultimedia(data) {
  * 8804 录音开始命令
  * @param data 消息体
  */
-export function startRecording(data) {
+export function startRecording(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8804',
     method: 'post',
@@ -430,7 +433,7 @@ export function startRecording(data) {
  * 8805 单条存储多媒体数据检索上传命令
  * @param data 消息体
  */
-export function searchUploadMultimedia(data) {
+export function searchUploadMultimedia(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8805',
     method: 'post',
@@ -442,7 +445,7 @@ export function searchUploadMultimedia(data) {
  * 8108 下发终端升级包
  * @param data 消息体
  */
-export function terminalUpgrade(data) {
+export function terminalUpgrade(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/8108',
     method: 'post',
@@ -454,7 +457,7 @@ export function terminalUpgrade(data) {
  * 9003 查询终端音视频属性
  * @param data 消息体
  */
-export function queryTerminalAVProperties(data) {
+export function queryTerminalAVProperties(data: any): Promise<AjaxResult<any>> {
   return request({
     url: '/jt1078/device/9003',
     method: 'post',

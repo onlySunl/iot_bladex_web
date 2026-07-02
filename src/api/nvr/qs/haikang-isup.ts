@@ -1,9 +1,9 @@
-import request from '@/axios'
+import request from '@/utils/request'
 import {HaikangIsupDevice} from "@/types/api";
 import {AjaxResult} from "@/types";
 
 // 查询海康isup设备列表
-export function listHaiKangIsupDevice() {
+export function listHaiKangIsupDevice(): Promise<AjaxResult<HaikangIsupDevice[]>> {
     return request({
         url: '/haikangIsup/device/list',
         method: 'get',
@@ -18,11 +18,11 @@ export function listHaiKangIsupDevice() {
  * @param endTime 结束时间
  */
 export function queryHaiKangIsupRecord(
-    deviceId,
-    channelId,
-    startTime,
-    endTime
-) {
+    deviceId: number,
+    channelId: number,
+    startTime: string,
+    endTime: string
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getRecMonth/${deviceId}/${channelId}`,
         method: 'get',
@@ -30,7 +30,7 @@ export function queryHaiKangIsupRecord(
             startTime,
             endTime
         },
-        timeout
+        timeout: 30000
     })
 }
 
@@ -38,7 +38,7 @@ export function queryHaiKangIsupRecord(
  * 重启海康ISUP设备
  * @param deviceId 设备ID
  */
-export function rebootHaiKangIsupDevice(deviceId) {
+export function rebootHaiKangIsupDevice(deviceId: number): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/rebootHaiKangDevice/${deviceId}`,
         method: 'get'
@@ -49,7 +49,7 @@ export function rebootHaiKangIsupDevice(deviceId) {
  * 获取海康ISUP设备时间
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupDevTime(deviceId) {
+export function getHaiKangIsupDevTime(deviceId: number): Promise<AjaxResult<string>> {
     return request({
         url: `/haikangIsup/device/getHaiKangDevTime/${deviceId}`,
         method: 'get'
@@ -59,9 +59,9 @@ export function getHaiKangIsupDevTime(deviceId) {
 /**
  * 设置海康ISUP设备时间
  * @param deviceId 设备ID
- * @param time 时间，格式为 yyyy-MM-dd HH
+ * @param time 时间，格式为 yyyy-MM-dd HH:mm:ss
  */
-export function setHaiKangIsupDevTime(deviceId, time) {
+export function setHaiKangIsupDevTime(deviceId: number, time: string): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/setHaiKangDevTime/${deviceId}`,
         method: 'get',
@@ -75,7 +75,7 @@ export function setHaiKangIsupDevTime(deviceId, time) {
  * @param channelId 通道ID
  * @param snapshotType 抓图类型
  */
-export function captureHaiKangIsupAndSave(deviceId, channelId, snapshotType) {
+export function captureHaiKangIsupAndSave(deviceId: number, channelId: number, snapshotType: string): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/captureAndSave/${deviceId}/${channelId}`,
         method: 'post',
@@ -86,18 +86,25 @@ export function captureHaiKangIsupAndSave(deviceId, channelId, snapshotType) {
 /**
  * 海康ISUP设备录像下载请求参数
  */
+export interface HaikangIsupRecordDownloadRequest {
+    id: number;
+    channelId: number;
+    startTime: string;
+    endTime: string;
+    recordFileType?: number;
+}
 
 /**
  * 海康ISUP设备录像直接下载到用户电脑
  * @param data 下载请求
  */
-export function downloadHaikangIsupRecordDirect(data) {
+export function downloadHaikangIsupRecordDirect(data: HaikangIsupRecordDownloadRequest): Promise<any> {
     return request({
         url: '/haikangIsup/device/downloadRecordDirect',
         method: 'post',
-        data,
+        data: data,
         responseType: 'blob',
-        timeout
+        timeout: 300000
     })
 }
 
@@ -105,7 +112,7 @@ export function downloadHaikangIsupRecordDirect(data) {
  * 获取海康ISUP设备信息
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupDeviceInfo(deviceId) {
+export function getHaiKangIsupDeviceInfo(deviceId: number): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getHaiKangIsupDeviceInfo/${deviceId}`,
         method: 'get'
@@ -116,7 +123,7 @@ export function getHaiKangIsupDeviceInfo(deviceId) {
  * 获取海康ISUP存储信息
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupStorageInfo(deviceId) {
+export function getHaiKangIsupStorageInfo(deviceId: number): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getHaiKangIsupStorageInfo/${deviceId}`,
         method: 'get'
@@ -127,7 +134,7 @@ export function getHaiKangIsupStorageInfo(deviceId) {
  * 获取海康ISUP SD卡信息
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupSDCardInfo(deviceId) {
+export function getHaiKangIsupSDCardInfo(deviceId: number): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getHaiKangIsupSDCardInfo/${deviceId}`,
         method: 'get'
@@ -138,7 +145,7 @@ export function getHaiKangIsupSDCardInfo(deviceId) {
  * 获取海康ISUP码率信息
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupBitrateInfo(deviceId) {
+export function getHaiKangIsupBitrateInfo(deviceId: number): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getHaiKangIsupBitrateInfo/${deviceId}`,
         method: 'get'
@@ -149,7 +156,7 @@ export function getHaiKangIsupBitrateInfo(deviceId) {
  * 获取海康ISUP网络状态信息
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupNetworkStatusInfo(deviceId) {
+export function getHaiKangIsupNetworkStatusInfo(deviceId: number): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getHaiKangIsupNetworkStatusInfo/${deviceId}`,
         method: 'get'
@@ -160,7 +167,7 @@ export function getHaiKangIsupNetworkStatusInfo(deviceId) {
  * 获取海康ISUP软件版本信息
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupSoftwareVersionInfo(deviceId) {
+export function getHaiKangIsupSoftwareVersionInfo(deviceId: number): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getHaiKangIsupSoftwareVersionInfo/${deviceId}`,
         method: 'get'
@@ -171,7 +178,7 @@ export function getHaiKangIsupSoftwareVersionInfo(deviceId) {
  * 获取海康ISUP电源状态信息
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupPowerStateInfo(deviceId) {
+export function getHaiKangIsupPowerStateInfo(deviceId: number): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getHaiKangIsupPowerStateInfo/${deviceId}`,
         method: 'get'
@@ -182,7 +189,7 @@ export function getHaiKangIsupPowerStateInfo(deviceId) {
  * 获取海康ISUP摄像头属性信息
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupCameraInfo(deviceId) {
+export function getHaiKangIsupCameraInfo(deviceId: number): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getHaiKangIsupCameraInfo/${deviceId}`,
         method: 'get'
@@ -193,7 +200,7 @@ export function getHaiKangIsupCameraInfo(deviceId) {
  * 获取海康ISUP系统参数
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupSystemParam(deviceId) {
+export function getHaiKangIsupSystemParam(deviceId: number): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getHaiKangIsupSystemParam/${deviceId}`,
         method: 'get'
@@ -205,7 +212,7 @@ export function getHaiKangIsupSystemParam(deviceId) {
  * @param deviceId 设备ID
  * @param streamType 流类型
  */
-export function getHaiKangIsupVideoParam(deviceId, streamType) {
+export function getHaiKangIsupVideoParam(deviceId: number, streamType?: string): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getHaiKangIsupVideoParam/${deviceId}`,
         method: 'get',
@@ -217,7 +224,7 @@ export function getHaiKangIsupVideoParam(deviceId, streamType) {
  * 获取海康系统状态信息
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupSystemStatus(deviceId) {
+export function getHaiKangIsupSystemStatus(deviceId: number): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getHaiKangIsupSystemStatus/${deviceId}`,
         method: 'get'
@@ -228,7 +235,7 @@ export function getHaiKangIsupSystemStatus(deviceId) {
  * 获取海康设备信息（XML格式）
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupDeviceInfoXml(deviceId) {
+export function getHaiKangIsupDeviceInfoXml(deviceId: number): Promise<AjaxResult<any>> {
     return request({
         url: `/haikangIsup/device/getHaiKangIsupDeviceInfoXml/${deviceId}`,
         method: 'get'
@@ -238,16 +245,25 @@ export function getHaiKangIsupDeviceInfoXml(deviceId) {
 /**
  * 海康设备远程升级请求参数
  */
+export interface HaiKangIsupUpgradeRequest {
+    deviceId: number;
+    ftpServerIp: string;
+    ftpServerPort?: number;
+    ftpAccount?: string;
+    ftpPassword?: string;
+    fileName: string;
+    channel?: number;
+}
 
 /**
  * 海康设备远程升级
  * @param request 升级请求参数
  */
-export function upgradeHaiKangIsupDevice(data) {
+export function upgradeHaiKangIsupDevice(data: HaiKangIsupUpgradeRequest): Promise<AjaxResult<any>> {
   return request({
     url: '/haikangIsup/device/upgradeHaiKangIsupDevice',
     method: 'post',
-    data
+    data: data
   });
 }
 
@@ -255,7 +271,7 @@ export function upgradeHaiKangIsupDevice(data) {
  * 获取海康ISUP设备配置信息
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupDeviceConfig(deviceId) {
+export function getHaiKangIsupDeviceConfig(deviceId: number): Promise<AjaxResult<any>> {
   return request({
     url: `/haikangIsup/device/getHaiKangIsupDeviceConfig/${deviceId}`,
     method: 'get'
@@ -267,11 +283,11 @@ export function getHaiKangIsupDeviceConfig(deviceId) {
  * @param deviceId 设备ID
  * @param config 配置信息
  */
-export function setHaiKangIsupDeviceConfig(deviceId, config) {
+export function setHaiKangIsupDeviceConfig(deviceId: number, config: any): Promise<AjaxResult<any>> {
   return request({
     url: `/haikangIsup/device/setHaiKangIsupDeviceConfig/${deviceId}`,
     method: 'post',
-    data
+    data: config
   });
 }
 
@@ -279,7 +295,7 @@ export function setHaiKangIsupDeviceConfig(deviceId, config) {
  * 获取海康ISUP版本信息
  * @param deviceId 设备ID
  */
-export function getHaiKangIsupVersionInfo(deviceId) {
+export function getHaiKangIsupVersionInfo(deviceId: number): Promise<AjaxResult<any>> {
   return request({
     url: `/haikangIsup/device/getHaiKangIsupVersionInfo/${deviceId}`,
     method: 'get'

@@ -383,7 +383,7 @@ import UnusualRegionDeviceSelect from "../../components/common/UnusualRegionDevi
 import { Pane, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import { DeviceQueryParams } from "@/types/api";
-import { addDeviceToRegion, deleteDeviceToRegion, listDevice, queryListByCivilCode } from "@/api/nvr/device";
+import { addDeviceToRegion, deleteDeviceToRegion, listDevice, queryListByCivilCode } from "@/api/qs/device";
 import { OfficeBuilding, MapLocation, VideoCamera, Connection } from "@element-plus/icons-vue";
 
 const { proxy } = getCurrentInstance();

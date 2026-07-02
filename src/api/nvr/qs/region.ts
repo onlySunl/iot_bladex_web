@@ -1,5 +1,5 @@
 import {AjaxResult} from "@/types";
-import request from "@/axios";
+import request from "@/utils/request";
 import {QsRegion} from "@/types/api";
 
 /**
@@ -7,11 +7,11 @@ import {QsRegion} from "@/types/api";
  *
  * @param data
  */
-export function addRegion(data) {
+export function addRegion(data: QsRegion): Promise<AjaxResult> {
     return request({
         url: '/qs/region/add',
         method: 'post',
-        data
+        data: data
     })
 }
 
@@ -20,11 +20,11 @@ export function addRegion(data) {
  *
  * @param data
  */
-export function updateRegion(data) {
+export function updateRegion(data: QsRegion): Promise<AjaxResult> {
     return request({
         url: '/qs/region/update',
         method: 'post',
-        data
+        data: data
     })
 }
 
@@ -33,7 +33,7 @@ export function updateRegion(data) {
  *
  * @param id
  */
-export function deleteRegion(id) {
+export function deleteRegion(id: number): Promise<AjaxResult> {
     return request({
         url: '/qs/region/delete/' + id,
         method: 'delete',
@@ -45,11 +45,11 @@ export function deleteRegion(id) {
  *
  * @param id
  */
-export function queryForRegionTree(query) {
+export function queryForRegionTree(query: any): Promise<AjaxResult> {
     return request({
         url: '/qs/region/tree/list',
         method: 'get',
-        params
+        params: query
     })
 }
 
@@ -58,7 +58,7 @@ export function queryForRegionTree(query) {
  *
  * @param id
  */
-export function queryRegionForDevice() {
+export function queryRegionForDevice(): Promise<AjaxResult> {
     return request({
         url: '/qs/region/device/list',
         method: 'get',
@@ -70,11 +70,11 @@ export function queryRegionForDevice() {
  *
  * @param id
  */
-export function queryForRegionQuery(query) {
+export function queryForRegionQuery(query): Promise<AjaxResult<QsRegion[]>> {
     return request({
         url: '/qs/region/tree/query',
         method: 'get',
-        params
+        params: query
     })
 }
 
@@ -83,10 +83,10 @@ export function queryForRegionQuery(query) {
  *
  * @param parent
  */
-export function getAllChild(parent) {
+export function getAllChild(parent: String): Promise<AjaxResult<QsRegion[]>> {
     return request({
         url: '/qs/region/base/child/list',
         method: 'get',
-        params
+        params: parent
     })
 }

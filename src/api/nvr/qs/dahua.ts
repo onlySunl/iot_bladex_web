@@ -1,4 +1,4 @@
-import request from '@/axios'
+import request from '@/utils/request'
 import {
   DaHuaDevice,
   DaHuaDeviceInfo,
@@ -22,7 +22,7 @@ import {
 import {AjaxResult} from "@/types";
 
 // 查询大华设备列表
-export function listDaHuaDevice() {
+export function listDaHuaDevice(): Promise<AjaxResult<DaHuaDevice[]>> {
   return request({
     url: '/dahua/device/list',
     method: 'get',
@@ -37,11 +37,11 @@ export function listDaHuaDevice() {
  * @param endTime 结束时间
  */
 export function queryDaHuaRecord(
-  id,
-  channelId,
-  startTime,
-  endTime
-) {
+  id: number,
+  channelId: number,
+  startTime: string,
+  endTime: string
+): Promise<AjaxResult<any>> {
   return request({
     url: `/dahua/device/queryRecord/${id}/${channelId}`,
     method: 'get',
@@ -49,7 +49,7 @@ export function queryDaHuaRecord(
       startTime,
       endTime
     },
-    timeout
+    timeout: 30000
   })
 }
 
@@ -57,7 +57,7 @@ export function queryDaHuaRecord(
  * 大华设备获取时间
  * @param ip 设备IP
  */
-export function getDaHuaTime(ip) {
+export function getDaHuaTime(ip: string): Promise<AjaxResult<string>> {
   return request({
     url: `/dahua/device/getTime/${ip}`,
     method: 'post'
@@ -70,7 +70,7 @@ export function getDaHuaTime(ip) {
  * @param date 日期时间
  * @param type 类型
  */
-export function setDaHuaTime(id, date, type) {
+export function setDaHuaTime(id: number, date: string, type: boolean): Promise<AjaxResult<boolean>> {
   return request({
     url: `/dahua/device/setTime/${id}`,
     method: 'get',
@@ -85,7 +85,7 @@ export function setDaHuaTime(id, date, type) {
  * 大华设备重启
  * @param id 设备ID
  */
-export function rebootDaHuaDevice(id) {
+export function rebootDaHuaDevice(id: number): Promise<AjaxResult<boolean>> {
   return request({
     url: `/dahua/device/reboot/${id}`,
     method: 'get'
@@ -96,7 +96,7 @@ export function rebootDaHuaDevice(id) {
  * 获取大华设备详细信息
  * @param id 设备ID
  */
-export function getDaHuaDeviceInfo(id) {
+export function getDaHuaDeviceInfo(id: number): Promise<AjaxResult<DaHuaDeviceInfo>> {
   return request({
     url: `/dahua/device/deviceInfo/${id}`,
     method: 'get'
@@ -107,7 +107,7 @@ export function getDaHuaDeviceInfo(id) {
  * 获取大华设备详细信息(通过IP)
  * @param ip 设备IP
  */
-export function getDaHuaDeviceInfoByIp(ip) {
+export function getDaHuaDeviceInfoByIp(ip: string): Promise<AjaxResult<DaHuaDeviceInfo>> {
   return request({
     url: `/dahua/device/deviceInfoByIp/${ip}`,
     method: 'get'
@@ -118,7 +118,7 @@ export function getDaHuaDeviceInfoByIp(ip) {
  * 获取大华设备系统参数
  * @param id 设备ID
  */
-export function getDaHuaSystemParam(id) {
+export function getDaHuaSystemParam(id: number): Promise<AjaxResult<DaHuaSystemParam>> {
   return request({
     url: `/dahua/device/systemParam/${id}`,
     method: 'get'
@@ -131,7 +131,7 @@ export function getDaHuaSystemParam(id) {
  * @param channelId 通道ID
  * @param streamType 码流类型
  */
-export function getDaHuaVideoParam(id, channelId, streamType) {
+export function getDaHuaVideoParam(id: number, channelId: number, streamType: number): Promise<AjaxResult<DaHuaVideoParam>> {
   return request({
     url: `/dahua/device/videoParam/${id}/${channelId}`,
     method: 'get',
@@ -146,7 +146,7 @@ export function getDaHuaVideoParam(id, channelId, streamType) {
  * @param id 设备ID
  * @param channelId 通道ID
  */
-export function getDaHuaDeviceVideoParam(id, channelId) {
+export function getDaHuaDeviceVideoParam(id: number, channelId: number): Promise<AjaxResult<DaHuaDeviceVideoParam>> {
   return request({
     url: `/dahua/device/deviceVideoParam/${id}/${channelId}`,
     method: 'get'
@@ -160,14 +160,14 @@ export function getDaHuaDeviceVideoParam(id, channelId) {
  * @param streamType 码流类型
  * @param param 视频参数
  */
-export function setDaHuaVideoParam(id, channelId, streamType, param) {
+export function setDaHuaVideoParam(id: number, channelId: number, streamType: number, param: DaHuaVideoParam): Promise<AjaxResult<boolean>> {
   return request({
     url: `/dahua/device/videoParam/${id}/${channelId}`,
     method: 'put',
     params: {
       streamType
     },
-    data
+    data: param
   })
 }
 
@@ -177,11 +177,11 @@ export function setDaHuaVideoParam(id, channelId, streamType, param) {
  * @param channelId 通道ID
  * @param param 视频输入参数
  */
-export function setDaHuaDeviceVideoParam(id, channelId, param) {
+export function setDaHuaDeviceVideoParam(id: number, channelId: number, param: DaHuaDeviceVideoParam): Promise<AjaxResult<boolean>> {
   return request({
     url: `/dahua/device/deviceVideoParam/${id}/${channelId}`,
     method: 'put',
-    data
+    data: param
   })
 }
 
@@ -191,7 +191,7 @@ export function setDaHuaDeviceVideoParam(id, channelId, param) {
  * @param channelId 通道ID
  * @param snapshotType 抓图类型
  */
-export function captureDaHuaAndSave(id, channelId, snapshotType = 'manual') {
+export function captureDaHuaAndSave(id: number, channelId: number, snapshotType: string = 'manual'): Promise<AjaxResult<number>> {
   return request({
     url: `/dahua/device/captureAndSave/${id}/${channelId}`,
     method: 'post',
@@ -203,7 +203,7 @@ export function captureDaHuaAndSave(id, channelId, snapshotType = 'manual') {
  * 获取大华设备存储信息
  * @param id 设备ID
  */
-export function getDaHuaStorageInfo(id) {
+export function getDaHuaStorageInfo(id: number): Promise<AjaxResult<DaHuaStorageInfo>> {
   return request({
     url: `/dahua/device/storageInfo/${id}`,
     method: 'get'
@@ -214,7 +214,7 @@ export function getDaHuaStorageInfo(id) {
  * 获取大华设备系统资源信息
  * @param id 设备ID
  */
-export function getDaHuaSystemResourceInfo(id) {
+export function getDaHuaSystemResourceInfo(id: number): Promise<AjaxResult<DaHuaSystemResourceInfo>> {
   return request({
     url: `/dahua/device/systemResourceInfo/${id}`,
     method: 'get'
@@ -225,7 +225,7 @@ export function getDaHuaSystemResourceInfo(id) {
  * 获取大华设备SD卡信息
  * @param id 设备ID
  */
-export function getDaHuaSDCardInfo(id) {
+export function getDaHuaSDCardInfo(id: number): Promise<AjaxResult<DaHuaSDCardInfo>> {
   return request({
     url: `/dahua/device/sdCardInfo/${id}`,
     method: 'get'
@@ -236,7 +236,7 @@ export function getDaHuaSDCardInfo(id) {
  * 获取大华设备码流信息
  * @param id 设备ID
  */
-export function getDaHuaBitrateInfo(id) {
+export function getDaHuaBitrateInfo(id: number): Promise<AjaxResult<DaHuaBitrateInfo>> {
   return request({
     url: `/dahua/device/bitrateInfo/${id}`,
     method: 'get'
@@ -247,7 +247,7 @@ export function getDaHuaBitrateInfo(id) {
  * 获取大华设备网络状态信息
  * @param id 设备ID
  */
-export function getDaHuaNetworkStatusInfo(id) {
+export function getDaHuaNetworkStatusInfo(id: number): Promise<AjaxResult<DaHuaNetworkStatusInfo>> {
   return request({
     url: `/dahua/device/networkStatusInfo/${id}`,
     method: 'get'
@@ -258,7 +258,7 @@ export function getDaHuaNetworkStatusInfo(id) {
  * 获取大华设备软件版本信息
  * @param id 设备ID
  */
-export function getDaHuaSoftwareVersionInfo(id) {
+export function getDaHuaSoftwareVersionInfo(id: number): Promise<AjaxResult<DaHuaSoftwareVersionInfo>> {
   return request({
     url: `/dahua/device/softwareVersionInfo/${id}`,
     method: 'get'
@@ -269,7 +269,7 @@ export function getDaHuaSoftwareVersionInfo(id) {
  * 获取大华设备录像状态信息
  * @param id 设备ID
  */
-export function getDaHuaRecordStateInfo(id) {
+export function getDaHuaRecordStateInfo(id: number): Promise<AjaxResult<DaHuaRecordStateInfo>> {
   return request({
     url: `/dahua/device/recordStateInfo/${id}`,
     method: 'get'
@@ -280,7 +280,7 @@ export function getDaHuaRecordStateInfo(id) {
  * 获取大华设备电源状态信息
  * @param id 设备ID
  */
-export function getDaHuaPowerStateInfo(id) {
+export function getDaHuaPowerStateInfo(id: number): Promise<AjaxResult<DaHuaPowerStateInfo>> {
   return request({
     url: `/dahua/device/powerStateInfo/${id}`,
     method: 'get'
@@ -291,7 +291,7 @@ export function getDaHuaPowerStateInfo(id) {
  * 获取大华设备报警布撤防信息
  * @param id 设备ID
  */
-export function getDaHuaAlarmArmInfo(id) {
+export function getDaHuaAlarmArmInfo(id: number): Promise<AjaxResult<DaHuaAlarmArmInfo>> {
   return request({
     url: `/dahua/device/alarmArmInfo/${id}`,
     method: 'get'
@@ -302,7 +302,7 @@ export function getDaHuaAlarmArmInfo(id) {
  * 获取大华设备摄像头属性信息
  * @param id 设备ID
  */
-export function getDaHuaCameraInfo(id) {
+export function getDaHuaCameraInfo(id: number): Promise<AjaxResult<DaHuaCameraInfo>> {
   return request({
     url: `/dahua/device/cameraInfo/${id}`,
     method: 'get'
@@ -313,7 +313,7 @@ export function getDaHuaCameraInfo(id) {
  * 获取大华设备RTSP URL信息
  * @param id 设备ID
  */
-export function getDaHuaRtspUrlInfo(id) {
+export function getDaHuaRtspUrlInfo(id: number): Promise<AjaxResult<DaHuaRtspUrlInfo>> {
   return request({
     url: `/dahua/device/rtspUrlInfo/${id}`,
     method: 'get'
@@ -324,12 +324,12 @@ export function getDaHuaRtspUrlInfo(id) {
  * 大华设备录像下载（返回文件信息）
  * @param req 下载请求参数
  */
-export function downloadDaHuaRecord(data) {
+export function downloadDaHuaRecord(data: DaHuaRecordDownloadRequest): Promise<AjaxResult<DaHuaRecordDownloadResponse>> {
   return request({
     url: '/dahua/device/downloadRecord',
     method: 'post',
-    data,
-    timeout // 5分钟超时
+    data: data,
+    timeout: 300000 // 5分钟超时
   })
 }
 
@@ -337,12 +337,12 @@ export function downloadDaHuaRecord(data) {
  * 大华设备录像直接下载到用户电脑
  * @param req 下载请求参数
  */
-export function downloadDaHuaRecordDirect(data) {
+export function downloadDaHuaRecordDirect(data: DaHuaRecordDownloadRequest): Promise<any> {
   return request({
     url: '/dahua/device/downloadRecordDirect',
     method: 'post',
-    data,
+    data: data,
     responseType: 'blob',
-    timeout // 5分钟超时
+    timeout: 300000 // 5分钟超时
   })
 }

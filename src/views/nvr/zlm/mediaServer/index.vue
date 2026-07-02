@@ -184,7 +184,7 @@
 
 <script setup name="MediaServer" lang="ts">
 import router from "@/router";
-import {delMediaServer, getMediaServerList, restartServer} from "@/api/nvr/zlm.js";
+import {delMediaServer, getMediaServerList, restartServer} from "../../../api/qs/zlm.js";
 import {MediaServer} from "@/types/api";
 import {InfoFilled, Connection, Monitor, Lock, View, Edit, Delete, RefreshRight, SuccessFilled} from '@element-plus/icons-vue';
 

@@ -1,4 +1,4 @@
-import request from '@/axios'
+import request from '@/utils/request'
 import {AjaxResult} from "@/types";
 
 /**
@@ -9,11 +9,11 @@ import {AjaxResult} from "@/types";
  * @param endTime 结束时间
  */
 export function queryHaiKangRecord(
-    deviceId,
-    channelId,
-    startTime,
-    endTime
-) {
+    deviceId: number,
+    channelId: number,
+    startTime: string,
+    endTime: string
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikang/device/getRecMonth/${deviceId}/${channelId}`,
         method: 'get',
@@ -21,22 +21,29 @@ export function queryHaiKangRecord(
             startTime,
             endTime
         },
-        timeout
+        timeout: 30000
     })
 }
 
+export interface HaikangRecordDownloadRequest {
+    id: number;
+    channelId: number;
+    startTime: string;
+    endTime: string;
+    recordFileType?: number;
+}
 
 /**
  * 海康设备录像直接下载到用户电脑
  * @param data 下载请求
  */
-export function downloadHaikangRecordDirect(data) {
+export function downloadHaikangRecordDirect(data: HaikangRecordDownloadRequest): Promise<any> {
     return request({
         url: '/haikang/device/downloadRecordDirect',
         method: 'post',
-        data,
+        data: data,
         responseType: 'blob',
-        timeout
+        timeout: 300000
     })
 }
 
@@ -47,15 +54,15 @@ export function downloadHaikangRecordDirect(data) {
  * @param snapshotType 抓图类型
  */
 export function captureHaikangAndSave(
-    deviceId,
-    channelId,
-    snapshotType = 'manual'
-) {
+    deviceId: number,
+    channelId: number,
+    snapshotType: string = 'manual'
+): Promise<AjaxResult<number>> {
     return request({
         url: `/haikang/device/captureAndSave/${deviceId}/${channelId}`,
         method: 'post',
         params: { snapshotType },
-        timeout
+        timeout: 30000
     })
 }
 
@@ -64,12 +71,12 @@ export function captureHaikangAndSave(
  * @param deviceId 设备ID
  */
 export function getHaiKangDeviceInfo(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikang/device/getHaiKangDeviceInfo/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
@@ -78,12 +85,12 @@ export function getHaiKangDeviceInfo(
  * @param deviceId 设备ID
  */
 export function getHaiKangStorageInfo(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikang/device/getHaiKangStorageInfo/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
@@ -92,12 +99,12 @@ export function getHaiKangStorageInfo(
  * @param deviceId 设备ID
  */
 export function getHaiKangSDCardInfo(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikang/device/getHaiKangSDCardInfo/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
@@ -106,12 +113,12 @@ export function getHaiKangSDCardInfo(
  * @param deviceId 设备ID
  */
 export function getHaiKangBitrateInfo(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikang/device/getHaiKangBitrateInfo/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
@@ -120,12 +127,12 @@ export function getHaiKangBitrateInfo(
  * @param deviceId 设备ID
  */
 export function getHaiKangNetworkStatusInfo(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikang/device/getHaiKangNetworkStatusInfo/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
@@ -134,12 +141,12 @@ export function getHaiKangNetworkStatusInfo(
  * @param deviceId 设备ID
  */
 export function getHaiKangSoftwareVersionInfo(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikang/device/getHaiKangSoftwareVersionInfo/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
@@ -148,12 +155,12 @@ export function getHaiKangSoftwareVersionInfo(
  * @param deviceId 设备ID
  */
 export function getHaiKangRecordStateInfo(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikang/device/getHaiKangRecordStateInfo/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
@@ -162,12 +169,12 @@ export function getHaiKangRecordStateInfo(
  * @param deviceId 设备ID
  */
 export function getHaiKangPowerStateInfo(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikang/device/getHaiKangPowerStateInfo/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
@@ -176,12 +183,12 @@ export function getHaiKangPowerStateInfo(
  * @param deviceId 设备ID
  */
 export function getHaiKangAlarmArmInfo(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikang/device/getHaiKangAlarmArmInfo/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
@@ -190,12 +197,12 @@ export function getHaiKangAlarmArmInfo(
  * @param deviceId 设备ID
  */
 export function getHaiKangCameraInfo(
-  deviceId
-) {
+  deviceId: number
+): Promise<AjaxResult<any>> {
   return request({
     url: `/haikang/device/getHaiKangCameraInfo/${deviceId}`,
     method: 'get',
-    timeout
+    timeout: 30000
   })
 }
 
@@ -204,12 +211,12 @@ export function getHaiKangCameraInfo(
  * @param deviceId 设备ID
  */
 export function getHaiKangRtspUrlInfo(
-  deviceId
-) {
+  deviceId: number
+): Promise<AjaxResult<any>> {
   return request({
     url: `/haikang/device/getHaiKangRtspUrlInfo/${deviceId}`,
     method: 'get',
-    timeout
+    timeout: 30000
   })
 }
 
@@ -218,12 +225,12 @@ export function getHaiKangRtspUrlInfo(
  * @param deviceId 设备ID
  */
 export function getHaiKangSystemParam(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikang/device/getHaiKangSystemParam/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
@@ -234,15 +241,15 @@ export function getHaiKangSystemParam(
  * @param streamType 码流类型
  */
 export function getHaiKangVideoParam(
-    deviceId,
-    channelId,
-    streamType
-) {
+    deviceId: number,
+    channelId: number,
+    streamType: string
+): Promise<AjaxResult<any>> {
     return request({
         url: `/haikang/device/getHaiKangVideoParam/${deviceId}/${channelId}`,
         method: 'get',
         params: { streamType },
-        timeout
+        timeout: 30000
     })
 }
 
@@ -251,29 +258,29 @@ export function getHaiKangVideoParam(
  * @param deviceId 设备ID
  */
 export function getHaiKangDevTime(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<string>> {
     return request({
         url: `/haikang/device/getHaiKangDevTime/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }
 
 /**
  * 设置海康设备时间
  * @param deviceId 设备ID
- * @param time 时间（格式：yyyy-MM-dd HH）
+ * @param time 时间（格式：yyyy-MM-dd HH:mm:ss）
  */
 export function setHaiKangDevTime(
-    deviceId,
-    time
-) {
+    deviceId: number,
+    time: string
+): Promise<AjaxResult<boolean>> {
     return request({
         url: `/haikang/device/setHaiKangDevTime/${deviceId}`,
         method: 'get',
         params: { time },
-        timeout
+        timeout: 30000
     })
 }
 
@@ -282,11 +289,11 @@ export function setHaiKangDevTime(
  * @param deviceId 设备ID
  */
 export function rebootHaiKangDevice(
-    deviceId
-) {
+    deviceId: number
+): Promise<AjaxResult<boolean>> {
     return request({
         url: `/haikang/device/rebootHaiKangDevice/${deviceId}`,
         method: 'get',
-        timeout
+        timeout: 30000
     })
 }

@@ -120,7 +120,7 @@
 
 <script setup name="AssociatedDevice" lang="ts">
 import {useRoute} from "vue-router";
-import {link, listPlanRecord} from "@/api/nvr/device";
+import {link, listPlanRecord} from "@/api/qs/device";
 
 const {proxy} = getCurrentInstance()
 const {

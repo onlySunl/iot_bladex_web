@@ -1,5 +1,5 @@
 // 查询视频监控设备列表
-import request from "@/axios";
+import request from "@/utils/request";
 import {AjaxResult} from "@/types";
 
 /**
@@ -7,7 +7,7 @@ import {AjaxResult} from "@/types";
  *
  * @return
  */
-export function getSystemInfo() {
+export function getSystemInfo(): Promise<AjaxResult> {
     return request({
         url: '/qs/server/system/info',
         method: 'get',
@@ -19,7 +19,7 @@ export function getSystemInfo() {
  *
  * @return
  */
-export function getDeviceStatistics() {
+export function getDeviceStatistics(): Promise<AjaxResult> {
     return request({
         url: '/qs/server/system/deviceStatist',
         method: 'get',

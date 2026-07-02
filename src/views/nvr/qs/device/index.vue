@@ -278,10 +278,10 @@
                   <span>暂无截图</span>
                 </div>
               </div>
-              
+
               <!-- 左上角复选框 -->
               <el-checkbox v-model="item.checked" @change="handleCardSelection" class="card-checkbox" />
-              
+
               <!-- 底部玻璃信息条 -->
               <div class="media-glass-bar">
                 <h3 class="bar-device-name" :title="item.deviceName">{{ item.deviceName }}</h3>
@@ -377,7 +377,7 @@
                     @click="handleDeviceRecord(item)"
                   />
                 </el-tooltip>
-                
+
                 <!-- 刷新设备状态和通道（GB28181） -->
                 <el-tooltip content="刷新" v-if="item.type === '12'">
                   <el-button
@@ -390,7 +390,7 @@
                     @click="handleRefreshDevice(item)"
                   />
                 </el-tooltip>
-                
+
                 <!-- 更多操作下拉菜单 -->
                 <el-dropdown @command="(command) => handleMoreAction(command, item)" trigger="click" style="margin-left: 12px;">
                   <el-button
@@ -4953,14 +4953,14 @@
 
 <script setup lang="ts" name="Device">
 import {onUnmounted, watch, nextTick, reactive, ref, getCurrentInstance, toRefs, computed} from "vue";
-import { useClipboard } from "vue3-clipboard";
+import useClipboard from "vue-clipboard3";
 import { ElLoading } from "element-plus";
 import {
   getHaiKangIsupDeviceConfig,
   setHaiKangIsupDeviceConfig,
   getHaiKangIsupVersionInfo
-} from "@/api/nvr/haikang-isup";
-import EasyPlayer from "@/components/nvr/EasyPlayer";
+} from "@/api/nvr/qs/haikang-isup";
+import EasyPlayer from "@/components/EasyPlayer";
 import type {DeviceQueryParams, QsDevice} from "@/types/api/qs/device"
 import {
   addDevice,
@@ -4978,7 +4978,7 @@ import {
   deletePreset,
   controlLight,
   controlWiper
-} from "@/api/nvr/device"
+} from "@/api/qs/device"
 import {
     listHaiKangIsupDevice,
     rebootHaiKangIsupDevice,
@@ -4999,7 +4999,7 @@ import {
     getHaiKangIsupSystemStatus,
     getHaiKangIsupDeviceInfoXml,
     upgradeHaiKangIsupDevice
-} from "@/api/nvr/haikang-isup";
+} from "@/api/qs/haikang-isup";
 import {HaikangIsupDevice, PullConfig, RTPServerParam, WSDiscoveryDevice, WSOnvifDevice} from "@/types/api";
 import {
   DaHuaDevice,
@@ -5024,7 +5024,7 @@ import {
   getDaHuaStorageInfo, getDaHuaSystemResourceInfo, getDaHuaSDCardInfo, getDaHuaBitrateInfo,
   getDaHuaNetworkStatusInfo, getDaHuaSoftwareVersionInfo, getDaHuaRecordStateInfo, getDaHuaPowerStateInfo,
   getDaHuaAlarmArmInfo, getDaHuaCameraInfo, getDaHuaRtspUrlInfo, downloadDaHuaRecord, downloadDaHuaRecordDirect
-} from "@/api/nvr/dahua";
+} from "@/api/qs/dahua";
 import { 
   queryHaiKangRecord, 
   downloadHaikangRecordDirect, 
@@ -5045,7 +5045,7 @@ import {
   getHaiKangDevTime,
   setHaiKangDevTime,
   rebootHaiKangDevice
-} from "@/api/nvr/haikang";
+} from "@/api/qs/haikang";
 import { saveAs } from "file-saver";
 import {
   closeStreams,
@@ -5057,22 +5057,22 @@ import {
   streamPullPlay, streamPullPush,
   startGb28181Play, stopGb28181Play,
   startJt1078Play, stopJt1078Play
-} from "@/api/nvr/zlm";
+} from "@/api/qs/zlm";
 import {DocumentCopy, InfoFilled, Refresh, Sunny, Moon, SwitchButton, CircleClose, Position, Plus, Delete, Download, WindPower, List, Grid, CircleCheck, Picture, VideoCamera, MapLocation, Monitor, More, ArrowDown, Clock, Camera, Cpu, Histogram, Bell, Lock, Key, Timer, Place, OfficeBuilding, CollectionTag, Link, Medal, SetUp, Box, Connection, Odometer, Files, TrendCharts, Tools, Lightning, Warning, Loading, Search, Setting, VideoPlay, VideoPause} from '@element-plus/icons-vue'
-import StreamDropdown from "@/components/nvr/Channel/streamDropdown.vue";
-import { queryTerminalParams, setTerminalParams, querySpecificTerminalParams, terminalControl, queryTerminalAttribute, queryLocation, tempLocationTrack, confirmAlarm, linkCheck, sendText, eventSetting, sendQuestion, menuSetting, infoService, phoneCallback, setPhoneBook, vehicleControl, setCircleArea, deleteCircleArea, setRectArea, deleteRectArea, setPolygonArea, deletePolygonArea, setRoute, deleteRoute, queryAreaOrRoute, tachographDataCollect, tachographParamSend, reportDriverInfo, queryTerminalAVProperties, cameraShoot, searchMultimedia, uploadMultimedia, startRecording, searchUploadMultimedia, terminalUpgrade } from "@/api/nvr/jt1078";
-import MediaInfo from "@/components/nvr/Channel/mediaInfo.vue";
-import SelectMapPosition from '@/components/nvr/SelectMapPosition';
+import StreamDropdown from "@/components/Channel/streamDropdown.vue";
+import { queryTerminalParams, setTerminalParams, querySpecificTerminalParams, terminalControl, queryTerminalAttribute, queryLocation, tempLocationTrack, confirmAlarm, linkCheck, sendText, eventSetting, sendQuestion, menuSetting, infoService, phoneCallback, setPhoneBook, vehicleControl, setCircleArea, deleteCircleArea, setRectArea, deleteRectArea, setPolygonArea, deletePolygonArea, setRoute, deleteRoute, queryAreaOrRoute, tachographDataCollect, tachographParamSend, reportDriverInfo, queryTerminalAVProperties, cameraShoot, searchMultimedia, uploadMultimedia, startRecording, searchUploadMultimedia, terminalUpgrade } from "@/api/qs/jt1078";
+import MediaInfo from "@/components/Channel/mediaInfo.vue";
+import SelectMapPosition from '@/components/SelectMapPosition';
 import ChannelCode from '@/views/components/common/channelCode.vue';
-import DeviceSnapshotDialog from '@/components/nvr/DeviceSnapshotDialog/index.vue';
-import {getOnvifDeviceList, onvifLogin, restartOnvifDevice, syncOnvifDeviceTime, getOnvifDeviceTime, getOnvifDeviceInfo, captureOnvifAndSave, getOnvifStorageConfigurations, getOnvifStorageCapabilities, getOnvifStorageState, getOnvifNetworkInterfaces, getOnvifNetworkProtocols, getOnvifVideoSourceConfigs, getOnvifVideoEncoderConfigs, getOnvifAudioSourceConfigs, getOnvifAudioEncoderConfigs, getOnvifVideoOutputConfigs} from "@/api/nvr/onvif";
-import {getAllDevices, getChannelsByDeviceId, refreshDevice, rebootGb28181Device, recordCmd, queryDeviceStatus, queryDeviceInfo, subscribeCatalog, unsubscribeCatalog, queryDeviceConfig, updateDeviceConfig, queryHomePosition, updateHomePosition, queryCruiseTrackList, queryCruiseTrack, queryPTZPosition, homePositionControl, ptzPreciseControl, startCruise, stopCruise, querySDCardStatus, formatSDCardControl} from "@/api/nvr/gb28181";
+import DeviceSnapshotDialog from '@/components/DeviceSnapshotDialog/index.vue';
+import {getOnvifDeviceList, onvifLogin, restartOnvifDevice, syncOnvifDeviceTime, getOnvifDeviceTime, getOnvifDeviceInfo, captureOnvifAndSave, getOnvifStorageConfigurations, getOnvifStorageCapabilities, getOnvifStorageState, getOnvifNetworkInterfaces, getOnvifNetworkProtocols, getOnvifVideoSourceConfigs, getOnvifVideoEncoderConfigs, getOnvifAudioSourceConfigs, getOnvifAudioEncoderConfigs, getOnvifVideoOutputConfigs} from "@/api/qs/onvif";
+import {getAllDevices, getChannelsByDeviceId, refreshDevice, rebootGb28181Device, recordCmd, queryDeviceStatus, queryDeviceInfo, subscribeCatalog, unsubscribeCatalog, queryDeviceConfig, updateDeviceConfig, queryHomePosition, updateHomePosition, queryCruiseTrackList, queryCruiseTrack, queryPTZPosition, homePositionControl, ptzPreciseControl, startCruise, stopCruise, querySDCardStatus, formatSDCardControl} from "@/api/qs/gb28181";
 import type {Gb28181Device, Gb28181Channel} from "@/types/api/qs/gb28181";
-import {getAllDevice} from "@/api/nvr/jt1078";
+import {getAllDevice} from "@/api/qs/jt1078";
 import type {Jt1078Device} from "@/types/api/qs/jt1078";
 import {ElMessageBox} from "element-plus";
 import {useRouter} from "vue-router";
-import {captureFromStream, listSnapshot, delSnapshot} from "@/api/nvr/snapshot";
+import {captureFromStream, listSnapshot, delSnapshot} from "@/api/qs/snapshot";
 import type { QsDeviceSnapshot, SnapshotQueryParams } from "@/types/api/qs/snapshot";
 
 const {toClipboard} = useClipboard()
