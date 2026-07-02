@@ -4953,7 +4953,7 @@
 
 <script setup lang="ts" name="Device">
 import {onUnmounted, watch, nextTick, reactive, ref, getCurrentInstance, toRefs, computed} from "vue";
-import useClipboard from "vue-clipboard3";
+import { useClipboard } from "vue3-clipboard";
 import { ElLoading } from "element-plus";
 import {
   getHaiKangIsupDeviceConfig,

@@ -1,4 +1,4 @@
-import request from '@/router/axios'
+import request from '@/axios'
 /**
  * 获取所有国标设备
  */

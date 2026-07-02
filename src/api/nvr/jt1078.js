@@ -1,4 +1,4 @@
-import request from '@/router/axios'
+import request from '@/axios'
 export function getAllDevice() {
   return request({
     url: '/jt1078/device/allList',

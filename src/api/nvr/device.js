@@ -1,4 +1,4 @@
-import request from '@/router/axios'
+import request from '@/axios'
 import {RecordPlanParam} from "@/types/api";
 
 // 查询视频监控设备列表

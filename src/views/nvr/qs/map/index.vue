@@ -260,7 +260,7 @@ import EasyPlayer from "@/components/nvr/EasyPlayer";
 import {DocumentCopy, InfoFilled, CaretTop, CaretLeft, CaretBottom, CaretRight, ZoomIn, ZoomOut, Refresh} from '@element-plus/icons-vue'
 import StreamDropdown from "@/components/nvr/Channel/streamDropdown.vue";
 import MediaInfo from "@/components/nvr/Channel/mediaInfo.vue";
-import useClipboard from "vue-clipboard3";
+import { useClipboard } from "vue3-clipboard";
 import DeviceTree from '@/components/nvr/DeviceTree'
 import SelectMapPosition from '@/components/nvr/SelectMapPosition'
 import {Pane, Splitpanes} from "splitpanes"

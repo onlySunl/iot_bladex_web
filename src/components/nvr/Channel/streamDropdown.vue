@@ -222,10 +222,10 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, computed, ref, watch} from 'vue';
+import {computed, ref, watch} from 'vue';
 import {ElMessage} from 'element-plus';
 import {DocumentCopy} from '@element-plus/icons-vue';
-import useClipboard from 'vue-clipboard3';
+import { useClipboard } from 'vue3-clipboard';
 
 const {toClipboard} = useClipboard();
 

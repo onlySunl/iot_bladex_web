@@ -1,5 +1,5 @@
 import {AjaxResult} from "@/types";
-import request from "@/router/axios";
+import request from "@/axios";
 import {QsRegion} from "@/types/api";
 
 /**

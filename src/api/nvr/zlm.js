@@ -1,4 +1,4 @@
-import request from '@/router/axios'
+import request from '@/axios'
 import {MediaInfo, MediaServer, PullConfig, RTPServerParam, Snap, StreamContent} from "@/types/api";
 import {AjaxResult} from "@/types";
 

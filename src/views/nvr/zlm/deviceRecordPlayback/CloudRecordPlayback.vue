@@ -227,7 +227,7 @@
 </template>
 
 <script setup lang="ts" name="CloudRecordPlayback">
-import useClipboard from 'vue-clipboard3'
+import { useClipboard } from 'vue3-clipboard'
 import screenfull from 'screenfull'
 import moment from 'moment'
 import EasyPlayer from '@/components/nvr/EasyPlayer'

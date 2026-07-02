@@ -1,4 +1,4 @@
-import request from '@/router/axios'
+import request from '@/axios'
 // 查询设备抓图列表
 export function listSnapshot(query) {
     return request({

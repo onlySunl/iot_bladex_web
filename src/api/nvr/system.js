@@ -1,5 +1,5 @@
 // 查询视频监控设备列表
-import request from "@/router/axios";
+import request from "@/axios";
 import {AjaxResult} from "@/types";
 
 /**

@@ -1,4 +1,4 @@
-import request from '@/router/axios'
+import request from '@/axios'
 // 查询设备告警列表
 export function listAlarm(query) {
     return request({

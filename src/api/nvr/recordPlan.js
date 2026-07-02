@@ -1,4 +1,4 @@
-import request from '@/router/axios'
+import request from '@/axios'
 // 查询录像计划列表
 export function listRecordPlan(query) {
   return request({

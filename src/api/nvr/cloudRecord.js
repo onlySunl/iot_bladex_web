@@ -1,4 +1,4 @@
-import request from '@/router/axios'
+import request from '@/axios'
 // 查询云端录像列表（分页）
 export function listCloudRecord(query) {
     return request({

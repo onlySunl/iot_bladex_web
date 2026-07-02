@@ -1,4 +1,4 @@
-import request from '@/router/axios'
+import request from '@/axios'
 
 
 export function listPlatform(query) {
