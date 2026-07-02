@@ -393,7 +393,6 @@ import useClipboard from "vue-clipboard3";
 import screenfull from 'screenfull'
 import moment from 'moment'
 import EasyPlayer from "@/components/EasyPlayer";
-import type {CloudRecordQueryParams, ZlmCloudRecord} from "@/types/api/qs/cloudRecord"
 import {
   closeStreams,
   delCloudRecord,

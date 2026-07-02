@@ -46,7 +46,6 @@
 
 <script setup lang="ts" name="DeviceConfigDialog">
 import { ref, computed, watch } from 'vue';
-import type { FormInstance, FormRules } from 'element-plus';
 
 interface DeviceConfig {
   id?: number;

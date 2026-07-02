@@ -224,7 +224,6 @@
 </template>
 
 <script setup lang="ts" name="RecordPlan">
-import type {RecordPlanQueryParams, ZlmRecordPlan} from "@/types/api/qs/recordPlan"
 import ByteWeekTimePicker from "./byteWeekTimePicker.vue"
 import AssociatedSevice from "./associatedDevice.vue"
 import {addRecordPlan, delRecordPlan, getRecordPlan, listRecordPlan, updateRecordPlan, changeRecordPlanStatus} from "@/api/qs/recordPlan"

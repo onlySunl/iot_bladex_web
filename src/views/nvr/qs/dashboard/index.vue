@@ -447,7 +447,6 @@ import { queryRegionForDevice } from '@/api/qs/region'
 import { queryGroupForDevice } from '@/api/qs/group'
 import { getConfigKey } from '@/api/system/config'
 import { streamPullPlay, rtpPlay, streamPullPush, startGb28181Play, startJt1078Play, loadRecord } from '@/api/qs/zlm'
-import type { PullConfig, RTPServerParam } from '@/types/api'
 
 const { toClipboard } = useClipboard()
 

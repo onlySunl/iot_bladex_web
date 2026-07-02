@@ -281,7 +281,6 @@ import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import RegionTree from '@/views/components/common/RegionTree.vue'
 import GroupTree from '@/views/components/common/GroupTree.vue'
-import type { CloudRecordQueryParams, ZlmCloudRecord } from '@/types/api/qs/cloudRecord'
 import { closeStreams, listAllCloudRecord, loadRecord, seekCloudRecord, setCloudRecordSpeed } from '@/api/qs/cloudRecord'
 import momentDurationFormatSetup from 'moment-duration-format'
 import {

@@ -148,7 +148,6 @@
 
 <script setup lang="ts" name="DeviceFormDialog">
 import { ref, computed, watch } from 'vue';
-import type { FormInstance, FormRules } from 'element-plus';
 
 interface QsDevice {
   id?: number;

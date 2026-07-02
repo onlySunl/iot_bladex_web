@@ -122,7 +122,7 @@ import { pageMediaServer } from '@/api/nvr/qs/zlm';
 import { listGroup } from '@/api/nvr/qs/group';
 
 // 导入工具函数
-import { formatCapacity, calculateStoragePercentage, getStorageStatus, getOnlineStatus } from './utils';
+import { formatCapacity, calculateStoragePercentage, getStorageStatus, getOnlineStatus } from './utils.js';
 
 // 类型定义
 interface QsDevice {

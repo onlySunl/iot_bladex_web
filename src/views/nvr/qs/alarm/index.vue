@@ -227,7 +227,6 @@
 <script setup lang="ts" name="DeviceAlarm">
 import { getCurrentInstance, onMounted, reactive, ref, toRefs } from 'vue'
 import { delAlarm, listAlarm, exportAlarm, updateAlarm, batchHandleAlarm } from '@/api/qs/alarm'
-import type { QsDeviceAlarm, AlarmQueryParams } from '@/types/api/qs/alarm'
 import useUserStore from '@/store/modules/user'
 
 import { ElMessage, ElMessageBox } from 'element-plus'
