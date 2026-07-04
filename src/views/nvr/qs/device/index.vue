@@ -249,7 +249,7 @@ import {
   exportQsDevice
 } from '@/api/nvr/device'
 import { listGroup } from '@/api/nvr/group'
-import { getMediaServerList, startStream, stopStream } from '@/api/nvr/zlm'
+import { getMediaServerList, streamPullPlay, stopStreamPullPlay } from '@/api/nvr/zlm'
 import { getDictionary } from '@/api/system/dict'
 
 // 导入子组件
