@@ -137,47 +137,50 @@
       </template>
 
       <!-- ==================== 操作列扩展 ==================== -->
-      <template #menu="{ row, size }">
+      <!-- 使用 menu-left 插槽在默认按钮前添加自定义按钮 -->
+      <template #menu-left="{ row, size }">
         <!-- 播放 -->
-        <avue-button
+        <el-button
           type="primary"
           text
           :size="size"
           icon="video-play"
           @click="handlePlay(row)"
-        >播放</avue-button>
+        >播放</el-button>
 
         <!-- 抓图 -->
-        <avue-button
+        <el-button
           type="primary"
           text
           :size="size"
           icon="camera"
           @click="handleSnapshot(row)"
-        >抓图</avue-button>
+        >抓图</el-button>
 
         <!-- 配置 -->
-        <avue-button
+        <el-button
           type="primary"
           text
           :size="size"
           icon="setting"
           @click="handleConfig(row)"
-        >配置</avue-button>
+        >配置</el-button>
 
         <!-- 更多操作下拉菜单 -->
-        <avue-dropdown @command="(cmd) => handleCommand(cmd, row)">
-          <avue-button type="primary" text :size="size">
-            更多<avue-icon icon="arrow-down" style="margin-left: 3px" />
-          </avue-button>
+        <el-dropdown @command="(cmd) => handleCommand(cmd, row)" trigger="click">
+          <el-button type="primary" text :size="size">
+            更多<el-icon style="margin-left: 3px"><arrow-down /></el-icon>
+          </el-button>
           <template #dropdown>
-            <avue-dropdown-item command="reboot" icon="refresh-right" :disabled="!canReboot(row)">重启</avue-dropdown-item>
-            <avue-dropdown-item command="preset" icon="aim" :disabled="!isGb28181(row)">预置点</avue-dropdown-item>
-            <avue-dropdown-item command="ptz" icon="aim" :disabled="!isGb28181(row)">云台控制</avue-dropdown-item>
-            <avue-dropdown-item command="timeSync" icon="time" :disabled="!canTimeSync(row)">校时</avue-dropdown-item>
-            <avue-dropdown-item command="recordDownload" icon="download" :disabled="!canDownloadRecord(row)">录像下载</avue-dropdown-item>
+            <el-dropdown-menu>
+              <el-dropdown-item command="reboot" :icon="RefreshRight" :disabled="!canReboot(row)">重启</el-dropdown-item>
+              <el-dropdown-item command="preset" :icon="Aim" :disabled="!isGb28181(row)">预置点</el-dropdown-item>
+              <el-dropdown-item command="ptz" :icon="Aim" :disabled="!isGb28181(row)">云台控制</el-dropdown-item>
+              <el-dropdown-item command="timeSync" :icon="Timer" :disabled="!canTimeSync(row)">校时</el-dropdown-item>
+              <el-dropdown-item command="recordDownload" :icon="Download" :disabled="!canDownloadRecord(row)">录像下载</el-dropdown-item>
+            </el-dropdown-menu>
           </template>
-        </avue-dropdown>
+        </el-dropdown>
       </template>
 
       <!-- ==================== 表单插槽 ==================== -->
@@ -276,6 +279,9 @@ import DeviceRecordDownload from './components/DeviceRecordDownload.vue'
 import DeviceSnapshotDialog from './components/DeviceSnapshotDialog.vue'
 import SelectMapPosition from '@/components/nvr/SelectMapPosition/index.vue'
 
+// 导入图标
+import { RefreshRight, Aim, Timer, Download, ArrowDown } from '@element-plus/icons-vue'
+
 /**
  * 设备管理页面
  * 使用 Avue CRUD 组件实现，支持：
@@ -293,7 +299,13 @@ export default {
     DeviceTimeSync,
     DeviceRecordDownload,
     DeviceSnapshotDialog,
-    SelectMapPosition
+    SelectMapPosition,
+    // 图标组件
+    RefreshRight,
+    Aim,
+    Timer,
+    Download,
+    ArrowDown
   },
   data() {
     return {
