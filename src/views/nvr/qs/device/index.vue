@@ -139,33 +139,6 @@
       <!-- ==================== 操作列扩展 ==================== -->
       <!-- 使用 menu-left 插槽在默认按钮前添加自定义按钮 -->
       <template #menu-left="{ row, size }">
-        <!-- 播放 -->
-        <el-button
-          type="primary"
-          text
-          :size="size"
-          icon="video-play"
-          @click="handlePlay(row)"
-        >播放</el-button>
-
-        <!-- 抓图 -->
-        <el-button
-          type="primary"
-          text
-          :size="size"
-          icon="camera"
-          @click="handleSnapshot(row)"
-        >抓图</el-button>
-
-        <!-- 配置 -->
-        <el-button
-          type="primary"
-          text
-          :size="size"
-          icon="setting"
-          @click="handleConfig(row)"
-        >配置</el-button>
-
         <!-- 更多操作下拉菜单 -->
         <el-dropdown @command="(cmd) => handleCommand(cmd, row)" trigger="click">
           <el-button type="primary" text :size="size">
@@ -173,6 +146,9 @@
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
+              <el-dropdown-item command="play" :icon="VideoPlay">播放</el-dropdown-item>
+              <el-dropdown-item command="snapshot" :icon="Camera">抓图</el-dropdown-item>
+              <el-dropdown-item command="config" :icon="Setting">配置</el-dropdown-item>
               <el-dropdown-item command="reboot" :icon="RefreshRight" :disabled="!canReboot(row)">重启</el-dropdown-item>
               <el-dropdown-item command="preset" :icon="Aim" :disabled="!isGb28181(row)">预置点</el-dropdown-item>
               <el-dropdown-item command="ptz" :icon="Aim" :disabled="!isGb28181(row)">云台控制</el-dropdown-item>
@@ -436,7 +412,8 @@ export default {
           searchType: 'select',
           overHidden: true,
           slot: true,
-          props: { label: 'dictValue', value: 'dictKey' }
+          props: { label: 'dictValue', value: 'dictKey' },
+          onChange: (val) => this.handleAccessTypeChange(val)
         },
         // ==================== 启用状态 ====================
         {
@@ -460,8 +437,8 @@ export default {
           width: 90,
           align: 'center',
           type: 'switch',
-          activeValue: 'online',
-          inactiveValue: 'offline',
+          activeValue: 1,
+          inactiveValue: 0,
           addDisplay: false,
           editDisplay: false,
           search: true,
@@ -887,10 +864,47 @@ export default {
       }
     },
 
+    // ==================== 接入类型变更时自动生成直播流地址 ====================
+    handleAccessTypeChange(val) {
+      if (!val) return
+      const accessType = String(val)
+      // 根据接入类型生成默认直播流地址模板
+      const templates = {
+        '1': 'rtsp://${ip}:${port}/${stream}',      // RTSP
+        '2': 'rtmp://${ip}:${port}/${stream}',      // RTMP
+        '3': 'http://${ip}:${port}/${stream}.flv',  // HTTP-FLV
+        '4': 'http://${ip}:${port}/${stream}/hls.m3u8', // HLS
+        '5': 'gb28181://${channelId}',              // GB28181
+        '6': 'jt1078://${phone}:${channel}'         // JT1078
+      }
+      const template = templates[accessType]
+      if (template) {
+        // 使用表单中的值替换模板变量
+        const form = this.form || {}
+        let address = template
+          .replace('${ip}', form.ip || '127.0.0.1')
+          .replace('${port}', form.port || '554')
+          .replace('${stream}', form.stream || 'stream1')
+          .replace('${channelId}', form.channelId || '')
+          .replace('${phone}', form.phone || '')
+          .replace('${channel}', form.channel || '1')
+        this.form.streamAddress = address
+      }
+    },
+
     // ==================== 更多操作 ====================
     async handleCommand(command, row) {
       this.currentDevice = row
       switch (command) {
+        case 'play':
+          this.handlePlay(row)
+          break
+        case 'snapshot':
+          this.handleSnapshot(row)
+          break
+        case 'config':
+          this.handleConfig(row)
+          break
         case 'reboot':
           await this.handleReboot(row)
           break
