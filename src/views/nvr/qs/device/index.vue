@@ -526,11 +526,10 @@ export default {
           prop: 'address',
           minWidth: 160,
           align: 'center',
-          type: 'input',
+          type: 'map',
           placeholder: '请选择安装地址',
-          span: 18,
+          span: 24,
           overHidden: true,
-          display: false,
           addDisplay: true,
           editDisplay: true,
           slot: true,
@@ -541,8 +540,7 @@ export default {
           label: '地图选点',
           prop: 'mapSelect',
           type: 'button',
-          span: 6,
-          display: false,
+          span: 24,
           addDisplay: true,
           editDisplay: true,
           formslot: true,
@@ -554,7 +552,6 @@ export default {
           prop: 'longitude',
           type: 'map',
           span: 12,
-          display: false,
           addDisplay: true,
           editDisplay: true,
           hide: true
@@ -565,7 +562,6 @@ export default {
           prop: 'latitude',
           type: 'map',
           span: 12,
-          display: false,
           addDisplay: true,
           editDisplay: true,
           hide: true
@@ -846,8 +842,10 @@ export default {
       if (data && data.lat && data.lng) {
         this.form.latitude = data.lat
         this.form.longitude = data.lng
-        // 使用逆地理编码获取地址（如果可用）
-        this.reverseGeocode(data.lat, data.lng)
+        // 如果返回了地址，直接回填
+        if (data.address) {
+          this.form.address = data.address
+        }
       }
       this.mapSelectVisible = false
     },
