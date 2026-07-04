@@ -100,7 +100,7 @@
           <span style="max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
             {{ row.liveAddress }}
           </span>
-          <avue-button link type="primary" size="small" @click="handleCopy(row.liveAddress)">复制</avue-button>
+          <el-button link type="primary" size="small" @click="handleCopy(row.liveAddress)">复制</el-button>
         </div>
         <span v-else>-</span>
       </template>
@@ -128,12 +128,16 @@
 
       <!-- 设备在线状态 -->
       <template #deviceStatus="{ row }">
-        <avue-dict-tag :options="dict.qs_device_status" :value="row.deviceStatus" />
+        <el-tag :type="row.deviceStatus === 1 ? 'success' : 'danger'" size="small">
+          {{ row.deviceStatus === 1 ? '在线' : '离线' }}
+        </el-tag>
       </template>
 
       <!-- 上线类型 -->
       <template #onlineType="{ row }">
-        <avue-dict-tag :options="dict.qs_online_type" :value="row.onlineType" />
+        <el-tag size="small">
+          {{ getOnlineTypeLabel(row.onlineType) }}
+        </el-tag>
       </template>
 
       <!-- ==================== 操作列扩展 ==================== -->
@@ -168,7 +172,7 @@
       <!-- 地图选点按钮表单插槽 -->
       <template #mapSelectForm>
         <el-button type="primary" @click="openMapSelect">
-          <avue-icon icon="location" style="margin-right: 4px" />
+          <el-icon style="margin-right: 4px"><location /></el-icon>
           地图选点
         </el-button>
       </template>
@@ -256,7 +260,7 @@ import DeviceSnapshotDialog from './components/DeviceSnapshotDialog.vue'
 import SelectMapPosition from '@/components/nvr/SelectMapPosition/index.vue'
 
 // 导入图标
-import { RefreshRight, Aim, Timer, Download, ArrowDown } from '@element-plus/icons-vue'
+import { RefreshRight, Aim, Timer, Download, ArrowDown, Location, VideoPlay, Camera, Setting } from '@element-plus/icons-vue'
 
 /**
  * 设备管理页面
@@ -281,7 +285,11 @@ export default {
     Aim,
     Timer,
     Download,
-    ArrowDown
+    ArrowDown,
+    Location,
+    VideoPlay,
+    Camera,
+    Setting
   },
   data() {
     return {
@@ -948,6 +956,20 @@ export default {
     },
     canDownloadRecord(row) {
       return [7, 8, 9].includes(row.type)
+    },
+    /**
+     * 获取上线类型标签
+     */
+    getOnlineTypeLabel(type) {
+      const typeMap = {
+        1: 'RTSP',
+        2: 'RTMP',
+        3: 'HTTP-FLV',
+        4: 'HLS',
+        5: 'GB28181',
+        6: 'JT1078'
+      }
+      return typeMap[type] || '-'
     }
   }
 }
