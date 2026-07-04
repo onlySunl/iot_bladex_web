@@ -1,174 +1,164 @@
 <template>
-  <div class="table-wrapper">
+  <div class="device-table">
     <el-table
       v-loading="loading"
       :data="deviceList"
+      border
       @selection-change="handleSelectionChange"
-      ref="tableRef"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="设备ID" align="center" prop="id" width="80" />
-      <el-table-column label="设备名称" align="center" prop="deviceName" :show-overflow-tooltip="true" />
-      <el-table-column label="接入类型" align="center" prop="type" width="120">
-        <template #default="scope">
-          <dict-tag :options="liveStreamTypeDict" :value="scope.row.type" />
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="设备名称" prop="deviceName" min-width="150" />
+      <el-table-column label="设备ID" prop="deviceId" min-width="150" />
+      <el-table-column label="协议" prop="protocol" width="100">
+        <template slot-scope="scope">
+          {{ getProtocolLabel(scope.row.protocol) }}
         </template>
       </el-table-column>
-      <el-table-column label="IP地址" align="center" prop="ipAddress" width="140" />
-      <el-table-column label="端口" align="center" prop="port" width="80" />
-      <el-table-column label="状态" align="center" prop="status" width="80">
-        <template #default="scope">
-          <dict-tag :options="statusDict" :value="scope.row.status" />
+      <el-table-column label="厂商" prop="vendor" width="100">
+        <template slot-scope="scope">
+          {{ getVendorLabel(scope.row.vendor) }}
         </template>
       </el-table-column>
-      <el-table-column label="设备状态" align="center" prop="deviceStatus" width="100">
-        <template #default="scope">
-          <dict-tag :options="deviceStatusDict" :value="scope.row.deviceStatus" />
+      <el-table-column label="在线状态" prop="online" width="100">
+        <template slot-scope="scope">
+          <el-tag :type="getOnlineStatusType(scope.row.online)">
+            {{ getOnlineStatusLabel(scope.row.online) }}
+          </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="160">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
+      <el-table-column label="推流状态" prop="streamPush" width="100">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.streamPush ? 'success' : 'info'">
+            {{ scope.row.streamPush ? '推流中' : '未推流' }}
+          </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="280" fixed="right">
-        <template #default="scope">
-          <el-button link type="primary" icon="View" @click="handlePlay(scope.row)">播放</el-button>
-          <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button link type="primary" icon="Setting" @click="handleConfig(scope.row)">配置</el-button>
-          <el-button link type="danger" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
-          <el-dropdown @command="(cmd) => handleMoreAction(cmd, scope.row)">
-            <el-button link type="primary">
-              更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="channel">通道管理</el-dropdown-item>
-                <el-dropdown-item command="snapshot">抓图</el-dropdown-item>
-                <el-dropdown-item command="cloudRecord">云端录像</el-dropdown-item>
-                <el-dropdown-item command="deviceRecord">设备录像</el-dropdown-item>
-                <el-dropdown-item command="subscribe">订阅目录</el-dropdown-item>
-                <el-dropdown-item command="unsubscribe">取消订阅</el-dropdown-item>
-                <el-dropdown-item command="status" divided>状态变更</el-dropdown-item>
-                <el-dropdown-item command="accessAddress">接入地址</el-dropdown-item>
-                <el-dropdown-item command="mapPosition">地图位置</el-dropdown-item>
-                <el-dropdown-item command="jt1078">JT1078参数</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+      <el-table-column label="IP地址" prop="ip" width="140" />
+      <el-table-column label="端口" prop="port" width="80" />
+      <el-table-column label="创建时间" prop="createTime" width="160" />
+      <el-table-column label="操作" width="300" fixed="right">
+        <template slot-scope="scope">
+          <el-button size="mini" type="text" @click="$emit('view', scope.row)">
+            <i class="el-icon-view"></i> 查看
+          </el-button>
+          <el-button size="mini" type="text" @click="$emit('edit', scope.row)">
+            <i class="el-icon-edit"></i> 编辑
+          </el-button>
+          <el-button size="mini" type="text" @click="$emit('delete', scope.row)">
+            <i class="el-icon-delete"></i> 删除
+          </el-button>
+          <el-button
+            v-if="!scope.row.streamPush"
+            size="mini"
+            type="text"
+            @click="$emit('start-stream', scope.row)"
+          >
+            <i class="el-icon-video-play"></i> 推流
+          </el-button>
+          <el-button
+            v-else
+            size="mini"
+            type="text"
+            @click="$emit('stop-stream', scope.row)"
+          >
+            <i class="el-icon-video-pause"></i> 停止
+          </el-button>
+          <el-button size="mini" type="text" @click="$emit('snapshot', scope.row)">
+            <i class="el-icon-camera"></i> 抓图
+          </el-button>
+          <el-button size="mini" type="text" @click="$emit('ptz', scope.row)">
+            <i class="el-icon-aim"></i> 云台
+          </el-button>
+          <el-button size="mini" type="text" @click="$emit('config', scope.row)">
+            <i class="el-icon-setting"></i> 配置
+          </el-button>
+          <el-button size="mini" type="text" @click="$emit('reboot', scope.row)">
+            <i class="el-icon-refresh-right"></i> 重启
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="handlePageChange"
+    <el-pagination
+      class="pagination"
+      :current-page="pagination.currentPage"
+      :page-size="pagination.pageSize"
+      :page-sizes="[10, 20, 50, 100]"
+      :total="pagination.total"
+      layout="total, sizes, prev, pager, next, jumper"
+      @size-change="$emit('size-change', $event)"
+      @current-change="$emit('page-change', $event)"
     />
   </div>
 </template>
 
-<script setup lang="ts" name="DeviceTable">
-import { ref } from 'vue';
-import { ArrowDown } from '@element-plus/icons-vue';
-
-interface QsDevice {
-  id: number;
-  deviceName: string;
-  type: string;
-  ipAddress: string;
-  port: string;
-  status: string;
-  deviceStatus: string;
-  createTime: string;
-  [key: string]: any;
-}
-
-interface QueryParams {
-  pageNum: number;
-  pageSize: number;
-  [key: string]: any;
-}
-
-interface DictItem {
-  label: string;
-  value: string;
-}
-
-const props = defineProps<{
-  loading: boolean;
-  deviceList: QsDevice[];
-  total: number;
-  queryParams: QueryParams;
-  liveStreamTypeDict: DictItem[];
-  statusDict: DictItem[];
-  deviceStatusDict: DictItem[];
-}>();
-
-const emit = defineEmits<{
-  (e: 'selection-change', selection: QsDevice[]): void;
-  (e: 'play', row: QsDevice): void;
-  (e: 'edit', row: QsDevice): void;
-  (e: 'config', row: QsDevice): void;
-  (e: 'delete', row: QsDevice): void;
-  (e: 'more-action', command: string, row: QsDevice): void;
-  (e: 'page-change'): void;
-  (e: 'update:queryParams', value: QueryParams): void;
-}>();
-
-const tableRef = ref();
-
-const handleSelectionChange = (selection: QsDevice[]) => {
-  emit('selection-change', selection);
+<script>
+export default {
+  name: 'DeviceTable',
+  props: {
+    deviceList: {
+      type: Array,
+      default: () => []
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    },
+    selection: {
+      type: Array,
+      default: () => []
+    },
+    pagination: {
+      type: Object,
+      default: () => ({
+        currentPage: 1,
+        pageSize: 20,
+        total: 0
+      })
+    },
+    protocolDict: {
+      type: Array,
+      default: () => []
+    },
+    vendorDict: {
+      type: Array,
+      default: () => []
+    },
+    onlineStatusMap: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+  emits: ['selection-change', 'page-change', 'size-change', 'view', 'edit', 'delete', 'start-stream', 'stop-stream', 'snapshot', 'ptz', 'config', 'reboot'],
+  methods: {
+    handleSelectionChange(val) {
+      this.$emit('selection-change', val);
+    },
+    getProtocolLabel(value) {
+      const item = this.protocolDict.find(d => d.value === value);
+      return item ? item.label : value;
+    },
+    getVendorLabel(value) {
+      const item = this.vendorDict.find(d => d.value === value);
+      return item ? item.label : value;
+    },
+    getOnlineStatusLabel(value) {
+      const status = this.onlineStatusMap[value];
+      return status ? status.label : '未知';
+    },
+    getOnlineStatusType(value) {
+      const status = this.onlineStatusMap[value];
+      return status ? status.type : 'info';
+    }
+  }
 };
-
-const handlePlay = (row: QsDevice) => {
-  emit('play', row);
-};
-
-const handleEdit = (row: QsDevice) => {
-  emit('edit', row);
-};
-
-const handleConfig = (row: QsDevice) => {
-  emit('config', row);
-};
-
-const handleDelete = (row: QsDevice) => {
-  emit('delete', row);
-};
-
-const handleMoreAction = (command: string, row: QsDevice) => {
-  emit('more-action', command, row);
-};
-
-const handlePageChange = () => {
-  emit('page-change');
-};
-
-// 解析时间
-const parseTime = (time: string | number) => {
-  if (!time) return '-';
-  const date = new Date(typeof time === 'string' ? time.replace(/-/g, '/') : time);
-  if (isNaN(date.getTime())) return String(time);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-
-defineExpose({
-  tableRef
-});
 </script>
 
-<style scoped lang="scss">
-.table-wrapper {
+<style scoped>
+.device-table {
   margin-top: 16px;
+}
+.pagination {
+  margin-top: 16px;
+  text-align: right;
 }
 </style>

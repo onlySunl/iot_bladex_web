@@ -1,5 +1,5 @@
 <template>
-  <div class="cards-wrapper">
+  <div class="device-cards">
     <el-row :gutter="16">
       <el-col
         v-for="device in deviceList"
@@ -8,263 +8,158 @@
         :sm="12"
         :md="8"
         :lg="6"
-        :xl="4"
       >
-        <div
-          class="device-card"
-          :class="{ 'is-selected': isSelected(device), 'is-offline': !isOnline(device) }"
-          @click="handleCardClick(device)"
-        >
-          <!-- 卡片头部 -->
+        <el-card class="device-card" shadow="hover">
           <div class="card-header">
-            <div class="device-info">
-              <el-checkbox
-                :model-value="isSelected(device)"
-                @click.stop="handleCardSelect(device)"
-                class="device-checkbox"
-              />
-              <div class="device-name" :title="device.deviceName">
-                {{ device.deviceName || '未命名设备' }}
-              </div>
-            </div>
-            <div class="device-status">
-              <el-tag :type="getStatusType(device.status)" size="small" effect="dark">
-                {{ getStatusLabel(device.status) }}
-              </el-tag>
-            </div>
+            <div class="device-name">{{ device.deviceName }}</div>
+            <el-tag :type="getOnlineStatusType(device.online)" size="mini">
+              {{ getOnlineStatusLabel(device.online) }}
+            </el-tag>
           </div>
-
-          <!-- 卡片内容 -->
           <div class="card-body">
             <div class="info-row">
-              <span class="label">接入类型:</span>
-              <span class="value">
-                <dict-tag :options="liveStreamTypeDict" :value="device.type" />
-              </span>
+              <span class="label">设备ID:</span>
+              <span class="value">{{ device.deviceId }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">协议:</span>
+              <span class="value">{{ getProtocolLabel(device.protocol) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">厂商:</span>
+              <span class="value">{{ getVendorLabel(device.vendor) }}</span>
             </div>
             <div class="info-row">
               <span class="label">IP地址:</span>
-              <span class="value">{{ device.ipAddress || '-' }}</span>
+              <span class="value">{{ device.ip }}:{{ device.port }}</span>
             </div>
             <div class="info-row">
-              <span class="label">端口:</span>
-              <span class="value">{{ device.port || '-' }}</span>
-            </div>
-            <div class="info-row" v-if="device.deviceStatus">
-              <span class="label">设备状态:</span>
-              <span class="value">
-                <dict-tag :options="deviceStatusDict" :value="device.deviceStatus" />
-              </span>
+              <span class="label">推流状态:</span>
+              <el-tag :type="device.streamPush ? 'success' : 'info'" size="mini">
+                {{ device.streamPush ? '推流中' : '未推流' }}
+              </el-tag>
             </div>
           </div>
-
-          <!-- 卡片操作 -->
-          <div class="card-actions">
-            <el-button link type="primary" icon="VideoPlay" @click.stop="handlePlay(device)">播放</el-button>
-            <el-button link type="primary" icon="Edit" @click.stop="handleEdit(device)">编辑</el-button>
-            <el-button link type="danger" icon="Delete" @click.stop="handleDelete(device)">删除</el-button>
+          <div class="card-footer">
+            <el-button size="mini" type="primary" @click="$emit('view', device)">
+              <i class="el-icon-view"></i> 查看
+            </el-button>
+            <el-button size="mini" type="primary" @click="$emit('edit', device)">
+              <i class="el-icon-edit"></i> 编辑
+            </el-button>
+            <el-button size="mini" type="danger" @click="$emit('delete', device)">
+              <i class="el-icon-delete"></i> 删除
+            </el-button>
           </div>
-        </div>
+        </el-card>
       </el-col>
     </el-row>
-
-    <!-- 空状态 -->
-    <el-empty v-if="deviceList.length === 0" description="暂无设备数据" />
-
-    <!-- 分页 -->
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="handlePageChange"
+    <el-pagination
+      class="pagination"
+      :current-page="pagination.currentPage"
+      :page-size="pagination.pageSize"
+      :page-sizes="[12, 24, 48]"
+      :total="pagination.total"
+      layout="total, sizes, prev, pager, next"
+      @size-change="$emit('size-change', $event)"
+      @current-change="$emit('page-change', $event)"
     />
   </div>
 </template>
 
-<script setup lang="ts" name="DeviceCards">
-import { computed } from 'vue';
-
-interface QsDevice {
-  id: number;
-  deviceName: string;
-  type: string;
-  ipAddress: string;
-  port: string;
-  status: string;
-  deviceStatus: string;
-  [key: string]: any;
-}
-
-interface QueryParams {
-  pageNum: number;
-  pageSize: number;
-  [key: string]: any;
-}
-
-interface DictItem {
-  label: string;
-  value: string;
-}
-
-const props = defineProps<{
-  deviceList: QsDevice[];
-  total: number;
-  queryParams: QueryParams;
-  selectedIds: number[];
-  liveStreamTypeDict: DictItem[];
-  deviceStatusDict: DictItem[];
-}>();
-
-const emit = defineEmits<{
-  (e: 'select', device: QsDevice): void;
-  (e: 'play', device: QsDevice): void;
-  (e: 'edit', device: QsDevice): void;
-  (e: 'delete', device: QsDevice): void;
-  (e: 'page-change'): void;
-  (e: 'update:queryParams', value: QueryParams): void;
-}>();
-
-const isSelected = (device: QsDevice): boolean => {
-  return props.selectedIds.includes(device.id);
-};
-
-const isOnline = (device: QsDevice): boolean => {
-  return Number(device.status) === 1;
-};
-
-const getStatusType = (status: string): string => {
-  const typeMap: Record<number, string> = {
-    0: 'danger',
-    1: 'success',
-    2: 'warning'
-  };
-  return typeMap[Number(status)] || 'info';
-};
-
-const getStatusLabel = (status: string): string => {
-  const statusMap: Record<number, string> = {
-    0: '离线',
-    1: '在线',
-    2: '故障'
-  };
-  return statusMap[Number(status)] || '未知';
-};
-
-const handleCardClick = (device: QsDevice) => {
-  emit('select', device);
-};
-
-const handleCardSelect = (device: QsDevice) => {
-  emit('select', device);
-};
-
-const handlePlay = (device: QsDevice) => {
-  emit('play', device);
-};
-
-const handleEdit = (device: QsDevice) => {
-  emit('edit', device);
-};
-
-const handleDelete = (device: QsDevice) => {
-  emit('delete', device);
-};
-
-const handlePageChange = () => {
-  emit('page-change');
+<script>
+export default {
+  name: 'DeviceCards',
+  props: {
+    deviceList: {
+      type: Array,
+      default: () => []
+    },
+    pagination: {
+      type: Object,
+      default: () => ({
+        currentPage: 1,
+        pageSize: 12,
+        total: 0
+      })
+    },
+    protocolDict: {
+      type: Array,
+      default: () => []
+    },
+    vendorDict: {
+      type: Array,
+      default: () => []
+    },
+    onlineStatusMap: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+  emits: ['page-change', 'size-change', 'view', 'edit', 'delete'],
+  methods: {
+    getProtocolLabel(value) {
+      const item = this.protocolDict.find(d => d.value === value);
+      return item ? item.label : value;
+    },
+    getVendorLabel(value) {
+      const item = this.vendorDict.find(d => d.value === value);
+      return item ? item.label : value;
+    },
+    getOnlineStatusLabel(value) {
+      const status = this.onlineStatusMap[value];
+      return status ? status.label : '未知';
+    },
+    getOnlineStatusType(value) {
+      const status = this.onlineStatusMap[value];
+      return status ? status.type : 'info';
+    }
+  }
 };
 </script>
 
-<style scoped lang="scss">
-.cards-wrapper {
-  margin-top: 16px;
-}
-
-.device-card {
-  background: #fff;
-  border: 1px solid #ebeef5;
-  border-radius: 8px;
+<style scoped>
+.device-cards {
   padding: 16px;
-  margin-bottom: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-  }
-
-  &.is-selected {
-    border-color: #409eff;
-    background: #ecf5ff;
-  }
-
-  &.is-offline {
-    opacity: 0.7;
-  }
 }
-
+.device-card {
+  margin-bottom: 16px;
+}
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #ebeef5;
 }
-
-.device-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
-}
-
-.device-checkbox {
-  flex-shrink: 0;
-}
-
 .device-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #303133;
+  font-size: 16px;
+  font-weight: bold;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .card-body {
   margin-bottom: 12px;
 }
-
 .info-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 4px 0;
-  font-size: 13px;
-
-  .label {
-    color: #909399;
-    flex-shrink: 0;
-  }
-
-  .value {
-    color: #606266;
-    text-align: right;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 60%;
-  }
+  margin-bottom: 8px;
+  font-size: 14px;
 }
-
-.card-actions {
+.info-row .label {
+  color: #909399;
+}
+.info-row .value {
+  color: #303133;
+}
+.card-footer {
   display: flex;
-  justify-content: space-around;
-  padding-top: 12px;
-  border-top: 1px solid #ebeef5;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.pagination {
+  margin-top: 16px;
+  text-align: right;
 }
 </style>
