@@ -1,174 +1,277 @@
 <template>
-  <div class="table-wrapper">
-    <el-table
+  <avue-crud
+      v-if="tableOptionReady"
       v-loading="loading"
       :data="deviceList"
+      :option="tableOption"
+      ref="crud"
       @selection-change="handleSelectionChange"
-      ref="tableRef"
-    >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="设备ID" align="center" prop="id" width="80" />
-      <el-table-column label="设备名称" align="center" prop="deviceName" :show-overflow-tooltip="true" />
-      <el-table-column label="接入类型" align="center" prop="type" width="120">
-        <template #default="scope">
-          <dict-tag :options="liveStreamTypeDict" :value="scope.row.type" />
-        </template>
-      </el-table-column>
-      <el-table-column label="IP地址" align="center" prop="ipAddress" width="140" />
-      <el-table-column label="端口" align="center" prop="port" width="80" />
-      <el-table-column label="状态" align="center" prop="status" width="80">
-        <template #default="scope">
-          <dict-tag :options="statusDict" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="设备状态" align="center" prop="deviceStatus" width="100">
-        <template #default="scope">
-          <dict-tag :options="deviceStatusDict" :value="scope.row.deviceStatus" />
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="160">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="280" fixed="right">
-        <template #default="scope">
-          <el-button link type="primary" icon="View" @click="handlePlay(scope.row)">播放</el-button>
-          <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button link type="primary" icon="Setting" @click="handleConfig(scope.row)">配置</el-button>
-          <el-button link type="danger" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
-          <el-dropdown @command="(cmd) => handleMoreAction(cmd, scope.row)">
-            <el-button link type="primary">
-              更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="channel">通道管理</el-dropdown-item>
-                <el-dropdown-item command="snapshot">抓图</el-dropdown-item>
-                <el-dropdown-item command="cloudRecord">云端录像</el-dropdown-item>
-                <el-dropdown-item command="deviceRecord">设备录像</el-dropdown-item>
-                <el-dropdown-item command="subscribe">订阅目录</el-dropdown-item>
-                <el-dropdown-item command="unsubscribe">取消订阅</el-dropdown-item>
-                <el-dropdown-item command="status" divided>状态变更</el-dropdown-item>
-                <el-dropdown-item command="accessAddress">接入地址</el-dropdown-item>
-                <el-dropdown-item command="mapPosition">地图位置</el-dropdown-item>
-                <el-dropdown-item command="jt1078">JT1078参数</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </template>
-      </el-table-column>
-    </el-table>
+      @row-save="handleSubmit"
+      @row-update="handleUpdate"
+      :before-close="beforeClose"
+  >
+    <!-- 核心：#menu 操作栏插槽，scope.row 获取当前行，完全复用你原来el-table代码 -->
+    <template #menu="{ row }">
+      <div class="table-actions" style="display:flex;flex-wrap:wrap;gap:4px">
+        <!-- 固定外露三个按钮：查看、编辑、删除 -->
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="handlePageChange"
-    />
-  </div>
+        <!-- 更多下拉：存放全部剩余功能 -->
+        <el-dropdown
+            trigger="click"
+            style="margin-left:12px"
+            @command="(cmd) => handleMoreAction(cmd, row)"
+        >
+          <el-button
+              type="primary"
+              text
+              bg
+              size="small"
+              icon="More"
+          >
+            更多
+            <el-icon class="el-icon--right">
+              <ArrowDown/>
+            </el-icon>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu class="device-dropdown-menu">
+              <!-- 播放 -->
+              <el-dropdown-item
+                  v-if="row.deviceStatus === 'ON'"
+                  command="handlePlay"
+                  icon="VideoPlay"
+              >播放
+              </el-dropdown-item>
+              <!-- 停止 -->
+              <el-dropdown-item
+                  v-if="row.streamStatus === '1' && row.type !== '13'"
+                  command="handleStopPlay"
+                  icon="SwitchButton"
+              >停止
+              </el-dropdown-item>
+              <!-- 接入地址 -->
+              <el-dropdown-item
+                  v-if="row.type === '13'"
+                  command="handleAccessAddress"
+                  icon="Position"
+              >接入地址
+              </el-dropdown-item>
+              <!-- 云端录像 -->
+              <el-dropdown-item command="handleCloudRecord" icon="VideoCamera">云端录像</el-dropdown-item>
+              <!-- 设备录像 -->
+              <el-dropdown-item
+                  v-if="!['1','2','3','4','6','13'].includes(row.type)"
+                  command="handleDeviceRecord"
+                  icon="Monitor"
+              >设备录像
+              </el-dropdown-item>
+              <!-- 刷新 -->
+              <el-dropdown-item
+                  v-if="row.type === '12'"
+                  command="handleRefreshDevice"
+                  icon="Refresh"
+              >刷新
+              </el-dropdown-item>
+              <!-- 查看抓图 -->
+              <el-dropdown-item command="viewSnapshots" icon="Picture">查看抓图</el-dropdown-item>
+              <!-- GB目录订阅 -->
+              <el-dropdown-item
+                  v-if="row.type === '12' && row.subscribeCatalogStatus !== 1"
+                  command="subscribeCatalog"
+                  icon="Connection"
+                  :disabled="row.deviceStatus !== 'ON'"
+              >目录订阅
+              </el-dropdown-item>
+              <el-dropdown-item
+                  v-if="row.type === '12' && row.subscribeCatalogStatus === 1"
+                  command="unsubscribeCatalog"
+                  icon="SwitchButton"
+                  :disabled="row.deviceStatus !== 'ON'"
+              >取消目录订阅
+              </el-dropdown-item>
+              <!-- 校时 -->
+              <el-dropdown-item
+                  v-if="['5','7','8','9'].includes(row.type)"
+                  command="timeSync"
+                  icon="Clock"
+                  :disabled="row.deviceStatus !== 'ON'"
+                  class="time-sync-item"
+              >校时
+              </el-dropdown-item>
+              <!-- 设备信息 -->
+              <el-dropdown-item
+                  v-if="['5','7','8','9','12','14'].includes(row.type)"
+                  command="deviceInfo"
+                  icon="InfoFilled"
+                  :disabled="row.deviceStatus !== 'ON'"
+                  class="time-sync-item"
+              >设备信息
+              </el-dropdown-item>
+              <!-- 抓图 -->
+              <el-dropdown-item
+                  v-if="['5','7','8','9'].includes(row.type)"
+                  command="capture"
+                  icon="Camera"
+                  :disabled="row.deviceStatus !== 'ON'"
+              >抓图
+              </el-dropdown-item>
+              <!-- 重启 -->
+              <el-dropdown-item
+                  v-if="['5','7','8','9','12','14'].includes(row.type)"
+                  command="reboot"
+                  icon="Refresh"
+                  :disabled="row.deviceStatus !== 'ON'"
+                  class="is-danger"
+              >重启
+              </el-dropdown-item>
+              <!-- GB录像控制 -->
+              <el-dropdown-item
+                  v-if="row.type === '12'"
+                  command="recordControl"
+                  icon="VideoCamera"
+                  :disabled="row.deviceStatus !== 'ON'"
+              >录像控制
+              </el-dropdown-item>
+              <!-- 设备配置 -->
+              <el-dropdown-item
+                  v-if="row.type === '12'"
+                  command="deviceConfig"
+                  icon="Setting"
+                  :disabled="row.deviceStatus !== 'ON'"
+              >设备配置
+              </el-dropdown-item>
+              <!-- 录像下载 -->
+              <el-dropdown-item
+                  v-if="['7','8','9'].includes(row.type)"
+                  command="downloadRecord"
+                  icon="Download"
+                  :disabled="row.deviceStatus !== 'ON'"
+              >录像下载
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
+    </template>
+  </avue-crud>
 </template>
 
-<script setup lang="ts" name="DeviceTable">
-import { ref } from 'vue';
-import { ArrowDown } from '@element-plus/icons-vue';
+<script setup>
+import {addDevice, updateDevice} from '@/api/nvr/qs/device'
+import {useDeviceDict} from '@/views/nvr/qs/device/js/useDeviceDict'
+import {initTableOption} from '@/views/nvr/qs/device/js/deviceTableColumn'
+import {ref} from 'vue'
 
-interface QsDevice {
-  id: number;
-  deviceName: string;
-  type: string;
-  ipAddress: string;
-  port: string;
-  status: string;
-  deviceStatus: string;
-  createTime: string;
-  [key: string]: any;
+const tableOptionReady = ref(false)
+let tableOption = null
+const props = defineProps({
+  loading: Boolean,
+  deviceList: Array,
+  single: Boolean,
+  multiple: Boolean,
+  viewMode: String,
+  dictObject: Object
+})
+
+const emit = defineEmits([
+  'update:view-mode',
+  'add',
+  'edit',
+  'batch-del',
+  'refresh',
+  'selectionChange',
+  'handleCopy',
+  'handleStatusChange',
+  'handlePlay',
+  'handleStopPlay',
+  'handleAccessAddress',
+  'handleCloudRecord',
+  'handleDeviceRecord',
+  'handleRefreshDevice',
+  'handleMoreAction'
+])
+
+const {
+  qs_live_stream_type,
+  qs_device_status,
+  qs_status,
+  qs_stream_type,
+  qs_protocol,
+  qs_online_type
+} = useDeviceDict()
+// 直接初始化完整表格配置（包含列+工具栏+分页+搜索等全部配置）
+// 模拟异步
+const loadOption = async () => {
+  // 异步请求/处理逻辑
+  tableOption = initTableOption(emit,
+      props.dictObject.qs_live_stream_type,
+      props.dictObject.qs_device_status,
+      props.dictObject.qs_status,
+      props.dictObject.qs_stream_type,
+      props.dictObject.qs_protocol,
+      props.dictObject.qs_online_type)
+  tableOptionReady.value = true
 }
-
-interface QueryParams {
-  pageNum: number;
-  pageSize: number;
-  [key: string]: any;
+loadOption()
+const handleSelectionChange = val => emit('selectionChange', val)
+const handleUpdate = async (row, done, loading) => {
+  try {
+    loading();
+    const res = await updateDevice(row)
+    done()
+  } catch (err){
+    // 捕获异常，不阻塞done，可自行加提示
+    console.error(err)
+    done()
+  }
 }
-
-interface DictItem {
-  label: string;
-  value: string;
+const handleSubmit = async (row, done, loading) => {
+  try {
+    loading();
+    const res = await addDevice(row)
+    done()
+  } catch (err){
+    // 捕获异常，不阻塞done，可自行加提示
+    console.error(err)
+    done()
+  }
 }
-
-const props = defineProps<{
-  loading: boolean;
-  deviceList: QsDevice[];
-  total: number;
-  queryParams: QueryParams;
-  liveStreamTypeDict: DictItem[];
-  statusDict: DictItem[];
-  deviceStatusDict: DictItem[];
-}>();
-
-const emit = defineEmits<{
-  (e: 'selection-change', selection: QsDevice[]): void;
-  (e: 'play', row: QsDevice): void;
-  (e: 'edit', row: QsDevice): void;
-  (e: 'config', row: QsDevice): void;
-  (e: 'delete', row: QsDevice): void;
-  (e: 'more-action', command: string, row: QsDevice): void;
-  (e: 'page-change'): void;
-  (e: 'update:queryParams', value: QueryParams): void;
-}>();
-
-const tableRef = ref();
-
-const handleSelectionChange = (selection: QsDevice[]) => {
-  emit('selection-change', selection);
+const beforeClose = (done, type) => {
+  done();
 };
-
-const handlePlay = (row: QsDevice) => {
-  emit('play', row);
-};
-
-const handleEdit = (row: QsDevice) => {
-  emit('edit', row);
-};
-
-const handleConfig = (row: QsDevice) => {
-  emit('config', row);
-};
-
-const handleDelete = (row: QsDevice) => {
-  emit('delete', row);
-};
-
-const handleMoreAction = (command: string, row: QsDevice) => {
-  emit('more-action', command, row);
-};
-
-const handlePageChange = () => {
-  emit('page-change');
-};
-
-// 解析时间
-const parseTime = (time: string | number) => {
-  if (!time) return '-';
-  const date = new Date(typeof time === 'string' ? time.replace(/-/g, '/') : time);
-  if (isNaN(date.getTime())) return String(time);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-
-defineExpose({
-  tableRef
-});
+// 所有操作函数直接emit抛出，无需内部处理
+const handleMoreAction = (cmd, row) => {
+  switch (cmd) {
+    case 'handlePlay':
+      emit('handlePlay', row)
+      break
+    case 'handleStopPlay':
+      emit('handleStopPlay', row)
+      break
+    case 'handleAccessAddress':
+      emit('handleAccessAddress', row)
+      break
+    case 'handleCloudRecord':
+      emit('handleCloudRecord', row)
+      break
+    case 'handleDeviceRecord':
+      emit('handleDeviceRecord', row)
+      break
+    case 'handleRefreshDevice':
+      emit('handleRefreshDevice', row)
+      break
+    case 'viewSnapshots':
+    case 'subscribeCatalog':
+    case 'unsubscribeCatalog':
+    case 'timeSync':
+    case 'deviceInfo':
+    case 'capture':
+    case 'reboot':
+    case 'recordControl':
+    case 'deviceConfig':
+    case 'downloadRecord':
+      emit('handleMoreAction', cmd, row)
+      break
+  }
+}
 </script>
-
-<style scoped lang="scss">
-.table-wrapper {
-  margin-top: 16px;
-}
-</style>

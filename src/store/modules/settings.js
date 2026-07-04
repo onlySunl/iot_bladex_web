@@ -1,6 +1,4 @@
 import defaultSettings from '@/settings';
-import { getSettings } from '@/api/system/settings';
-import { dynamicTitle as useDynamicTitle } from '@/utils/dynamicTitle';
 
 const { sideTheme, showSettings, navType, tagsView, tagsViewPersist, tagsIcon, fixedHeader, sidebarLogo, dynamicTitle, footerVisible, footerContent } = defaultSettings;
 
@@ -46,18 +44,7 @@ const mutations = {
 };
 
 const actions = {
-  changeSetting({ commit }, data) {
-    commit('CHANGE_SETTING', data);
-  },
-  async getSettings({ commit }) {
-    const res = await getSettings();
-    if (res.data && res.data.data) {
-      commit('CHANGE_SETTINGS', res.data.data);
-    }
-  },
-  resetSettings({ commit }, data) {
-    commit('RESET_SETTINGS', data);
-  },
+
 };
 
 export default {

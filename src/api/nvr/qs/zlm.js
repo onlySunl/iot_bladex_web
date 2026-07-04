@@ -1,9 +1,21 @@
-import request from '@/axios';
-import {MediaInfo, MediaServer, PullConfig, RTPServerParam, Snap, StreamContent} from "@/types/api";
-import {AjaxResult} from "@/types/common";
+import request from '@/axios'
 
-// 拉流播放
-export const streamPullPlay = (data: PullConfig) => {
+/**
+ * @typedef {import("@/types/api").MediaInfo} MediaInfo
+ * @typedef {import("@/types/api").MediaServer} MediaServer
+ * @typedef {import("@/types/api").PullConfig} PullConfig
+ * @typedef {import("@/types/api").RTPServerParam} RTPServerParam
+ * @typedef {import("@/types/api").Snap} Snap
+ * @typedef {import("@/types/api").StreamContent} StreamContent
+ * @typedef {import("@/types").AjaxResult} AjaxResult
+ */
+
+/**
+ * RTSP拉流播放
+ * @param {PullConfig} data 拉流配置参数
+ * @returns {Promise<AjaxResult<StreamContent>>}
+ */
+export function streamPullPlay(data) {
     return request({
         url: '/zlm/streamPullPlay',
         method: 'post',
@@ -12,8 +24,12 @@ export const streamPullPlay = (data: PullConfig) => {
     })
 }
 
-// 停止拉流播放
-export const stopStreamPullPlay = (data: PullConfig) => {
+/**
+ * 停止RTSP拉流
+ * @param {PullConfig} data 拉流配置参数
+ * @returns {Promise<AjaxResult>}
+ */
+export function stopStreamPullPlay(data) {
     return request({
         url: '/zlm/stopStreamPullPlay',
         method: 'post',
@@ -22,8 +38,12 @@ export const stopStreamPullPlay = (data: PullConfig) => {
     })
 }
 
-// 获取截图
-export const getSnap = (data: Snap) => {
+/**
+ * 视频流截图
+ * @param {Snap} data 截图参数
+ * @returns {Promise<AjaxResult>}
+ */
+export function getSnap(data) {
     return request({
         url: '/zlm/getSnap',
         method: 'post',
@@ -32,8 +52,12 @@ export const getSnap = (data: Snap) => {
     })
 }
 
-// rtp播放
-export const rtpPlay = (data: RTPServerParam) => {
+/**
+ * RTP实时预览播放
+ * @param {RTPServerParam} data RTP服务参数
+ * @returns {Promise<AjaxResult<StreamContent>>}
+ */
+export function rtpPlay(data) {
     return request({
         url: '/zlm/rtpPlay',
         method: 'post',
@@ -42,8 +66,12 @@ export const rtpPlay = (data: RTPServerParam) => {
     })
 }
 
-// 停止rtp播放
-export const stopRtpPlay = (data: RTPServerParam) => {
+/**
+ * 停止RTP实时预览
+ * @param {RTPServerParam} data RTP服务参数
+ * @returns {Promise<AjaxResult>}
+ */
+export function stopRtpPlay(data) {
     return request({
         url: '/zlm/stopRtpPlay',
         method: 'post',
@@ -52,8 +80,12 @@ export const stopRtpPlay = (data: RTPServerParam) => {
     })
 }
 
-// 大华回放
-export const rtpPlayback = (data: RTPServerParam) => {
+/**
+ * 大华设备RTP回放
+ * @param {RTPServerParam} data RTP服务参数
+ * @returns {Promise<AjaxResult<StreamContent>>}
+ */
+export function rtpPlayback(data) {
     return request({
         url: '/zlm/rtpPlayback',
         method: 'post',
@@ -62,8 +94,12 @@ export const rtpPlayback = (data: RTPServerParam) => {
     })
 }
 
-// 停止大华回放
-export const stopRtpPlayback = (data: RTPServerParam) => {
+/**
+ * 停止大华RTP回放
+ * @param {RTPServerParam} data RTP服务参数
+ * @returns {Promise<AjaxResult>}
+ */
+export function stopRtpPlayback(data) {
     return request({
         url: '/zlm/stopRtpPlayback',
         method: 'post',
@@ -72,8 +108,12 @@ export const stopRtpPlayback = (data: RTPServerParam) => {
     })
 }
 
-// ONVIF回放拉流播放
-export const onvifPlayback = (data) => {
+/**
+ * ONVIF录像回放拉流
+ * @param {Object} data 回放参数
+ * @returns {Promise<AjaxResult<StreamContent>>}
+ */
+export function onvifPlayback(data) {
     return request({
         url: '/zlm/onvifPlayback',
         method: 'post',
@@ -82,8 +122,12 @@ export const onvifPlayback = (data) => {
     })
 }
 
-// 停止ONVIF拉流播放
-export const stopOnvifPlayback = (data) => {
+/**
+ * 停止ONVIF回放拉流
+ * @param {Object} data 回放参数
+ * @returns {Promise<AjaxResult>}
+ */
+export function stopOnvifPlayback(data) {
     return request({
         url: '/zlm/stopStreamPullPlay',
         method: 'post',
@@ -92,25 +136,35 @@ export const stopOnvifPlayback = (data) => {
     })
 }
 
-
-// 获取流媒体服务器列表
-export const getMediaServerList = () => {
+/**
+ * 获取所有流媒体服务节点列表
+ * @returns {Promise<AjaxResult<MediaServer[]>>}
+ */
+export function getMediaServerList() {
     return request({
         url: '/zlm/list',
-        method: 'get',
+        method: 'get'
     })
 }
 
-// 移除流媒体服务
-export const delMediaServer = (id) => {
+/**
+ * 删除流媒体服务节点
+ * @param {string} id 服务节点ID
+ * @returns {Promise<AjaxResult>}
+ */
+export function delMediaServer(id) {
     return request({
-        url: '/zlm/delete/' + id,
-        method: 'delete',
+        url: `/zlm/delete/${id}`,
+        method: 'delete'
     })
 }
 
-// 保存流媒体服务
-export const saveMediaServer = (data: MediaServer) => {
+/**
+ * 新增/编辑保存流媒体服务配置
+ * @param {MediaServer} data 流媒体节点配置
+ * @returns {Promise<AjaxResult>}
+ */
+export function saveMediaServer(data) {
     return request({
         url: '/zlm/save',
         method: 'post',
@@ -118,8 +172,15 @@ export const saveMediaServer = (data: MediaServer) => {
     })
 }
 
-// 测试流媒体服务
-export const checkMediaServer = (ip, port, secret, type) => {
+/**
+ * 测试流媒体服务连通性
+ * @param {string} ip 服务IP
+ * @param {number} port 服务端口
+ * @param {string} secret 密钥
+ * @param {string} type 服务类型
+ * @returns {Promise<AjaxResult>}
+ */
+export function checkMediaServer(ip, port, secret, type) {
     return request({
         url: '/zlm/check',
         method: 'get',
@@ -127,84 +188,109 @@ export const checkMediaServer = (ip, port, secret, type) => {
             ip,
             port,
             secret,
-            type,
+            type
         }
     })
 }
 
-// 获取流媒体服务
-export const getMediaServer = (id) => {
+/**
+ * 根据ID获取单个流媒体服务详情
+ * @param {string} id 服务节点ID
+ * @returns {Promise<AjaxResult<MediaServer>>}
+ */
+export function getMediaServer(id) {
     return request({
-        url: '/zlm/one/' + id,
-        method: 'get',
+        url: `/zlm/one/${id}`,
+        method: 'get'
     })
 }
 
-// 获取流信息
-export const getMediaInfo = (app, stream, mediaServerId) => {
+/**
+ * 获取指定流的详细媒体编码信息
+ * @param {string} app 应用名
+ * @param {string} stream 流ID
+ * @param {string} mediaServerId 流媒体节点ID
+ * @returns {Promise<AjaxResult<MediaInfo>>}
+ */
+export function getMediaInfo(app, stream, mediaServerId) {
     return request({
         url: '/zlm/media_info',
         method: 'get',
         params: {
             app,
             stream,
-            mediaServerId,
+            mediaServerId
         }
     })
 }
 
-// 加载文件形成播放地址
-export const loadRecord = (id) => {
+/**
+ * 加载云端录像文件生成播放地址
+ * @param {string} id 录像记录ID
+ * @returns {Promise<AjaxResult<StreamContent>>}
+ */
+export function loadRecord(id) {
     return request({
-        url: '/zlm/loadRecord/' + id,
-        method: 'get',
-    })
-}
-
-// 关闭流文件形成播放地址
-export const closeStreams = (id) => {
-    return request({
-        url: '/zlm/closeStreams/' + id,
-        method: 'get',
+        url: `/zlm/loadRecord/${id}`,
+        method: 'get'
     })
 }
 
 /**
- * 获取负载信息
+ * 关闭录像播放流、释放资源
+ * @param {string} id 录像记录ID
+ * @returns {Promise<AjaxResult>}
  */
-export const getMediaLoad = () => {
+export function closeStreams(id) {
+    return request({
+        url: `/zlm/closeStreams/${id}`,
+        method: 'get'
+    })
+}
+
+/**
+ * 获取流媒体服务负载信息
+ * @returns {Promise<AjaxResult>}
+ */
+export function getMediaLoad() {
     return request({
         url: '/zlm/server/media_server/load',
-        method: 'get',
+        method: 'get'
     })
 }
 
 /**
- * 重启流媒体
+ * 重启指定流媒体服务节点
+ * @param {string} id 服务节点ID
+ * @returns {Promise<AjaxResult>}
  */
-export const restartServer = (id) => {
+export function restartServer(id) {
     return request({
-        url: '/zlm/restartServer/' + id,
-        method: 'get',
+        url: `/zlm/restartServer/${id}`,
+        method: 'get'
     })
 }
 
 /**
- * 获取所有在线媒体服务器
+ * 获取所有在线的流媒体服务节点
+ * @returns {Promise<AjaxResult>}
  */
-export const getAllOnlineMediaServe = () => {
+export function getAllOnlineMediaServe() {
     return request({
         url: '/zlm/getAllOnlineMediaServe',
-        method: 'get',
+        method: 'get'
     })
 }
 
 /**
- * 生成推流地址
+ * 生成设备推流地址
+ * @param {number} id 设备ID
+ * @param {string} callId 会话ID
+ * @returns {Promise<AjaxResult>}
  */
-export const getStreamPushAddress = (id, callId) => {
+export function getStreamPushAddress(id, callId) {
     return request({
-        url: '/zlm/getStreamPushAddress/' + id,
+        url: `/zlm/getStreamPushAddress/${id}`,
         method: 'get',
         params: {
             callId
@@ -213,9 +299,11 @@ export const getStreamPushAddress = (id, callId) => {
 }
 
 /**
- * 推流播放
+ * 主动拉取推流进行播放
+ * @param {number} id 设备ID
+ * @returns {Promise<AjaxResult>}
  */
-export const streamPullPush = (id) => {
+export function streamPullPush(id) {
     return request({
         url: '/zlm/streamPullPush',
         method: 'get',
@@ -226,31 +314,39 @@ export const streamPullPush = (id) => {
 }
 
 /**
- * gb28181 播放
+ * GB28181设备实时预览播放
+ * @param {number} id 设备通道ID
+ * @returns {Promise<AjaxResult<StreamContent>>}
  */
-export const startGb28181Play = (id) => {
+export function startGb28181Play(id) {
     return request({
-        url: '/zlm/startGb28181Play/' + id,
-        method: 'get',
+        url: `/zlm/startGb28181Play/${id}`,
+        method: 'get'
     })
 }
 
 /**
- * gb28181 停止点播
+ * 停止GB28181实时预览
+ * @param {number} id 设备通道ID
+ * @returns {Promise<AjaxResult>}
  */
-export const stopGb28181Play = (id) => {
+export function stopGb28181Play(id) {
     return request({
-        url: '/zlm/stopGb28181Play/' + id,
-        method: 'get',
+        url: `/zlm/stopGb28181Play/${id}`,
+        method: 'get'
     })
 }
 
 /**
- * gb28181 回放
+ * GB28181录像回放
+ * @param {number} id 通道ID
+ * @param {string} startTime 开始时间
+ * @param {string} endTime 结束时间
+ * @returns {Promise<AjaxResult<StreamContent>>}
  */
-export const startGb28181Playback = (id, startTime, endTime) => {
+export function startGb28181Playback(id, startTime, endTime) {
     return request({
-        url: '/zlm/startGb28181Playback/' + id,
+        url: `/zlm/startGb28181Playback/${id}`,
         method: 'get',
         params: { startTime, endTime },
         timeout: 20000
@@ -258,31 +354,37 @@ export const startGb28181Playback = (id, startTime, endTime) => {
 }
 
 /**
- * gb28181 停止回放
+ * 停止GB28181录像回放
+ * @param {number} id 通道ID
+ * @returns {Promise<AjaxResult>}
  */
-export const stopGb28181Playback = (id) => {
+export function stopGb28181Playback(id) {
     return request({
-        url: '/zlm/stopGb28181Playback/' + id,
-        method: 'get',
+        url: `/zlm/stopGb28181Playback/${id}`,
+        method: 'get'
     })
 }
 
 /**
- * jt1078 播放
+ * JT1078车载设备实时播放
+ * @param {number} id 通道ID
+ * @returns {Promise<AjaxResult<StreamContent>>}
  */
-export const startJt1078Play = (id) => {
+export function startJt1078Play(id) {
     return request({
-        url: '/zlm/startJt1078Play/' + id,
-        method: 'get',
+        url: `/zlm/startJt1078Play/${id}`,
+        method: 'get'
     })
 }
 
 /**
- * jt1078 停止点播
+ * 停止JT1078实时播放
+ * @param {number} id 通道ID
+ * @returns {Promise<AjaxResult>}
  */
-export const stopJt1078Play = (id) => {
+export function stopJt1078Play(id) {
     return request({
-        url: '/zlm/stopJt1078Play/' + id,
-        method: 'get',
+        url: `/zlm/stopJt1078Play/${id}`,
+        method: 'get'
     })
 }

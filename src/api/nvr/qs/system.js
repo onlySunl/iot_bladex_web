@@ -1,27 +1,27 @@
-// 查询视频监控设备列表
-import request from '@/axios';
-import {AjaxResult} from "@/types/common";
+import request from '@/axios'
 
 /**
- * 获取系统信息
- *
- * @return
+ * @typedef {import("@/types/common").AjaxResult} AjaxResult
  */
-export const getSystemInfo = () => {
+
+/**
+ * 获取系统基础信息
+ * @returns {Promise<AjaxResult>}
+ */
+export function getSystemInfo() {
     return request({
         url: '/qs/server/system/info',
-        method: 'get',
+        method: 'get'
     })
 }
 
 /**
- * 获取设备统计信息
- *
- * @return
+ * 获取设备统计数据
+ * @returns {Promise<AjaxResult>}
  */
-export const getDeviceStatistics = () => {
+export function getDeviceStatistics() {
     return request({
         url: '/qs/server/system/deviceStatist',
-        method: 'get',
+        method: 'get'
     })
 }

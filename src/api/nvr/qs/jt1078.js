@@ -1,5 +1,15 @@
-import request from '@/axios';
-export const getAllDevice = () => {
+import request from '@/axios'
+
+/**
+ * @typedef {import("@/types/api/qs/jt1078").Jt1078Device} Jt1078Device
+ * @typedef {import("@/types/common").AjaxResult} AjaxResult
+ */
+
+/**
+ * 获取所有JT1078终端设备列表
+ * @returns {Promise<AjaxResult<Jt1078Device[]>>}
+ */
+export function getAllDevice() {
   return request({
     url: '/jt1078/device/allList',
     method: 'get'
@@ -7,34 +17,31 @@ export const getAllDevice = () => {
 }
 
 /**
- * 查询JT1078设备录像列表
- * @param mobileNo 手机号
- * @param channelNo 通道号
- * @param startTime 开始时间
- * @param endTime 结束时间
+ * 查询JT1078设备录像文件列表
+ * @param {string} mobileNo 设备绑定手机号
+ * @param {number} channelNo 通道号
+ * @param {string} startTime 开始时间
+ * @param {string} endTime 结束时间
+ * @returns {Promise<AjaxResult<any>>}
  */
-export const queryJt1078Record = (
-    mobileNo,
-    channelNo,
-    startTime,
-    endTime
-) => {
-    return request({
-        url: `/jt1078/queryRecord/${mobileNo}/${channelNo}`,
-        method: 'get',
-        params: {
-            startTime,
-            endTime
-        },
-        timeout: 30000
-    })
+export function queryJt1078Record(mobileNo, channelNo, startTime, endTime) {
+  return request({
+    url: `/jt1078/queryRecord/${mobileNo}/${channelNo}`,
+    method: 'get',
+    params: {
+      startTime,
+      endTime
+    },
+    timeout: 30000
+  })
 }
 
 /**
- * 8104 查询终端参数
- * @param data 消息体
+ * 8104 指令：查询终端参数
+ * @param {Object} data 指令请求消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const queryTerminalParams = (data) => {
+export function queryTerminalParams(data) {
   return request({
     url: '/jt1078/device/8104',
     method: 'post',
@@ -43,10 +50,11 @@ export const queryTerminalParams = (data) => {
 }
 
 /**
- * 8103 设置终端参数
- * @param data 参数数据
+ * 8103 指令：设置终端参数
+ * @param {Object} data 终端参数配置数据
+ * @returns {Promise<AjaxResult>}
  */
-export const setTerminalParams = (data) => {
+export function setTerminalParams(data) {
   return request({
     url: '/jt1078/device/8103',
     method: 'post',
@@ -55,10 +63,11 @@ export const setTerminalParams = (data) => {
 }
 
 /**
- * 8106 查询指定终端参数
- * @param data 参数数据
+ * 8106 指令：查询指定终端参数
+ * @param {Object} data 参数查询请求体
+ * @returns {Promise<AjaxResult>}
  */
-export const querySpecificTerminalParams = (data) => {
+export function querySpecificTerminalParams(data) {
   return request({
     url: '/jt1078/device/8106',
     method: 'post',
@@ -67,10 +76,11 @@ export const querySpecificTerminalParams = (data) => {
 }
 
 /**
- * 8105 终端控制
- * @param data 控制数据
+ * 8105 指令：终端远程控制
+ * @param {Object} data 终端控制指令数据
+ * @returns {Promise<AjaxResult>}
  */
-export const terminalControl = (data) => {
+export function terminalControl(data) {
   return request({
     url: '/jt1078/device/8105',
     method: 'post',
@@ -79,385 +89,417 @@ export const terminalControl = (data) => {
 }
 
 /**
- * 8107 查询终端属性
- * @param data 消息体
+ * 8107 指令：查询终端属性信息
+ * @param {Object} data 指令消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const queryTerminalAttribute = (data) => {
+export function queryTerminalAttribute(data) {
   return request({
     url: '/jt1078/device/8107',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8201 位置信息查询
- * @param data 消息体
+ * 8201 指令：单次位置信息查询
+ * @param {Object} data 指令消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const queryLocation = (data) => {
+export function queryLocation(data) {
   return request({
     url: '/jt1078/device/8201',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8202 临时位置跟踪控制
- * @param data 消息体
+ * 8202 指令：临时位置跟踪控制
+ * @param {Object} data 跟踪配置消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const tempLocationTrack = (data) => {
+export function tempLocationTrack(data) {
   return request({
     url: '/jt1078/device/8202',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8203 人工确认报警消息
- * @param data 消息体
+ * 8203 指令：人工确认报警消息
+ * @param {Object} data 报警确认消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const confirmAlarm = (data) => {
+export function confirmAlarm(data) {
   return request({
     url: '/jt1078/device/8203',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8204 服务器向终端发起链路检测请求
- * @param data 消息体
+ * 8204 指令：链路心跳检测请求
+ * @param {Object} data 检测指令消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const linkCheck = (data) => {
+export function linkCheck(data) {
   return request({
     url: '/jt1078/device/8204',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8300 文本信息下发
- * @param data 消息体
+ * 8300 指令：下发文本消息
+ * @param {Object} data 文本消息内容
+ * @returns {Promise<AjaxResult>}
  */
-export const sendText = (data) => {
+export function sendText(data) {
   return request({
     url: '/jt1078/device/8300',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8301 事件设置
- * @param data 消息体
+ * 8301 指令：事件上报设置
+ * @param {Object} data 事件配置参数
+ * @returns {Promise<AjaxResult>}
  */
-export const eventSetting = (data) => {
+export function eventSetting(data) {
   return request({
     url: '/jt1078/device/8301',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8302 提问下发
- * @param data 消息体
+ * 8302 指令：下发问答提问
+ * @param {Object} data 提问消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const sendQuestion = (data) => {
+export function sendQuestion(data) {
   return request({
     url: '/jt1078/device/8302',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8303 信息点播菜单设置
- * @param data 消息体
+ * 8303 指令：信息点播菜单配置
+ * @param {Object} data 菜单设置数据
+ * @returns {Promise<AjaxResult>}
  */
-export const menuSetting = (data) => {
+export function menuSetting(data) {
   return request({
     url: '/jt1078/device/8303',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8304 信息服务
- * @param data 消息体
+ * 8304 指令：信息点播服务下发
+ * @param {Object} data 服务指令消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const infoService = (data) => {
+export function infoService(data) {
   return request({
     url: '/jt1078/device/8304',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8400 电话回拨
- * @param data 消息体
+ * 8400 指令：电话回拨
+ * @param {Object} data 回拨参数消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const phoneCallback = (data) => {
+export function phoneCallback(data) {
   return request({
     url: '/jt1078/device/8400',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8401 设置电话本
- * @param data 消息体
+ * 8401 指令：设置终端电话本
+ * @param {Object} data 电话本配置数据
+ * @returns {Promise<AjaxResult>}
  */
-export const setPhoneBook = (data) => {
+export function setPhoneBook(data) {
   return request({
     url: '/jt1078/device/8401',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8500 车辆控制
- * @param data 消息体
+ * 8500 指令：车辆远程控制（断油断电等）
+ * @param {Object} data 车辆控制指令数据
+ * @returns {Promise<AjaxResult>}
  */
-export const vehicleControl = (data) => {
+export function vehicleControl(data) {
   return request({
     url: '/jt1078/device/8500',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8600 设置圆形区域
- * @param data 消息体
+ * 8600 指令：设置圆形电子围栏
+ * @param {Object} data 圆形围栏参数
+ * @returns {Promise<AjaxResult>}
  */
-export const setCircleArea = (data) => {
+export function setCircleArea(data) {
   return request({
     url: '/jt1078/device/8600',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8601 删除圆形区域
- * @param data 消息体
+ * 8601 指令：删除指定圆形电子围栏
+ * @param {Object} data 围栏删除参数
+ * @returns {Promise<AjaxResult>}
  */
-export const deleteCircleArea = (data) => {
+export function deleteCircleArea(data) {
   return request({
     url: '/jt1078/device/8601',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8602 设置矩形区域
- * @param data 消息体
+ * 8602 指令：设置矩形电子围栏
+ * @param {Object} data 矩形围栏参数
+ * @returns {Promise<AjaxResult>}
  */
-export const setRectArea = (data) => {
+export function setRectArea(data) {
   return request({
     url: '/jt1078/device/8602',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8603 删除矩形区域
- * @param data 消息体
+ * 8603 指令：删除指定矩形电子围栏
+ * @param {Object} data 围栏删除参数
+ * @returns {Promise<AjaxResult>}
  */
-export const deleteRectArea = (data) => {
+export function deleteRectArea(data) {
   return request({
     url: '/jt1078/device/8603',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8604 设置多边形区域
- * @param data 消息体
+ * 8604 指令：设置多边形电子围栏
+ * @param {Object} data 多边形围栏参数
+ * @returns {Promise<AjaxResult>}
  */
-export const setPolygonArea = (data) => {
+export function setPolygonArea(data) {
   return request({
     url: '/jt1078/device/8604',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8605 删除多边形区域
- * @param data 消息体
+ * 8605 指令：删除指定多边形电子围栏
+ * @param {Object} data 围栏删除参数
+ * @returns {Promise<AjaxResult>}
  */
-export const deletePolygonArea = (data) => {
+export function deletePolygonArea(data) {
   return request({
     url: '/jt1078/device/8605',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8606 设置路线
- * @param data 消息体
+ * 8606 指令：设置行驶路线规则
+ * @param {Object} data 路线配置参数
+ * @returns {Promise<AjaxResult>}
  */
-export const setRoute = (data) => {
+export function setRoute(data) {
   return request({
     url: '/jt1078/device/8606',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8607 删除路线
- * @param data 消息体
+ * 8607 指令：删除指定行驶路线
+ * @param {Object} data 路线删除参数
+ * @returns {Promise<AjaxResult>}
  */
-export const deleteRoute = (data) => {
+export function deleteRoute(data) {
   return request({
     url: '/jt1078/device/8607',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8608 查询区域或线路数据
- * @param data 消息体
+ * 8608 指令：查询电子围栏/路线配置数据
+ * @param {Object} data 查询条件消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const queryAreaOrRoute = (data) => {
+export function queryAreaOrRoute(data) {
   return request({
     url: '/jt1078/device/8608',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8700 行驶记录仪数据采集命令
- * @param data 消息体
+ * 8700 指令：行驶记录仪数据采集
+ * @param {Object} data 采集指令消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const tachographDataCollect = (data) => {
+export function tachographDataCollect(data) {
   return request({
     url: '/jt1078/device/8700',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8701 行驶记录仪参数下传命令
- * @param data 消息体
+ * 8701 指令：行驶记录仪参数下发配置
+ * @param {Object} data 记录仪参数数据
+ * @returns {Promise<AjaxResult>}
  */
-export const tachographParamSend = (data) => {
+export function tachographParamSend(data) {
   return request({
     url: '/jt1078/device/8701',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8702 上报驾驶员身份信息请求
- * @param data 消息体
+ * 8702 指令：请求上报驾驶员身份信息
+ * @param {Object} data 指令消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const reportDriverInfo = (data) => {
+export function reportDriverInfo(data) {
   return request({
     url: '/jt1078/device/8702',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8801 摄像头立即拍摄命令
- * @param data 消息体
+ * 8801 指令：终端摄像头立即抓拍
+ * @param {Object} data 拍照指令参数
+ * @returns {Promise<AjaxResult>}
  */
-export const cameraShoot = (data) => {
+export function cameraShoot(data) {
   return request({
     url: '/jt1078/device/8801',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8802 存储多媒体数据检索
- * @param data 消息体
+ * 8802 指令：检索终端存储多媒体文件
+ * @param {Object} data 多媒体检索条件
+ * @returns {Promise<AjaxResult>}
  */
-export const searchMultimedia = (data) => {
+export function searchMultimedia(data) {
   return request({
     url: '/jt1078/device/8802',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8803 存储多媒体数据上传
- * @param data 消息体
+ * 8803 指令：下发多媒体文件上传指令
+ * @param {Object} data 上传请求参数
+ * @returns {Promise<AjaxResult>}
  */
-export const uploadMultimedia = (data) => {
+export function uploadMultimedia(data) {
   return request({
     url: '/jt1078/device/8803',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8804 录音开始命令
- * @param data 消息体
+ * 8804 指令：终端开始录音控制
+ * @param {Object} data 录音指令参数
+ * @returns {Promise<AjaxResult>}
  */
-export const startRecording = (data) => {
+export function startRecording(data) {
   return request({
     url: '/jt1078/device/8804',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8805 单条存储多媒体数据检索上传命令
- * @param data 消息体
+ * 8805 指令：单条多媒体文件检索并上传
+ * @param {Object} data 多媒体检索上传参数
+ * @returns {Promise<AjaxResult>}
  */
-export const searchUploadMultimedia = (data) => {
+export function searchUploadMultimedia(data) {
   return request({
     url: '/jt1078/device/8805',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 8108 下发终端升级包
- * @param data 消息体
+ * 8108 指令：下发终端远程升级包
+ * @param {Object} data 升级任务参数
+ * @returns {Promise<AjaxResult>}
  */
-export const terminalUpgrade = (data) => {
+export function terminalUpgrade(data) {
   return request({
     url: '/jt1078/device/8108',
     method: 'post',
     data
-  });
+  })
 }
 
 /**
- * 9003 查询终端音视频属性
- * @param data 消息体
+ * 9003 指令：查询JT1078音视频相关能力属性
+ * @param {Object} data 查询指令消息体
+ * @returns {Promise<AjaxResult>}
  */
-export const queryTerminalAVProperties = (data) => {
+export function queryTerminalAVProperties(data) {
   return request({
     url: '/jt1078/device/9003',
     method: 'post',
     data
-  });
+  })
 }
