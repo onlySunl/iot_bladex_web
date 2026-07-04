@@ -331,7 +331,7 @@ export default {
         dialogWidth: '65%',
         dialogHideTitleFlag: false,
         dialogClickModal: false,
-        column: this.initColumn()
+        column: []
       }
     }
   },
@@ -347,7 +347,7 @@ export default {
   methods: {
     // ==================== 初始化列配置 ====================
     initColumn() {
-      return [
+      this.crudOption.column = [
         {
           label: '设备名称',
           prop: 'deviceName',
@@ -559,11 +559,12 @@ export default {
           const res = await getDictionary({ code: key })
           this.dict[key] = res.data.data || []
         } catch (e) {
-          console.warn(`加载字典 ${key} 失败`, e)
+          console.error('loadDict error', e)
+          this.dict[key] = []
         }
       }
-      // 更新列配置的字典数据
-      this.crudOption.column = this.initColumn()
+      // 字典加载完成后初始化列配置
+      this.initColumn()
     },
 
     // ==================== 加载分组列表 ====================
