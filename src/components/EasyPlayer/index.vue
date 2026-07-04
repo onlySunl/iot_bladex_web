@@ -98,7 +98,7 @@ import {
   VideoCamera, Mute, Microphone, Camera, FullScreen, Connection
 } from '@element-plus/icons-vue'
 import useSettingsStore from '@/store/modules/settings'
-import {computed, onMounted} from "vue";
+import {computed, onMounted,ref} from "vue";
 
 const emit = defineEmits(['error', 'play', 'pause', 'fullscreen', 'screenshot', 'ptz'])
 
