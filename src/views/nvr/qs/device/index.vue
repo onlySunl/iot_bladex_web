@@ -348,30 +348,35 @@ export default {
     // ==================== 初始化列配置 ====================
     initColumn() {
       this.crudOption.column = [
+        // ==================== 名称 ====================
         {
-          label: '设备名称',
+          label: '名称',
           prop: 'deviceName',
           width: 160,
           align: 'center',
           fixed: 'left',
           type: 'input',
-          placeholder: '请输入设备名称',
-          rules: [{ required: true, message: '请输入设备名称', trigger: 'blur' }],
+          placeholder: '请输入名称',
+          rules: [{ required: true, message: '请输入名称', trigger: 'blur' }],
           search: true,
           searchLabelWidth: 100,
+          overHidden: true,
           slot: true
         },
+        // ==================== 编号 ====================
         {
-          label: '设备编号',
+          label: '编号',
           prop: 'deviceCode',
           width: 160,
           align: 'center',
           type: 'input',
-          placeholder: '请输入设备编号',
+          placeholder: '请输入编号',
           span: 12,
           search: true,
+          overHidden: true,
           slot: true
         },
+        // ==================== 接入类型 ====================
         {
           label: '接入类型',
           prop: 'type',
@@ -382,9 +387,11 @@ export default {
           placeholder: '请选择接入类型',
           search: true,
           searchType: 'select',
+          overHidden: true,
           slot: true,
           props: { label: 'dictValue', value: 'dictKey' }
         },
+        // ==================== 启用状态 ====================
         {
           label: '启用状态',
           prop: 'status',
@@ -399,6 +406,24 @@ export default {
           searchType: 'select',
           slot: true
         },
+        // ==================== 是否在线（Switch 模式） ====================
+        {
+          label: '是否在线',
+          prop: 'deviceStatus',
+          width: 110,
+          align: 'center',
+          type: 'switch',
+          activeValue: 'online',
+          inactiveValue: 'offline',
+          addDisplay: false,
+          editDisplay: false,
+          search: true,
+          searchType: 'select',
+          dicData: this.dict.qs_device_status,
+          props: { label: 'dictValue', value: 'dictKey' },
+          slot: true
+        },
+        // ==================== 码流类型 ====================
         {
           label: '码流类型',
           prop: 'streamType',
@@ -408,9 +433,11 @@ export default {
           dicData: this.dict.qs_stream_type,
           placeholder: '请选择码流类型',
           span: 12,
+          overHidden: true,
           slot: true,
           props: { label: 'dictValue', value: 'dictKey' }
         },
+        // ==================== 传输协议 ====================
         {
           label: '传输协议',
           prop: 'protocol',
@@ -420,9 +447,11 @@ export default {
           dicData: this.dict.qs_protocol,
           placeholder: '请选择传输协议',
           span: 12,
+          overHidden: true,
           slot: true,
           props: { label: 'dictValue', value: 'dictKey' }
         },
+        // ==================== 传输模式 ====================
         {
           label: '传输模式',
           prop: 'streamMode',
@@ -431,12 +460,14 @@ export default {
           type: 'select',
           placeholder: '请选择传输模式',
           span: 12,
+          overHidden: true,
           slot: true,
           dicData: [
             { label: 'UDP', value: 'UDP' },
             { label: 'TCP被动', value: 'TCP-PASSIVE' }
           ]
         },
+        // ==================== 通道号 ====================
         {
           label: '通道号',
           prop: 'channel',
@@ -445,8 +476,10 @@ export default {
           type: 'input',
           placeholder: '请输入通道号',
           span: 12,
+          overHidden: true,
           slot: true
         },
+        // ==================== 直播流地址 ====================
         {
           label: '直播流地址',
           prop: 'liveAddress',
@@ -455,98 +488,78 @@ export default {
           type: 'input',
           placeholder: '请输入直播流地址',
           span: 24,
+          overHidden: true,
           slot: true
         },
-        {
-          label: '经度',
-          prop: 'longitude',
-          width: 120,
-          align: 'center',
-          type: 'input',
-          span: 12,
-          display: false,
-          addDisplay: true,
-          editDisplay: true
-        },
-        {
-          label: '纬度',
-          prop: 'latitude',
-          width: 120,
-          align: 'center',
-          type: 'input',
-          span: 12,
-          display: false,
-          addDisplay: true,
-          editDisplay: true
-        },
+        // ==================== 安装地址（地图模式） ====================
         {
           label: '安装地址',
           prop: 'address',
           minWidth: 180,
           align: 'center',
-          type: 'input',
-          placeholder: '请输入安装地址',
+          type: 'map',
+          placeholder: '请选择安装地址',
           span: 24,
+          overHidden: true,
           display: false,
           addDisplay: true,
-          editDisplay: true
+          editDisplay: true,
+          slot: true
         },
+        // ==================== 经度（地图模式，仅表单显示） ====================
+        {
+          label: '经度',
+          prop: 'longitude',
+          type: 'map',
+          span: 12,
+          display: false,
+          addDisplay: true,
+          editDisplay: true,
+          hide: true
+        },
+        // ==================== 纬度（地图模式，仅表单显示） ====================
+        {
+          label: '纬度',
+          prop: 'latitude',
+          type: 'map',
+          span: 12,
+          display: false,
+          addDisplay: true,
+          editDisplay: true,
+          hide: true
+        },
+        // ==================== 端口（不在表格显示） ====================
         {
           label: '端口',
           prop: 'port',
-          width: 90,
-          align: 'center',
-          display: false,
-          addDisplay: false,
-          editDisplay: false,
-          viewDisplay: false,
-          slot: true
+          hide: true,
+          type: 'input',
+          span: 12
         },
+        // ==================== 用户名（不在表格显示） ====================
         {
           label: '用户名',
           prop: 'userName',
-          width: 120,
-          align: 'center',
-          display: false,
-          addDisplay: false,
-          editDisplay: false,
-          viewDisplay: false,
-          slot: true
+          hide: true,
+          type: 'input',
+          span: 12
         },
+        // ==================== 密码（不在表格显示） ====================
         {
           label: '密码',
           prop: 'password',
-          width: 120,
-          align: 'center',
-          display: false,
-          addDisplay: false,
-          editDisplay: false,
-          viewDisplay: false,
-          slot: true
+          hide: true,
+          type: 'password',
+          span: 12
         },
-        {
-          label: '设备在线状态',
-          prop: 'deviceStatus',
-          width: 120,
-          align: 'center',
-          addDisplay: false,
-          editDisplay: false,
-          viewDisplay: false,
-          search: true,
-          searchType: 'select',
-          dicData: this.dict.qs_device_status,
-          slot: true
-        },
+        // ==================== 上线类型（不在表格显示） ====================
         {
           label: '上线类型',
           prop: 'onlineType',
-          width: 110,
-          align: 'center',
-          addDisplay: false,
-          editDisplay: false,
-          viewDisplay: false,
+          hide: true,
+          type: 'select',
           dicData: this.dict.qs_online_type,
-          slot: true
+          props: { label: 'dictValue', value: 'dictKey' }
         }
       ]
     },
