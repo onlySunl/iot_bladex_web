@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { startPtz, endPtz, getPresetList, setPreset, gotoPreset, deletePreset } from '@/api/nvr/qs/device'
+import { startPtz, endPtz, getPresetList, setPreset, gotoPreset, deletePreset } from '@/api/nvr/device'
 
 export const controSpeed = ref(5)
 export const controSpeedMax = ref(10)

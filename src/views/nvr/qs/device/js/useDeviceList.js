@@ -1,6 +1,6 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { listDevice, addDevice, updateDevice, delDevice, changeDeviceStatus } from '@/api/nvr/qs/device'
+import { listDevice, addDevice, updateDevice, delDevice, changeDeviceStatus } from '@/api/nvr/device'
 
 export function useDeviceList() {
     const loading = ref(true)

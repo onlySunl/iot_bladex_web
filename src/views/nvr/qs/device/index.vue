@@ -113,15 +113,15 @@ import {
   startStream,
   stopStream,
   rebootDevice
-} from '@/api/nvr/qs/device';
-import { pageMediaServer } from '@/api/nvr/zlm/mediaServer';
-import { listGroup } from '@/api/nvr/qs/group';
+} from '@/api/nvr/device';
+import { getMediaServerList } from '@/api/nvr/zlm';
+import { listGroup } from '@/api/nvr/group';
 import {
   pageDeviceConfig,
   addDeviceConfig,
   updateDeviceConfig,
   removeDeviceConfig
-} from '@/api/nvr/qs/deviceConfig';
+} from '@/api/nvr/deviceConfig';
 import DeviceSearchForm from './components/DeviceSearchForm.vue';
 import DeviceTable from './components/DeviceTable.vue';
 import DeviceCards from './components/DeviceCards.vue';
@@ -238,7 +238,7 @@ export default {
     // 加载媒体服务器
     async loadMediaServers() {
       try {
-        const res = await pageMediaServer({ current: 1, size: 1000 });
+        const res = await getMediaServerList({ current: 1, size: 1000 });
         if (res.data.code === 200) {
           this.mediaServerList = res.data.data.records || [];
         }
