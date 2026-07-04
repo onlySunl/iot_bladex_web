@@ -105,6 +105,12 @@
         <span v-else>-</span>
       </template>
 
+      <!-- 安装地址（表格显示） -->
+      <template #address="{ row }">
+        <span v-if="row.address">{{ row.address }}</span>
+        <span v-else>-</span>
+      </template>
+
       <!-- 端口 -->
       <template #port="{ row }">
         <span>{{ row.port || '-' }}</span>
@@ -173,6 +179,20 @@
           </template>
         </avue-dropdown>
       </template>
+
+      <!-- ==================== 表单插槽 ==================== -->
+      <!-- 安装地址表单插槽 -->
+      <template #addressForm>
+        <el-input v-model="form.address" placeholder="请输入安装地址或点击地图选点" />
+      </template>
+
+      <!-- 地图选点按钮表单插槽 -->
+      <template #mapSelectForm>
+        <el-button type="primary" @click="openMapSelect">
+          <avue-icon icon="location" style="margin-right: 4px" />
+          地图选点
+        </el-button>
+      </template>
     </avue-crud>
 
     <!-- ==================== 播放弹窗 ==================== -->
@@ -218,6 +238,12 @@
       v-model:visible="snapshotDialogVisible"
       :device="currentDevice"
     />
+
+    <!-- ==================== 地图选点弹窗 ==================== -->
+    <select-map-position
+      ref="selectMapPositionRef"
+      @onSubmit="handleMapSelect"
+    />
   </basic-container>
 </template>
 
@@ -248,6 +274,7 @@ import DevicePtzControl from './components/DevicePtzControl.vue'
 import DeviceTimeSync from './components/DeviceTimeSync.vue'
 import DeviceRecordDownload from './components/DeviceRecordDownload.vue'
 import DeviceSnapshotDialog from './components/DeviceSnapshotDialog.vue'
+import SelectMapPosition from '@/components/nvr/SelectMapPosition/index.vue'
 
 /**
  * 设备管理页面
@@ -265,7 +292,8 @@ export default {
     DevicePtzControl,
     DeviceTimeSync,
     DeviceRecordDownload,
-    DeviceSnapshotDialog
+    DeviceSnapshotDialog,
+    SelectMapPosition
   },
   data() {
     return {
@@ -315,6 +343,9 @@ export default {
       recordDownloadVisible: false,
       snapshotDialogVisible: false,
       currentDevice: null,
+
+      // ==================== 地图选点状态 ====================
+      mapSelectVisible: false,
 
       // ==================== CRUD 配置 ====================
       crudOption: {
@@ -497,14 +528,27 @@ export default {
           prop: 'address',
           minWidth: 180,
           align: 'center',
-          type: 'map',
+          type: 'input',
           placeholder: '请选择安装地址',
-          span: 24,
+          span: 18,
           overHidden: true,
           display: false,
           addDisplay: true,
           editDisplay: true,
-          slot: true
+          slot: true,
+          formslot: true
+        },
+        // ==================== 地图选点按钮 ====================
+        {
+          label: '地图选点',
+          prop: 'mapSelect',
+          type: 'button',
+          span: 6,
+          display: false,
+          addDisplay: true,
+          editDisplay: true,
+          formslot: true,
+          hide: true
         },
         // ==================== 经度（地图模式，仅表单显示） ====================
         {
@@ -528,35 +572,39 @@ export default {
           editDisplay: true,
           hide: true
         },
-        // ==================== 端口（不在表格显示） ====================
+        // ==================== 端口（不在表格和弹窗显示） ====================
         {
           label: '端口',
           prop: 'port',
           hide: true,
+          display: false,
           type: 'input',
           span: 12
         },
-        // ==================== 用户名（不在表格显示） ====================
+        // ==================== 用户名（不在表格和弹窗显示） ====================
         {
           label: '用户名',
           prop: 'userName',
           hide: true,
+          display: false,
           type: 'input',
           span: 12
         },
-        // ==================== 密码（不在表格显示） ====================
+        // ==================== 密码（不在表格和弹窗显示） ====================
         {
           label: '密码',
           prop: 'password',
           hide: true,
+          display: false,
           type: 'password',
           span: 12
         },
-        // ==================== 上线类型（不在表格显示） ====================
+        // ==================== 上线类型（不在表格和弹窗显示） ====================
         {
           label: '上线类型',
           prop: 'onlineType',
           hide: true,
+          display: false,
           type: 'select',
           dicData: this.dict.qs_online_type,
           props: { label: 'dictValue', value: 'dictKey' }
@@ -780,6 +828,47 @@ export default {
     handleConfig(row) {
       this.currentDevice = row
       this.configDialogVisible = true
+    },
+
+    // ==================== 打开地图选点 ====================
+    openMapSelect() {
+      this.mapSelectVisible = true
+      this.$nextTick(() => {
+        if (this.$refs.selectMapPositionRef) {
+          this.$refs.selectMapPositionRef.openDialog({
+            lat: this.form.latitude,
+            lng: this.form.longitude
+          })
+        }
+      })
+    },
+
+    // ==================== 地图选点回调 ====================
+    handleMapSelect(data) {
+      if (data && data.lat && data.lng) {
+        this.form.latitude = data.lat
+        this.form.longitude = data.lng
+        // 使用逆地理编码获取地址（如果可用）
+        this.reverseGeocode(data.lat, data.lng)
+      }
+      this.mapSelectVisible = false
+    },
+
+    // ==================== 逆地理编码（经纬度转地址） ====================
+    async reverseGeocode(lat, lng) {
+      try {
+        // 使用天地图逆地理编码 API
+        const postStr = JSON.stringify({ lon: lng, lat: lat, ver: 1 })
+        const response = await fetch(`https://api.tianditu.gov.cn/geocoder?postStr=${encodeURIComponent(postStr)}&type=geocode&tk=YOUR_TK`)
+        if (response.ok) {
+          const result = await response.json()
+          if (result && result.result && result.result.location) {
+            this.form.address = result.result.location.key
+          }
+        }
+      } catch (e) {
+        console.warn('逆地理编码失败', e)
+      }
     },
 
     // ==================== 更多操作 ====================
