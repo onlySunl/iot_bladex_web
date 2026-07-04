@@ -225,9 +225,7 @@
 import {computed, ref, watch} from 'vue';
 import {ElMessage} from 'element-plus';
 import {DocumentCopy} from '@element-plus/icons-vue';
-import { useClipboard } from 'vue3-clipboard';
-
-const {toClipboard} = useClipboard();
+import { copyText } from 'vue3-clipboard';
 
 // 定义 Props
 const props = defineProps({
@@ -275,7 +273,7 @@ const copyUrl = async (url: string) => {
   }
 
   try {
-    await toClipboard(url);
+    await copyText(url);
     ElMessage.success('成功拷贝到粘贴板');
   } catch (e) {
     console.error(e);

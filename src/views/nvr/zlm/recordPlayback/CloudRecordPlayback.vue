@@ -279,9 +279,9 @@ import moment from 'moment'
 import EasyPlayer from '@/components/EasyPlayer'
 import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
-import RegionTree from '@/views/components/common/RegionTree.vue'
-import GroupTree from '@/views/components/common/GroupTree.vue'
-import { closeStreams, listAllCloudRecord, loadRecord, seekCloudRecord, setCloudRecordSpeed } from '@/api/qs/cloudRecord'
+import RegionTree from '@/views/nvr/components/common/RegionTree.vue'
+import GroupTree from '@/views/nvr/components/common/GroupTree.vue'
+import { closeStreams, listAllCloudRecord, loadRecord, seekCloudRecord, setCloudRecordSpeed } from '@/api/nvr/cloudRecord'
 import momentDurationFormatSetup from 'moment-duration-format'
 import {
   Aim,
@@ -300,7 +300,7 @@ import {
   VideoPause,
   VideoPlay
 } from '@element-plus/icons-vue'
-import { getDevice } from '@/api/qs/device'
+import { getDevice } from '@/api/nvr/device'
 
 const { toClipboard } = useClipboard()
 momentDurationFormatSetup(moment)

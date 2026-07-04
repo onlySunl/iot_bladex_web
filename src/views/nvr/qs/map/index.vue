@@ -258,19 +258,19 @@
 <script setup lang="ts" name="Map">
 import EasyPlayer from "@/components/EasyPlayer";
 import {DocumentCopy, InfoFilled, CaretTop, CaretLeft, CaretBottom, CaretRight, ZoomIn, ZoomOut, Refresh} from '@element-plus/icons-vue'
-import StreamDropdown from "@/components/Channel/streamDropdown.vue";
-import MediaInfo from "@/components/Channel/mediaInfo.vue";
+import StreamDropdown from "@/components/nvr/Channel/streamDropdown.vue";
+import MediaInfo from "@/components/nvr/Channel/mediaInfo.vue";
 import useClipboard from "vue-clipboard3";
-import DeviceTree from '@/components/DeviceTree'
-import SelectMapPosition from '@/components/SelectMapPosition'
+import DeviceTree from '@/components/nvr/DeviceTree'
+import SelectMapPosition from '@/components/nvr/SelectMapPosition'
 import {Pane, Splitpanes} from "splitpanes"
 import "splitpanes/dist/splitpanes.css"
 import {getConfigKey} from "@/api/system/config";
-import {queryRegionForDevice} from "@/api/qs/region";
-import {queryGroupForDevice} from "@/api/qs/group";
-import {getDevice, getVideoSnapshot, updateDevice, startPtz, endPtz, getPresetList, setPreset, gotoPreset, deletePreset} from "@/api/qs/device";
+import {queryRegionForDevice} from "@/api/nvr/region";
+import {queryGroupForDevice} from "@/api/nvr/group";
+import {getDevice, getVideoSnapshot, updateDevice, startPtz, endPtz, getPresetList, setPreset, gotoPreset, deletePreset} from "@/api/nvr/device";
 import {PullConfig, RTPServerParam} from "@/types/api";
-import {loadRecord, rtpPlay, streamPullPlay, streamPullPush, startGb28181Play, startJt1078Play} from "@/api/qs/zlm";
+import {loadRecord, rtpPlay, streamPullPlay, streamPullPush, startGb28181Play, startJt1078Play} from "@/api/nvr/zlm";
 import {ElLoading} from "element-plus";
 
 const {toClipboard} = useClipboard()

@@ -379,7 +379,7 @@
 import GroupTree from "../../components/common/GroupTree.vue";
 import { Pane, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
-import { addDeviceIdToGroup, deleteDeviceToGroup, listDevice, queryListByParentId } from "@/api/qs/device";
+import { addDeviceIdToGroup, deleteDeviceToGroup, listDevice, queryListByParentId } from "@/api/nvr/device";
 import UnusualGroupDeviceSelect from "../../components/common/UnusualGroupDeviceSelect.vue";
 import { Monitor, FolderOpened, VideoCamera, Connection, MapLocation } from "@element-plus/icons-vue";
 

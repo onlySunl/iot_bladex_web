@@ -164,7 +164,7 @@
 </template>
 
 <script setup name="UpdateMediaServer" lang="ts">
-import {getMediaServer, saveMediaServer} from "../../../api/qs/zlm.js";
+import {getMediaServer, saveMediaServer} from '@/api/nvr/zlm.js';
 import {useRoute} from "vue-router";
 import {MediaServer} from "@/types/api";
 import {InfoFilled, Setting, Monitor} from '@element-plus/icons-vue';

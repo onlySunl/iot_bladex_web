@@ -116,12 +116,12 @@ import { ref, computed, reactive, onMounted, getCurrentInstance, nextTick } from
 import EasyPlayer from "@/components/EasyPlayer";
 import {Pane, Splitpanes} from "splitpanes"
 import "splitpanes/dist/splitpanes.css"
-import DeviceTree from '@/components/DeviceTree'
+import DeviceTree from '@/components/nvr/DeviceTree'
 import screenFull from 'screenfull'
 import {ElMessageBox} from "element-plus";
 import {PullConfig, RTPServerParam} from "@/types/api";
-import {loadRecord, rtpPlay, streamPullPlay, streamPullPush, startGb28181Play, startJt1078Play} from "@/api/qs/zlm";
-import {getDevice, getVideoSnapshot, startPtz, endPtz} from "@/api/qs/device";
+import {loadRecord, rtpPlay, streamPullPlay, streamPullPush, startGb28181Play, startJt1078Play} from "@/api/nvr/zlm";
+import {getDevice, getVideoSnapshot, startPtz, endPtz} from "@/api/nvr/device";
 import {FullScreen, Close, VideoPlay, Delete, Document, RefreshLeft, Monitor} from '@element-plus/icons-vue'
 
 const {proxy} = getCurrentInstance()

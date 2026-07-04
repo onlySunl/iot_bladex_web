@@ -43,7 +43,7 @@
 
 <script>
 import dayjs from 'dayjs'
-import WindowListItem from './WindowListItem'
+import WindowListItem from './WindowListItem.vue'
 import {
   ONE_HOUR_STAMP,
   ZOOM,

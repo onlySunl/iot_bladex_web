@@ -490,7 +490,7 @@
 </template>
 
 <script setup name="Platform">
-import {listPlatform, getPlatform, delPlatform, addPlatform, updatePlatform, unregisterPlatform, registerPlatform, pushCatalog} from '@/api/qs/platform';
+import {listPlatform, getPlatform, delPlatform, addPlatform, updatePlatform, unregisterPlatform, registerPlatform, pushCatalog} from '@/api/nvr/platform';
 import AssociatedChannel from './associatedChannel.vue';
 import {
   Monitor,

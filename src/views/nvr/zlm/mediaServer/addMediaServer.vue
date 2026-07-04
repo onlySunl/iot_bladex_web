@@ -174,7 +174,7 @@
 </template>
 
 <script setup name="AddMediaServer" lang="ts">
-import {checkMediaServer, saveMediaServer} from "../../../api/qs/zlm.js";
+import {checkMediaServer, saveMediaServer} from '@/api/nvr/zlm.js';
 import {MediaServer} from "@/types/api";
 import {InfoFilled, Setting, Monitor} from '@element-plus/icons-vue';
 import {nextTick} from "vue";

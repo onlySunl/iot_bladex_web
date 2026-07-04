@@ -400,7 +400,7 @@ import {
   loadRecord,
   seekCloudRecord,
   setCloudRecordSpeed
-} from "@/api/qs/cloudRecord"
+} from "@/api/nvr/cloudRecord"
 import momentDurationFormatSetup from 'moment-duration-format'
 import {
   DocumentCopy,
@@ -419,9 +419,9 @@ import {
   List,
   Grid
 } from '@element-plus/icons-vue'
-import StreamDropdown from "@/components/Channel/streamDropdown.vue";
-import MediaInfo from "@/components/Channel/mediaInfo.vue";
-import {getAllOnlineMediaServe} from "@/api/qs/zlm";
+import StreamDropdown from "@/components/nvr/Channel/streamDropdown.vue";
+import MediaInfo from "@/components/nvr/Channel/mediaInfo.vue";
+import {getAllOnlineMediaServe} from "@/api/nvr/zlm";
 
 const {toClipboard} = useClipboard()
 

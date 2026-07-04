@@ -404,3 +404,99 @@ export function controlWiper(id, channelId, isOn) {
         params: { channelId, isOn }
     })
 }
+
+// ============ 别名函数（兼容 device/index.vue 导入） ============
+
+/**
+ * 分页查询设备列表（listDevice 别名）
+ * @param {DeviceQueryParams} query 查询参数
+ * @returns {Promise<any>}
+ */
+export function pageQsDevice(query) {
+    return listDevice(query)
+}
+
+/**
+ * 新增设备（addDevice 别名）
+ * @param {QsDevice} data 设备数据
+ * @returns {Promise<any>}
+ */
+export function addQsDevice(data) {
+    return addDevice(data)
+}
+
+/**
+ * 修改设备（updateDevice 别名）
+ * @param {QsDevice} data 设备数据
+ * @returns {Promise<any>}
+ */
+export function updateQsDevice(data) {
+    return updateDevice(data)
+}
+
+/**
+ * 删除设备（delDevice 别名）
+ * @param {number | number[]} id 设备ID
+ * @returns {Promise<any>}
+ */
+export function removeQsDevice(id) {
+    return delDevice(id)
+}
+
+/**
+ * 导出设备列表
+ * @param {DeviceQueryParams} query 查询参数
+ * @returns {Promise<any>}
+ */
+export function exportQsDevice(query) {
+    return request({
+        url: '/qs/device/export',
+        method: 'get',
+        params: query,
+        responseType: 'blob'
+    })
+}
+
+/**
+ * 开启设备视频流
+ * @param {number} id 设备ID
+ * @returns {Promise<any>}
+ */
+export function startStream(id) {
+    return request({
+        url: `/qs/device/stream/start/${id}`,
+        method: 'put'
+    })
+}
+
+/**
+ * 关闭设备视频流
+ * @param {number} id 设备ID
+ * @returns {Promise<any>}
+ */
+export function stopStream(id) {
+    return request({
+        url: `/qs/device/stream/stop/${id}`,
+        method: 'put'
+    })
+}
+
+/**
+ * 重启设备
+ * @param {number} id 设备ID
+ * @returns {Promise<any>}
+ */
+export function rebootDevice(id) {
+    return request({
+        url: `/qs/device/reboot/${id}`,
+        method: 'put'
+    })
+}
+/**
+ * 设备绑定录制计划（linkRecordPlan 别名）
+ * @param {object} data 绑定参数
+ * @returns {Promise<any>}
+ */
+export function link(data) {
+    return linkRecordPlan(data)
+}

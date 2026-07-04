@@ -79,3 +79,14 @@ export function queryGroupForDevice() {
         method: 'get'
     })
 }
+
+// ============ 别名函数（兼容导入） ============
+
+/**
+ * 查询分组列表（queryForGroupQuery 别名）
+ * @param {object} query 查询参数
+ * @returns {Promise<any>}
+ */
+export function listGroup(query) {
+    return queryForGroupQuery(query)
+}

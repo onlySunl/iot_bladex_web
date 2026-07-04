@@ -56,8 +56,8 @@
 </template>
 
 <script setup name="DeviceTree" lang="ts">
-import GroupTree from "@/views/components/common/GroupTree.vue";
-import RegionTree from "@/views/components/common/RegionTree.vue";
+import GroupTree from "@/views/nvr/components/common/GroupTree.vue";
+import RegionTree from "@/views/nvr/components/common/RegionTree.vue";
 import { VideoCamera } from '@element-plus/icons-vue';
 
 const {proxy} = getCurrentInstance()

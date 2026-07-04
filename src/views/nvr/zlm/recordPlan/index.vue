@@ -226,7 +226,7 @@
 <script setup lang="ts" name="RecordPlan">
 import ByteWeekTimePicker from "./byteWeekTimePicker.vue"
 import AssociatedSevice from "./associatedDevice.vue"
-import {addRecordPlan, delRecordPlan, getRecordPlan, listRecordPlan, updateRecordPlan, changeRecordPlanStatus} from "@/api/qs/recordPlan"
+import {addRecordPlan, delRecordPlan, getRecordPlan, listRecordPlan, updateRecordPlan, changeRecordPlanStatus} from "@/api/nvr/recordPlan"
 import {QsDevice} from "@/types/api"
 import {List, Grid, VideoCamera, Link} from '@element-plus/icons-vue'
 

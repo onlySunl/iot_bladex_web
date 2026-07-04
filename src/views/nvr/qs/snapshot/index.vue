@@ -164,7 +164,7 @@
 
 <script setup lang="ts" name="DeviceSnapshot">
 import { getCurrentInstance, onMounted, reactive, ref, toRefs } from 'vue'
-import { delSnapshot, listSnapshot, exportSnapshot } from '@/api/qs/snapshot'
+import { delSnapshot, listSnapshot, exportSnapshot } from '@/api/nvr/snapshot'
 
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Download, Search, Delete, Refresh } from '@element-plus/icons-vue'
