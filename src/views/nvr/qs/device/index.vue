@@ -153,16 +153,11 @@
               <el-dropdown-item command="play">播放</el-dropdown-item>
               <el-dropdown-item command="snapshot">抓图</el-dropdown-item>
               <el-dropdown-item command="config">配置</el-dropdown-item>
-              <el-dropdown-item command="edit">编辑</el-dropdown-item>
-              <el-dropdown-item command="view">查看</el-dropdown-item>
               <el-dropdown-item command="reboot" :disabled="!canReboot(row)">重启</el-dropdown-item>
               <el-dropdown-item command="preset" :disabled="!isGb28181(row)">预置点</el-dropdown-item>
               <el-dropdown-item command="ptz" :disabled="!isGb28181(row)">云台控制</el-dropdown-item>
               <el-dropdown-item command="timeSync" :disabled="!canTimeSync(row)">校时</el-dropdown-item>
               <el-dropdown-item command="recordDownload" :disabled="!canDownloadRecord(row)">录像下载</el-dropdown-item>
-              <el-dropdown-item command="delete" divided>
-                <span style="color: var(--el-color-danger)">删除</span>
-              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -362,6 +357,7 @@ export default {
         size: 'small',
         header: true,
         refreshBtn: true,
+        menuType: 'menu',
         column: []
       }
     }
@@ -811,6 +807,7 @@ export default {
 
     // ==================== 播放 ====================
     handlePlay(row) {
+      console.log(row);
       this.currentDevice = row
       this.playerDialogVisible = true
     },
@@ -900,6 +897,7 @@ export default {
 
     // ==================== 更多操作 ====================
     async handleCommand(command, row) {
+      console.log(command,row);
       this.currentDevice = row
       switch (command) {
         case 'play':
