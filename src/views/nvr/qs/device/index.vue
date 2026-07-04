@@ -365,15 +365,19 @@ export default {
         simplePage: true,
         searchShow: true,
         searchMenuSpan: 6,
-        border: true,
-        index: true,
-        indexLabel: '序号',
+        border: false,
+        stripe: true,
+        index: false,
         selection: true,
         viewBtn: true,
         dialogType: 'drawer',
-        dialogWidth: '65%',
+        dialogWidth: '60%',
         dialogHideTitleFlag: false,
         dialogClickModal: false,
+        // 紧凑布局
+        size: 'small',
+        header: true,
+        refreshBtn: true,
         column: []
       }
     }
@@ -395,14 +399,14 @@ export default {
         {
           label: '名称',
           prop: 'deviceName',
-          width: 160,
+          width: 140,
           align: 'center',
           fixed: 'left',
           type: 'input',
           placeholder: '请输入名称',
           rules: [{ required: true, message: '请输入名称', trigger: 'blur' }],
           search: true,
-          searchLabelWidth: 100,
+          searchLabelWidth: 80,
           overHidden: true,
           slot: true
         },
@@ -410,7 +414,7 @@ export default {
         {
           label: '编号',
           prop: 'deviceCode',
-          width: 160,
+          width: 140,
           align: 'center',
           type: 'input',
           placeholder: '请输入编号',
@@ -423,7 +427,7 @@ export default {
         {
           label: '接入类型',
           prop: 'type',
-          width: 120,
+          width: 100,
           align: 'center',
           type: 'select',
           dicData: this.dict.qs_live_stream_type,
@@ -438,7 +442,7 @@ export default {
         {
           label: '启用状态',
           prop: 'status',
-          width: 110,
+          width: 90,
           align: 'center',
           type: 'switch',
           activeValue: 1,
@@ -453,7 +457,7 @@ export default {
         {
           label: '是否在线',
           prop: 'deviceStatus',
-          width: 110,
+          width: 90,
           align: 'center',
           type: 'switch',
           activeValue: 'online',
@@ -470,7 +474,7 @@ export default {
         {
           label: '码流类型',
           prop: 'streamType',
-          width: 110,
+          width: 90,
           align: 'center',
           type: 'select',
           dicData: this.dict.qs_stream_type,
@@ -484,7 +488,7 @@ export default {
         {
           label: '传输协议',
           prop: 'protocol',
-          width: 120,
+          width: 100,
           align: 'center',
           type: 'select',
           dicData: this.dict.qs_protocol,
@@ -498,7 +502,7 @@ export default {
         {
           label: '传输模式',
           prop: 'streamMode',
-          width: 120,
+          width: 100,
           align: 'center',
           type: 'select',
           placeholder: '请选择传输模式',
@@ -514,7 +518,7 @@ export default {
         {
           label: '通道号',
           prop: 'channel',
-          width: 100,
+          width: 80,
           align: 'center',
           type: 'input',
           placeholder: '请输入通道号',
@@ -526,7 +530,7 @@ export default {
         {
           label: '直播流地址',
           prop: 'liveAddress',
-          minWidth: 200,
+          minWidth: 180,
           align: 'center',
           type: 'input',
           placeholder: '请输入直播流地址',
@@ -538,7 +542,7 @@ export default {
         {
           label: '安装地址',
           prop: 'address',
-          minWidth: 180,
+          minWidth: 160,
           align: 'center',
           type: 'input',
           placeholder: '请选择安装地址',
@@ -936,9 +940,59 @@ export default {
 </script>
 
 <style scoped>
+/* 紧凑布局样式 */
+:deep(.avue-crud) {
+  font-size: 13px;
+}
+
+:deep(.avue-crud .el-table) {
+  font-size: 13px;
+}
+
+:deep(.avue-crud .el-table th) {
+  padding: 6px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+:deep(.avue-crud .el-table td) {
+  padding: 6px 0;
+}
+
+:deep(.avue-crud .el-table .cell) {
+  padding: 0 8px;
+  line-height: 1.4;
+}
+
+/* 操作列按钮紧凑 */
 :deep(.avue-crud__menu) {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+}
+
+:deep(.avue-crud__menu .el-button) {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* 搜索区域紧凑 */
+:deep(.avue-search) {
+  padding: 12px 16px;
+}
+
+:deep(.avue-search .el-form-item) {
+  margin-bottom: 12px;
+}
+
+/* 分页紧凑 */
+:deep(.avue-crud__pagination) {
+  padding: 8px 16px;
+}
+
+/* 下拉菜单紧凑 */
+.el-dropdown-menu__item {
+  padding: 6px 12px;
+  font-size: 12px;
 }
 </style>
