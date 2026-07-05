@@ -49,10 +49,8 @@
       <!-- 启用状态 -->
       <template #status="{ row }">
         <el-switch
-          v-model="row.status"
-          :active-value="1"
-          :inactive-value="0"
-          @change="handleStatusChange(row)"
+          :model-value="row.status === 1"
+          @change="(val) => handleStatusChange(row, val)"
         />
       </template>
 
@@ -665,12 +663,13 @@ const handleBatchDelete = async () => {
 }
 
 // ==================== 状态切换 ====================
-const handleStatusChange = async (row) => {
+const handleStatusChange = async (row, val) => {
+  const newStatus = val ? 1 : 0
   try {
-    await changeDeviceStatus(row.id, row.status)
+    await changeDeviceStatus(row.id, newStatus)
+    row.status = newStatus
     ElMessage.success('状态修改成功')
   } catch (e) {
-    row.status = row.status === 1 ? 0 : 1
     ElMessage.error(e.message || '状态修改失败')
   }
 }
