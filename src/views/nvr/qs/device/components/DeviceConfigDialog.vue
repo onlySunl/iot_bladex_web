@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     title="设备配置"
-    :visible.sync="dialogVisible"
+    v-model="dialogVisible"
     width="600px"
     @close="handleClose"
   >
@@ -73,10 +73,10 @@
         </el-form>
       </el-tab-pane>
     </el-tabs>
-    <div slot="footer">
+    <template #footer>
       <el-button @click="dialogVisible = false">取消</el-button>
       <el-button type="primary" :loading="saving" @click="handleSave">保存</el-button>
-    </div>
+    </template>
   </el-dialog>
 </template>
 

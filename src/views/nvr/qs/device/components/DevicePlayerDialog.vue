@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     title="视频播放"
-    :visible.sync="dialogVisible"
+    v-model="dialogVisible"
     width="800px"
     @close="handleClose"
   >
@@ -31,9 +31,9 @@
         </el-scrollbar>
       </div>
     </div>
-    <div slot="footer">
+    <template #footer>
       <el-button @click="dialogVisible = false">关闭</el-button>
-    </div>
+    </template>
   </el-dialog>
 </template>
 
