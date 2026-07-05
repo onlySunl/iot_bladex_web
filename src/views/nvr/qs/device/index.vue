@@ -358,7 +358,8 @@ const initColumn = () => {
       search: true,
       searchType: 'select',
       overHidden: true,
-      props: { label: 'dictValue', value: 'dictKey' }
+      props: { label: 'dictValue', value: 'dictKey' },
+      change: handleAccessTypeChange
     },
     // ==================== 启用状态 ====================
     {
@@ -424,7 +425,8 @@ const initColumn = () => {
       prop: 'channel',
       width: 80,
       align: 'center',
-      overHidden: true
+      overHidden: true,
+      defaultValue: 1
     },
     // ==================== 直播流地址 ====================
     {
@@ -775,6 +777,57 @@ const getAccessTypeLabel = (type) => {
 }
 
 // ==================== 码流类型标签 ====================
+// ==================== 接入类型变更处理 ====================
+const handleAccessTypeChange = (value, column, formData) => {
+  // 根据接入类型自动生成直播流地址模板
+  const ip = formData.ip || '127.0.0.1'
+  const port = formData.port || getDefaultPort(value)
+  const stream = formData.stream || 'stream'
+  const channelId = formData.channel || 1
+
+  let streamAddress = ''
+  switch (String(value)) {
+    case '1': // RTSP
+      streamAddress = `rtsp://${ip}:${port}/${stream}`
+      break
+    case '2': // RTMP
+      streamAddress = `rtmp://${ip}:${port}/${stream}`
+      break
+    case '3': // HTTP-FLV
+      streamAddress = `http://${ip}:${port}/${stream}.flv`
+      break
+    case '4': // HLS
+      streamAddress = `http://${ip}:${port}/${stream}/hls.m3u8`
+      break
+    case '5': // GB28181
+      streamAddress = `gb28181://${channelId}`
+      break
+    case '6': // JT1078
+      streamAddress = `jt1078://${formData.phone || ''}:${channelId}`
+      break
+    default:
+      streamAddress = ''
+  }
+
+  // 更新表单中的直播流地址
+  if (formData) {
+    formData.liveAddress = streamAddress
+  }
+}
+
+// 获取默认端口
+const getDefaultPort = (type) => {
+  switch (String(type)) {
+    case '1': return 554 // RTSP
+    case '2': return 1935 // RTMP
+    case '3': return 8080 // HTTP-FLV
+    case '4': return 8080 // HLS
+    case '5': return 5060 // GB28181
+    case '6': return 1078 // JT1078
+    default: return 80
+  }
+}
+
 const getStreamTypeLabel = (type) => {
   const item = dict.qs_stream_type.find(d => d.dictKey === String(type))
   return item ? item.dictValue : '-'
