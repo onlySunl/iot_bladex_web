@@ -469,6 +469,26 @@ const initColumn = () => {
       addDisplay: true,
       editDisplay: true
     },
+    // ==================== 流媒体服务器 ====================
+    {
+      label: '流媒体服务器',
+      prop: 'mediaServerId',
+      type: 'select',
+      hide: true,
+      display: true,
+      dicData: mediaServerList,
+      props: { label: 'name', value: 'id' },
+      change: handleMediaServerChange
+    },
+    // ==================== IP ====================
+    {
+      label: 'IP',
+      prop: 'ip',
+      type: 'input',
+      hide: true,
+      display: true,
+      span: 12
+    },
     // ==================== 端口（不在表格显示） ====================
     {
       label: '端口',
@@ -777,6 +797,16 @@ const getAccessTypeLabel = (type) => {
 }
 
 // ==================== 码流类型标签 ====================
+// ==================== 流媒体服务器变更处理 ====================
+const handleMediaServerChange = (value, column, formData) => {
+  // 根据选择的流媒体服务器自动填充 IP 和端口
+  const server = mediaServerList.value.find(item => item.id === value)
+  if (server) {
+    formData.ip = server.ip || ''
+    formData.port = server.httpPort || server.rtmpPort || server.rtspPort || 80
+  }
+}
+
 // ==================== 接入类型变更处理 ====================
 const handleAccessTypeChange = (value, column, formData) => {
   // 根据接入类型自动生成直播流地址模板
