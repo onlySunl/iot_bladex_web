@@ -118,7 +118,6 @@
       <!-- ==================== 操作列 ==================== -->
       <!-- 使用 menu 插槽完全控制操作列 -->
       <template #menu="{ row, size }">
-        <div>
           <!-- 更多操作下拉菜单 -->
           <el-dropdown @command="(cmd) => handleCommand(cmd, row)" trigger="click">
             <el-button type="primary" text :size="size">
@@ -129,20 +128,15 @@
                 <el-dropdown-item command="play">播放</el-dropdown-item>
                 <el-dropdown-item command="snapshot">抓图</el-dropdown-item>
                 <el-dropdown-item command="config">配置</el-dropdown-item>
-                <el-dropdown-item command="edit">编辑</el-dropdown-item>
-                <el-dropdown-item command="view">查看</el-dropdown-item>
                 <el-dropdown-item command="reboot" :disabled="!canReboot(row)">重启</el-dropdown-item>
                 <el-dropdown-item command="preset" :disabled="!isGb28181(row)">预置点</el-dropdown-item>
                 <el-dropdown-item command="ptz" :disabled="!isGb28181(row)">云台控制</el-dropdown-item>
                 <el-dropdown-item command="timeSync" :disabled="!canTimeSync(row)">校时</el-dropdown-item>
                 <el-dropdown-item command="recordDownload" :disabled="!canDownloadRecord(row)">录像下载</el-dropdown-item>
-                <el-dropdown-item command="delete" divided>
-                  <span style="color: var(--el-color-danger)">删除</span>
-                </el-dropdown-item>
+
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-        </div>
       </template>
     </avue-crud>
 
@@ -308,6 +302,7 @@ const crudOption = reactive({
   size: 'small',
   header: true,
   refreshBtn: true,
+  menuWidth:320,
   column: []
 })
 
@@ -542,8 +537,8 @@ const loadData = async () => {
       size: page.pageSize
     }
     const res = await pageQsDevice(params)
-    tableData.value = res.data.data.records || []
-    page.total = res.data.data.total || 0
+    tableData.value = res.data.records || []
+    page.total = res.data.total || 0
   } catch (e) {
     ElMessage.error(e.message || '加载数据失败')
   } finally {
