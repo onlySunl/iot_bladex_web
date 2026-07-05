@@ -49,7 +49,7 @@
       <!-- 启用状态 -->
       <template #status="{ row }">
         <el-switch
-          :model-value="row.status === 1"
+          :model-value="row.status == 1"
           @change="(val) => handleStatusChange(row, val)"
         />
       </template>
@@ -104,6 +104,17 @@
       </template>
 
       <!-- ==================== 表单插槽 ==================== -->
+      <!-- 启用状态表单插槽 -->
+      <template #statusForm="{ row }">
+        <el-switch
+          v-model="row.status"
+          :active-value="1"
+          :inactive-value="0"
+          active-text="启用"
+          inactive-text="禁用"
+        />
+      </template>
+
       <!-- 安装地址表单插槽 -->
       <template #addressForm="{ row }">
         <el-input v-model="row.address" placeholder="请输入安装地址" readonly>
