@@ -328,8 +328,7 @@ const initColumn = () => {
       rules: [{ required: true, message: '请输入名称', trigger: 'blur' }],
       search: true,
       searchLabelWidth: 80,
-      overHidden: true,
-      slot: true
+      overHidden: true
     },
     // ==================== 编号 ====================
     {
@@ -341,8 +340,7 @@ const initColumn = () => {
       placeholder: '请输入编号',
       span: 12,
       search: true,
-      overHidden: true,
-      slot: true
+      overHidden: true
     },
     // ==================== 接入类型 ====================
     {
@@ -356,7 +354,6 @@ const initColumn = () => {
       search: true,
       searchType: 'select',
       overHidden: true,
-      slot: true,
       props: { label: 'dictValue', value: 'dictKey' }
     },
     // ==================== 启用状态 ====================
@@ -372,7 +369,7 @@ const initColumn = () => {
       dicData: dict.qs_status,
       search: true,
       searchType: 'select',
-      slot: true
+      props: { label: 'dictValue', value: 'dictKey' }
     },
     // ==================== 是否在线 ====================
     {
@@ -386,7 +383,7 @@ const initColumn = () => {
       dicData: dict.qs_device_status,
       search: true,
       searchType: 'select',
-      slot: true
+      props: { label: 'dictValue', value: 'dictKey' }
     },
     // ==================== 码流类型 ====================
     {
@@ -397,7 +394,6 @@ const initColumn = () => {
       type: 'select',
       dicData: dict.qs_stream_type,
       overHidden: true,
-      slot: true,
       props: { label: 'dictValue', value: 'dictKey' }
     },
     // ==================== 传输协议 ====================
@@ -408,8 +404,6 @@ const initColumn = () => {
       align: 'center',
       type: 'select',
       dicData: dict.qs_protocol,
-      overHidden: true,
-      slot: true,
       props: { label: 'dictValue', value: 'dictKey' }
     },
     // ==================== 传输模式 ====================
@@ -418,8 +412,7 @@ const initColumn = () => {
       prop: 'streamMode',
       width: 100,
       align: 'center',
-      overHidden: true,
-      slot: true
+      overHidden: true
     },
     // ==================== 通道号 ====================
     {
@@ -427,8 +420,7 @@ const initColumn = () => {
       prop: 'channel',
       width: 80,
       align: 'center',
-      overHidden: true,
-      slot: true
+      overHidden: true
     },
     // ==================== 直播流地址 ====================
     {
@@ -436,8 +428,7 @@ const initColumn = () => {
       prop: 'liveAddress',
       width: 180,
       align: 'center',
-      overHidden: true,
-      slot: true
+      overHidden: true
     },
     // ==================== 安装地址（地图模式） ====================
     {
@@ -450,9 +441,7 @@ const initColumn = () => {
       overHidden: true,
       span: 24,
       addDisplay: true,
-      editDisplay: true,
-      slot: true,
-      formslot: true
+      editDisplay: true
     },
     // ==================== 经度 ====================
     {
@@ -516,8 +505,8 @@ const loadDict = async () => {
   const dictKeys = ['qs_live_stream_type', 'qs_device_status', 'qs_status', 'qs_stream_type', 'qs_protocol', 'qs_online_type', 'qs_onvif_auth']
   for (const key of dictKeys) {
     try {
-      const res = await getDictionary(key)
-      dict[key] = res.data.data || []
+      const res = await getDictionary({code:key})
+      dict[key] = res.data?.data || []
     } catch (e) {
       console.warn(`加载字典 ${key} 失败`, e)
     }
@@ -844,6 +833,7 @@ const handleReboot = async (row) => {
     }
   }
 }
+// 设置菜单宽度
 
 // ==================== 判断方法 ====================
 const canReboot = (row) => [5, 7, 8, 9, 12, 14].includes(row.type)
@@ -854,9 +844,10 @@ const canDownloadRecord = (row) => [7, 8, 9].includes(row.type)
 // ==================== 初始化 ====================
 onMounted(() => {
   loadDict()
-  loadGroupList()
+  //loadGroupList()
   loadMediaServerList()
   loadData()
+  //setMenuWidth()
 })
 </script>
 
