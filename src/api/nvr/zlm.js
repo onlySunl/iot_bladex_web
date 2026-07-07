@@ -20,7 +20,7 @@ export function streamPullPlay(data) {
         url: '/streamPullPlay',
         method: 'post',
         data,
-        timeout: 20000
+        timeout: 60000
     })
 }
 
@@ -34,7 +34,7 @@ export function stopStreamPullPlay(data) {
         url: '/stopStreamPullPlay',
         method: 'post',
         data,
-        timeout: 20000
+        timeout: 60000
     })
 }
 
@@ -48,7 +48,7 @@ export function getSnap(data) {
         url: '/zlm/getSnap',
         method: 'post',
         data,
-        timeout: 20000
+        timeout: 60000
     })
 }
 
@@ -62,7 +62,7 @@ export function rtpPlay(data) {
         url: '/rtpPlay',
         method: 'post',
         data,
-        timeout: 20000
+        timeout: 60000
     })
 }
 
@@ -76,7 +76,7 @@ export function stopRtpPlay(data) {
         url: '/stopRtpPlay',
         method: 'post',
         data,
-        timeout: 20000
+        timeout: 60000
     })
 }
 
@@ -90,7 +90,7 @@ export function rtpPlayback(data) {
         url: '/zlm/rtpPlayback',
         method: 'post',
         data,
-        timeout: 20000
+        timeout: 60000
     })
 }
 
@@ -104,7 +104,7 @@ export function stopRtpPlayback(data) {
         url: '/zlm/stopRtpPlayback',
         method: 'post',
         data,
-        timeout: 20000
+        timeout: 60000
     })
 }
 
@@ -118,7 +118,7 @@ export function onvifPlayback(data) {
         url: '/zlm/onvifPlayback',
         method: 'post',
         data,
-        timeout: 20000
+        timeout: 60000
     })
 }
 
@@ -132,7 +132,7 @@ export function stopOnvifPlayback(data) {
         url: '/zlm/stopStreamPullPlay',
         method: 'post',
         data,
-        timeout: 20000
+        timeout: 60000
     })
 }
 
@@ -349,7 +349,7 @@ export function startGb28181Playback(id, startTime, endTime) {
         url: `/zlm/startGb28181Playback/${id}`,
         method: 'get',
         params: { startTime, endTime },
-        timeout: 20000
+        timeout: 60000
     })
 }
 

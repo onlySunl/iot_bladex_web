@@ -575,7 +575,18 @@ const handlePlay = async () => {
     await autoPlay()
 
   } catch (err) {
-    showPlayErr(err?.message || '播放请求异常')
+    // 根据错误类型显示不同的提示信息
+    let errMsg = '播放请求异常'
+    if (err?.code === 'ECONNABORTED' || err?.message?.includes('timeout')) {
+      errMsg = '视频流请求超时，请检查网络连接或稍后重试'
+    } else if (err?.response?.status === 503) {
+      errMsg = '流媒体服务暂不可用，请稍后重试'
+    } else if (err?.response?.status === 404) {
+      errMsg = '视频流地址不存在，请检查设备配置'
+    } else if (err?.message) {
+      errMsg = err.message
+    }
+    showPlayErr(errMsg)
   } finally {
     row.loading = false
   }
