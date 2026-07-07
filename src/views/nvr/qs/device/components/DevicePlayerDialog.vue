@@ -306,18 +306,22 @@ import {
 } from '@element-plus/icons-vue'
 // 组件
 import EasyPlayer from '@/components/EasyPlayer'
-import MediaInfo from '@/components/nvr/Channel/MediaInfo.vue'
-import StreamDropdown from '@/components/nvr/Channel/StreamDropdown.vue'
+import MediaInfo from '@/components/nvr/Channel/mediaInfo.vue'
+import StreamDropdown from '@/components/nvr/Channel/streamDropdown.vue'
 import ImagePreview from '@/components/nvr/ImagePreview'
 // 接口
 import {
   streamPullPlay,
+  stopStreamPullPlay,
   loadRecord,
+  closeStreams,
   rtpPlay,
   stopRtpPlay,
   streamPullPush,
   startGb28181Play,
-  startJt1078Play
+  stopGb28181Play,
+  startJt1078Play,
+  stopJt1078Play
 } from '@/api/nvr/zlm'
 
 // Props Emits
