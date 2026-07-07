@@ -17,7 +17,7 @@ import request from '@/axios'
  */
 export function streamPullPlay(data) {
     return request({
-        url: '/zlm/streamPullPlay',
+        url: '/streamPullPlay',
         method: 'post',
         data,
         timeout: 20000
@@ -31,7 +31,7 @@ export function streamPullPlay(data) {
  */
 export function stopStreamPullPlay(data) {
     return request({
-        url: '/zlm/stopStreamPullPlay',
+        url: '/stopStreamPullPlay',
         method: 'post',
         data,
         timeout: 20000
@@ -59,7 +59,7 @@ export function getSnap(data) {
  */
 export function rtpPlay(data) {
     return request({
-        url: '/zlm/rtpPlay',
+        url: '/rtpPlay',
         method: 'post',
         data,
         timeout: 20000
@@ -73,7 +73,7 @@ export function rtpPlay(data) {
  */
 export function stopRtpPlay(data) {
     return request({
-        url: '/zlm/stopRtpPlay',
+        url: '/stopRtpPlay',
         method: 'post',
         data,
         timeout: 20000

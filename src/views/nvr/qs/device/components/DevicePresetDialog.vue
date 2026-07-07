@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { useDevicePlay } from '@/views/nvr/qs/device/js/useDevicePlay'
+import { useDevicePlay } from '@/views/nvr/qs/device/hooks/useDevicePlay'
 const props = defineProps({
   visible: Boolean,
   form: Object,

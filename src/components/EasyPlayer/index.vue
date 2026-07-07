@@ -1,13 +1,12 @@
 <template>
   <div
-    class="easy-player-wrapper"
-    :class="{
+      class="easy-player-wrapper"
+      :class="{
       'is-loading': isLoading,
       'is-error': hasError,
-      'is-dark': isDarkMode,
       'is-fullscreen': isFullscreen
     }"
-    :style="wrapperStyle"
+      :style="wrapperStyle"
   >
     <!-- 播放器容器 -->
     <div class="player-container">
@@ -16,9 +15,9 @@
 
     <!-- 封面图/Poster 层 -->
     <div
-      v-if="poster && !isPlaying && !hasError"
-      class="player-poster"
-      :style="{ backgroundImage: `url(${poster})` }"
+        v-if="poster && !isPlaying && !hasError"
+        class="player-poster"
+        :style="{ backgroundImage: `url(${poster})` }"
     >
       <div class="poster-overlay">
         <div class="play-button" @click="handlePlayClick">
@@ -92,13 +91,12 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import {
   VideoPlay, VideoPause, WarningFilled, RefreshRight,
   VideoCamera, Mute, Microphone, Camera, FullScreen, Connection
 } from '@element-plus/icons-vue'
-import useSettingsStore from '@/store/modules/settings'
-import {computed, onMounted,ref} from "vue";
+import { computed, onMounted, ref, onBeforeUnmount, watch } from "vue"
 
 const emit = defineEmits(['error', 'play', 'pause', 'fullscreen', 'screenshot', 'ptz'])
 
@@ -123,7 +121,7 @@ const props = defineProps({
   showNetworkStatus: { type: Boolean, default: false },
 })
 
-const easyplayer = ref<any>(null)
+const easyplayer = ref(null)
 const live = ref('STOP')
 const isLoading = ref(false)
 const hasError = ref(false)
@@ -132,10 +130,7 @@ const isPlayingState = ref(false)
 const isMuted = ref(props.isMute)
 const isFullscreen = ref(false)
 const loadingProgress = ref('')
-const networkStatus = ref<{ type: string; text: string } | null>(null)
-
-const settingsStore = useSettingsStore()
-const isDarkMode = computed(() => settingsStore.isDark)
+const networkStatus = ref(null)
 
 // 容器尺寸样式
 const wrapperStyle = computed(() => {
@@ -170,12 +165,12 @@ watch(() => props.videoUrl, (newUrl) => {
 
 const playCreate = () => {
   const container = props.id
-    ? document.getElementById(props.id)
-    : document.getElementById('player_box')
+      ? document.getElementById(props.id)
+      : document.getElementById('player_box')
 
   if (!container) return
 
-  const config: any = {
+  const config = {
     isLive: props.isLive,
     hasAudio: props.hasAudio,
     isMute: props.isMute,
@@ -217,7 +212,7 @@ const playCreate = () => {
   if (props.fullWatermark) config.fullWatermark = props.fullWatermark
 
   try {
-    easyplayer.value = new (window as any).EasyPlayerPro(container, config)
+    easyplayer.value = new window.EasyPlayerPro(container, config)
     bindEvents()
   } catch (e) {
     console.error('EasyPlayer init failed:', e)
@@ -229,32 +224,32 @@ const playCreate = () => {
 const bindEvents = () => {
   if (!easyplayer.value) return
 
-  easyplayer.value.on('play', (data: any) => {
+  easyplayer.value.on('play', (data) => {
     isLoading.value = false
     isPlaying.value = true
     isPlayingState.value = true
     emit('play', data)
   })
 
-  easyplayer.value.on('pause', (data: any) => {
+  easyplayer.value.on('pause', (data) => {
     isPlayingState.value = false
     emit('pause', data)
   })
 
-  easyplayer.value.on('fullscreen', (data: any) => {
+  easyplayer.value.on('fullscreen', (data) => {
     isFullscreen.value = data
     emit('fullscreen', data)
   })
 
-  easyplayer.value.on('mute', (data: any) => {
+  easyplayer.value.on('mute', (data) => {
     isMuted.value = data
   })
 
-  easyplayer.value.on('screenshots', (data: any) => {
+  easyplayer.value.on('screenshots', (data) => {
     emit('screenshot', data)
   })
 
-  easyplayer.value.on('error', (data: any) => {
+  easyplayer.value.on('error', (data) => {
     isLoading.value = false
     hasError.value = true
     emit('error', data)
@@ -270,7 +265,7 @@ const bindEvents = () => {
   })
 
   // 网络状态
-  easyplayer.value.on('kBps', (data: any) => {
+  easyplayer.value.on('kBps', (data) => {
     if (!props.showNetworkStatus) return
     const speed = Number(data)
     if (speed > 500) {
@@ -285,7 +280,7 @@ const bindEvents = () => {
   })
 
   // PTZ 事件
-  easyplayer.value.on('ptz', (data: any) => {
+  easyplayer.value.on('ptz', (data) => {
     // 不支持左上、左下、右上、右下等组合方向
     const unsupportedCommands = ['leftUp', 'leftdown', 'rightup', 'rightdown', 'upleft', 'downleft', 'upright', 'downright']
     if (unsupportedCommands.includes(data)) {
@@ -296,7 +291,7 @@ const bindEvents = () => {
   })
 }
 
-const play = (url?: string) => {
+const play = (url) => {
   const targetUrl = url || props.videoUrl
   if (!targetUrl) return
 
@@ -312,11 +307,11 @@ const play = (url?: string) => {
   } else if (!easyplayer.value) {
     playCreate()
     live.value = 'LIVE'
-    easyplayer.value?.play(targetUrl)
+    if (easyplayer.value) easyplayer.value.play(targetUrl)
   }
 }
 
-const playback = (url: string) => {
+const playback = (url) => {
   if (!url) return
 
   hasError.value = false
@@ -338,7 +333,7 @@ const togglePlay = () => {
   }
 }
 
-const setMute = (mute: boolean) => {
+const setMute = (mute) => {
   if (easyplayer.value) easyplayer.value.setMute(mute)
 }
 
@@ -350,7 +345,7 @@ const isMuteFn = () => {
   return easyplayer.value ? easyplayer.value.isMute() : false
 }
 
-const screenshot = (data?: any) => {
+const screenshot = (data) => {
   if (easyplayer.value) easyplayer.value.screenshot(data)
 }
 
@@ -394,7 +389,7 @@ const getAudioInfo = () => {
   return easyplayer.value ? easyplayer.value.getAudioInfo() : null
 }
 
-const setMic = (mic: boolean) => {
+const setMic = (mic) => {
   if (easyplayer.value) easyplayer.value.setMic(mic)
 }
 
@@ -481,10 +476,10 @@ defineExpose({
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.1) 0%,
-    rgba(0, 0, 0, 0.3) 60%,
-    rgba(0, 0, 0, 0.6) 100%
+      180deg,
+      rgba(0, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0.3) 60%,
+      rgba(0, 0, 0, 0.6) 100%
   );
   display: flex;
   flex-direction: column;
@@ -497,10 +492,10 @@ defineExpose({
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 0.15);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -510,8 +505,8 @@ defineExpose({
 }
 
 .play-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 0.25);
+  border-color: rgba(255, 255, 0.5);
   transform: scale(1.08);
 }
 
@@ -591,7 +586,7 @@ defineExpose({
 }
 
 .loading-sub {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 0.6);
   font-size: 12px;
 }
 
@@ -623,7 +618,7 @@ defineExpose({
 }
 
 .error-desc {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 0.6);
   font-size: 13px;
 }
 
@@ -663,7 +658,7 @@ defineExpose({
 }
 
 .info-icon {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 0.8);
   font-size: 14px;
 }
 
@@ -729,14 +724,14 @@ defineExpose({
 }
 
 .control-btn {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color: rgba(255, 255, 0.85) !important;
   padding: 6px !important;
   border-radius: var(--radius-sm, 6px) !important;
 }
 
 .control-btn:hover {
   color: #fff !important;
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 0.1) !important;
 }
 
 /* ==========================================
