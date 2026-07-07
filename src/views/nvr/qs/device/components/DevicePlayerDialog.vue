@@ -471,14 +471,64 @@ const resetStreamData = () => {
   streamInfo.value = null
 }
 
+/**
+ * 根据流媒体服务器信息生成播放地址
+ * @param {Object} data 流内容数据
+ * @returns {Object} 播放地址对象
+ */
+const generateStreamUrls = (data) => {
+  const isHttps = location.protocol === 'https:'
+  const mediaServer = data.mediaServer || {}
+  const ip = data.ip || mediaServer.streamIp || mediaServer.ip || 'localhost'
+  const app = data.app || 'live'
+  const stream = data.stream || data.streamId || ''
+
+  // 生成各协议播放地址
+  const urls = {
+    // HTTP-FLV
+    flv: data.flv || `http://${ip}:${mediaServer.flvPort || 80}/${app}/${stream}.flv`,
+    https_flv: data.https_flv || `https://${ip}:${mediaServer.flvSslPort || 443}/${app}/${stream}.flv`,
+    // WS-FLV
+    ws_flv: data.ws_flv || `ws://${ip}:${mediaServer.wsFlvPort || 80}/${app}/${stream}.flv`,
+    wss_flv: data.wss_flv || `wss://${ip}:${mediaServer.wsFlvSslPort || 443}/${app}/${stream}.flv`,
+    // HLS
+    hls: data.hls || `http://${ip}:${mediaServer.flvPort || 80}/${app}/${stream}/hls.m3u8`,
+    https_hls: data.https_hls || `https://${ip}:${mediaServer.flvSslPort || 443}/${app}/${stream}/hls.m3u8`,
+    // RTMP
+    rtmp: data.rtmp || `rtmp://${ip}:${mediaServer.rtmpPort || 1935}/${app}/${stream}`,
+    // RTSP
+    rtsp: data.rtsp || `rtsp://${ip}:${mediaServer.rtspPort || 554}/${app}/${stream}`,
+    // WebRTC
+    rtc: data.rtc || `rtc://${ip}:${mediaServer.httpPort || 80}/${app}/${stream}`,
+    rtcs: data.rtcs || `rtcs://${ip}:${mediaServer.httpSslPort || 443}/${app}/${stream}`
+  }
+
+  return {
+    flvUrl: isHttps ? urls.https_flv : urls.flv,
+    wsUrl: isHttps ? urls.wss_flv : urls.ws_flv,
+    rtcUrl: isHttps ? urls.rtcs : urls.rtc,
+    allUrls: urls
+  }
+}
+
+/**
+ * 设置流播放数据
+ * @param {Object} res API响应数据
+ */
 const setStreamBaseData = (res) => {
   const data = res || {}
-  const isHttps = location.protocol === 'https:'
-  flvUrl.value = isHttps ? data.https_flv : data.flv
-  rtcUrl.value = isHttps ? data.rtcs : data.rtc
-  wsUrl.value = isHttps ? data.wss_flv : data.ws_flv
+  console.log('[DevicePlayer] 流数据:', data)
+
+  // 生成播放地址
+  const urls = generateStreamUrls(data)
+
+  flvUrl.value = urls.flvUrl
+  rtcUrl.value = urls.rtcUrl
+  wsUrl.value = urls.wsUrl
   sharedIframe.value = `<iframe src="${window.location.origin}/easyPlayer?url=${encodeURIComponent(wsUrl.value)}"></iframe>`
-  streamInfo.value = data
+  streamInfo.value = { ...data, ...urls.allUrls }
+
+  console.log('[DevicePlayer] 播放地址:', { flvUrl: flvUrl.value, wsUrl: wsUrl.value, rtcUrl: rtcUrl.value })
 }
 
 const autoPlay = async () => {
