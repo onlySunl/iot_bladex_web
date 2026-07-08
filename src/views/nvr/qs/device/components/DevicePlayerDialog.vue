@@ -591,7 +591,7 @@ const handlePlay = async () => {
     typeCfg.needSnap && getDeviceSnapshotList()
 
     // 流数据赋值 + 自动播放
-    apiResponse?.data && setStreamBaseData(apiResponse.data)
+    apiResponse?.data && setStreamBaseData(apiResponse.data.data)
     await autoPlay()
 
   } catch (err) {
