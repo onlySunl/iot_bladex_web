@@ -526,9 +526,22 @@ const setStreamBaseData = (res) => {
   rtcUrl.value = urls.rtcUrl
   wsUrl.value = urls.wsUrl
   sharedIframe.value = `<iframe src="${window.location.origin}/easyPlayer?url=${encodeURIComponent(wsUrl.value)}"></iframe>`
-  streamInfo.value = { ...data, ...urls.allUrls }
+
+  // 确保 app、stream、mediaServerId 始终存在
+  const app = data.app || 'live'
+  const stream = data.stream || data.streamId || ''
+  const mediaServerId = data.mediaServerId || data.mediaServer?.id || ''
+
+  streamInfo.value = {
+    ...data,
+    ...urls.allUrls,
+    app,
+    stream,
+    mediaServerId
+  }
 
   console.log('[DevicePlayer] 播放地址:', { flvUrl: flvUrl.value, wsUrl: wsUrl.value, rtcUrl: rtcUrl.value })
+  console.log('[DevicePlayer] 流信息:', { app, stream, mediaServerId })
 }
 
 const autoPlay = async () => {
