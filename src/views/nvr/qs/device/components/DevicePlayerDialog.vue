@@ -175,8 +175,8 @@
                     <el-button type="primary" size="small" @click="handleGotoPreset" :disabled="!selectedPresetIndex">
                       调用
                     </el-button>
-                    <el-button type="small" @click="openSetPresetDialog">设置</el-button>
-                    <el-button type="small danger" @click="handleDeletePreset" :disabled="!selectedPresetIndex">删除
+                    <el-button size="small" @click="openSetPresetDialog">设置</el-button>
+                    <el-button type="danger" size="small" @click="handleDeletePreset" :disabled="!selectedPresetIndex">删除
                     </el-button>
                   </div>
                   <el-button text @click="loadPresetList" class="refresh-btn">
