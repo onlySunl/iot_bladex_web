@@ -108,7 +108,7 @@
  * DevicePlayerDialog - 设备播放弹窗（主页面）
  * 负责协调各子组件，处理播放逻辑
  */
-import { ref, computed, onBeforeUnmount } from 'vue'
+import { ref, computed, onBeforeUnmount, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import PlayerView from './PlayerView.vue'
 import StreamAddress from './StreamAddress.vue'
@@ -150,6 +150,7 @@ const PLAY_TYPE_CONFIG = {
 
 // Props
 const props = defineProps({
+  easyPlayerOpen: { type: Boolean, default: false },
   deviceRow: { type: Object, default: () => ({}) },
   channels: { type: Array, default: () => [] }
 })
@@ -159,7 +160,7 @@ const emit = defineEmits(['update:easy-player-open'])
 
 // 状态
 const dialogVisible = computed({
-  get: () => props.deviceRow?.playerVisible || false,
+  get: () => props.easyPlayerOpen,
   set: (val) => emit('update:easy-player-open', val)
 })
 const activeTab = ref('address')
@@ -181,6 +182,18 @@ const deviceName = computed(() => props.deviceRow?.deviceName || '设备播放')
 const deviceType = computed(() => props.deviceRow?.type || 1)
 const channelId = computed(() => props.deviceRow?.channelId || props.deviceRow?.gbChannelId || '')
 const channelName = computed(() => props.deviceRow?.channelName || '')
+
+// 监听弹窗打开，自动播放
+watch(dialogVisible, (val) => {
+  if (val) {
+    activeTab.value = 'address'
+    nextTick(() => {
+      handlePlay()
+    })
+  } else {
+    stopPlay()
+  }
+})
 
 // 云台相关
 const isPtz = computed(() => !!props.deviceRow?.ptz)
