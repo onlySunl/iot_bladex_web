@@ -67,6 +67,7 @@ const resetInnerStreamData = () => {
 
 const setStreamBaseData = (resData) => {
   const data = resData || {}
+  console.log(data);
   const isHttps = location.protocol === 'https:'
   flvUrl.value = isHttps ? data.https_flv : data.flv
   wsUrl.value = isHttps ? data.wss_flv : data.ws_flv
