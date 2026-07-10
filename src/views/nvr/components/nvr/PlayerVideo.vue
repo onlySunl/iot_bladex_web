@@ -44,6 +44,7 @@ const innerPlayerRef = ref(null)
 //组件内部私有变量
 const wsUrl = ref('')
 const flvUrl = ref('')
+const hlsUrl = ref('')
 const rtcUrl = ref('')
 const sharedIframe = ref('')
 const streamInfo = ref(null)
@@ -70,6 +71,7 @@ const setStreamBaseData = (resData) => {
   console.log(data);
   const isHttps = location.protocol === 'https:'
   flvUrl.value = isHttps ? data.https_flv : data.flv
+  hlsUrl.value = isHttps ? data.https_hls : data.hls
   wsUrl.value = isHttps ? data.wss_flv : data.ws_flv
   rtcUrl.value = isHttps ? data.rtcs : data.rtc
   sharedIframe.value = `<iframe src="${window.location.origin}/easyPlayer?url=${encodeURIComponent(wsUrl.value)}"></iframe>`
@@ -82,9 +84,11 @@ const setStreamBaseData = (resData) => {
 }
 
 const autoPlayVideo = async () => {
-  if (!flvUrl.value || !innerPlayerRef.value) return
+  // EasyPlayerPro 仅支持 HLS (m3u8) 和 FMP4 (mp4) 格式，优先使用 HLS
+  const playUrl = hlsUrl.value || flvUrl.value
+  if (!playUrl || !innerPlayerRef.value) return
   await nextTick()
-  innerPlayerRef.value.play(flvUrl.value)
+  innerPlayerRef.value.play(playUrl)
 }
 
 const showPlayErr = (msg) => {
