@@ -264,8 +264,19 @@ const playSegment = async (startTime, endTime) => {
     const res = await rtpPlayback(requestParams)
     console.log(res);
     console.log(res.data.data.flv);
-    if (res?.data?.data?.flv) {
-      playUrl.value = res.data.data.flv
+    if (res?.data?.data?.hls) {
+      playUrl.value = res.data.data.hls
+      await nextTick()
+      recordPlayerRef.value.play(playUrl.value)
+      playing.value = true
+    } else if (res?.data?.data?.fmp4) {
+      playUrl.value = res.data.data.fmp4
+      await nextTick()
+      recordPlayerRef.value.play(playUrl.value)
+      playing.value = true
+    } else if (res?.data?.data?.flv) {
+      // FLV 格式不支持回放，尝试使用 HLS
+      playUrl.value = res.data.data.flv.replace('.flv', '/hls.m3u8')
       await nextTick()
       recordPlayerRef.value.play(playUrl.value)
       playing.value = true

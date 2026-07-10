@@ -75,7 +75,7 @@ import {
   queryHomePresetApi, setHomePresetApi, callHomePresetApi,
   getCruiseListApi, getCruiseDetailApi, startCruiseApi, stopCruiseApi,
   queryPtzPosApi, setPtzPosApi
-} from '@/api/gbPtz'
+} from '@/api/nvr/gbPtz'
 
 const props = defineProps({
   deviceId: { type: String, required: true }
