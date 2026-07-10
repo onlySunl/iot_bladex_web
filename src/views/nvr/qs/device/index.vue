@@ -27,9 +27,10 @@
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="play">播放</el-dropdown-item>
-              <el-dropdown-item command="snapshot">抓图</el-dropdown-item>
-              <el-dropdown-item command="config">配置</el-dropdown-item>
+              <el-dropdown-item command="play" v-if="row.deviceStatus =='ONLINE'">播放</el-dropdown-item>
+              <el-dropdown-item command="record" v-if="row.deviceStatus =='ONLINE'">回放</el-dropdown-item>
+<!--              <el-dropdown-item command="snapshot">抓图</el-dropdown-item>
+              <el-dropdown-item command="config">配置</el-dropdown-item>-->
               <el-dropdown-item command="reboot" :disabled="!canReboot(row)">重启</el-dropdown-item>
               <el-dropdown-item command="preset" :disabled="!isGb28181(row)">预置点</el-dropdown-item>
               <el-dropdown-item command="ptz" :disabled="!isGb28181(row)">云台控制</el-dropdown-item>
@@ -49,7 +50,7 @@
     <DeviceTimeSync v-model="timeSyncDialogVisible" :device="currentDevice" @close="timeSyncDialogVisible = false"/>
     <DeviceRecordDownload v-model="recordDownloadVisible" :device="currentDevice" @close="recordDownloadVisible = false"/>
     <DeviceSnapshotDialog v-model="snapshotDialogVisible" :device="currentDevice" @close="snapshotDialogVisible = false"/>
-
+    <DeviceRecordDialog v-model="recordDialogVisible"  :device-row="currentDevice" @close="recordDialogVisible = false"></DeviceRecordDialog>
     <!-- 地图选点弹窗 -->
     <SelectMapPosition ref="selectMapPositionRef" @onSubmit="handleMapSelect"/>
   </basic-container>
@@ -68,7 +69,9 @@ import DevicePtzControl from './components/DevicePtzControl.vue'
 import DeviceTimeSync from './components/DeviceTimeSync.vue'
 import DeviceRecordDownload from './components/DeviceRecordDownload.vue'
 import DeviceSnapshotDialog from './components/DeviceSnapshotDialog.vue'
+import DeviceRecordDialog from './components/DeviceRecordDialog.vue'
 import SelectMapPosition from '@/components/nvr/SelectMapPosition/index.vue'
+
 
 // 业务hooks
 import { useDeviceDict } from './hooks/useDeviceDict'
@@ -89,7 +92,7 @@ const actionHook = useDeviceAction(tableHook, dialogHook)
 // 解构变量与方法
 const { dict, groupList, mediaServerList, loadDict, loadGroupList, loadMediaServerList } = dictHook
 const { tableData, loading, selectedIds, form, page, searchParams, loadData, handleSearchChange, handleSearchReset, handleCurrentChange, handleSizeChange, handleSelectionChange, handleBeforeOpen, handleRowSave, handleRowUpdate, handleRowDel, handleStatusChange } = tableHook
-const { selectMapPositionRef, playerDialogVisible, configDialogVisible, presetDialogVisible, ptzDialogVisible, timeSyncDialogVisible, recordDownloadVisible, snapshotDialogVisible, currentDevice, mapSelectVisible, openMapSelect, handleMapSelect, handlePlay, handleSnapshot, handleConfig } = dialogHook
+const { selectMapPositionRef, playerDialogVisible, configDialogVisible, presetDialogVisible, ptzDialogVisible, timeSyncDialogVisible, recordDownloadVisible, snapshotDialogVisible, currentDevice, mapSelectVisible, openMapSelect, handleMapSelect, handlePlay, handleSnapshot, handleConfig,recordDialogVisible } = dialogHook
 const { handleAccessTypeChange } = streamHook
 const { handleCommand, handleReboot, handleBatchDelete, handleExport, handleCopy, handleUpdate, handleView, canReboot, isGb28181, canTimeSync, canDownloadRecord } = actionHook
 

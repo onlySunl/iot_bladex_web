@@ -1,6 +1,7 @@
 import { validatenull } from './validate';
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
+import {loadRecord, rtpPlay, startGb28181Play, startJt1078Play, streamPullPlay, streamPullPush} from "@/api/nvr/zlm";
 //表单序列化
 export const serialize = data => {
   let list = [];
@@ -466,3 +467,6 @@ export const findColumn = (arr, prop) => {
   // - column 格式：item.column 不存在，返回 item 本身
   return arr.flatMap(item => item.column || item).find(col => col.prop === prop) || null;
 };
+
+
+

@@ -9,6 +9,7 @@ export function useDeviceDialog(form) {
     const timeSyncDialogVisible = ref(false)
     const recordDownloadVisible = ref(false)
     const snapshotDialogVisible = ref(false)
+    const recordDialogVisible = ref(false)
 
     // 当前操作设备
     const currentDevice = ref(null)
@@ -42,6 +43,10 @@ export function useDeviceDialog(form) {
         currentDevice.value = row
         playerDialogVisible.value = true
     }
+    const recordPlay = (row) => {
+        currentDevice.value = row
+        recordDialogVisible.value = true
+    }
     const handleSnapshot = (row) => {
         currentDevice.value = row
         snapshotDialogVisible.value = true
@@ -62,9 +67,11 @@ export function useDeviceDialog(form) {
         snapshotDialogVisible,
         currentDevice,
         mapSelectVisible,
+        recordDialogVisible,
         openMapSelect,
         handleMapSelect,
         handlePlay,
+        recordPlay,
         handleSnapshot,
         handleConfig
     }

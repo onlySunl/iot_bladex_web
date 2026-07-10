@@ -87,7 +87,7 @@ export function stopRtpPlay(data) {
  */
 export function rtpPlayback(data) {
     return request({
-        url: '/zlm/rtpPlayback',
+        url: '/rtpPlayback',
         method: 'post',
         data,
         timeout: 60000
@@ -101,7 +101,7 @@ export function rtpPlayback(data) {
  */
 export function stopRtpPlayback(data) {
     return request({
-        url: '/zlm/stopRtpPlayback',
+        url: '/stopRtpPlayback',
         method: 'post',
         data,
         timeout: 60000

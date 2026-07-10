@@ -1,594 +1,202 @@
 <template>
   <el-drawer
-      v-model="dialogVisible"
-      :title="deviceName"
+      :model-value="props.easyPlayerOpen"
+      @update:model-value="emit('update:easyPlayerOpen', $event)"
+      size="880px"
       direction="rtl"
-      size="70%"
-      :before-close="handleClose"
-      :destroy-on-close="true"
+      @close="handleDialogClose"
+      class="glass-dialog play-drawer"
   >
-    <div class="player-container">
-      <!-- 播放器区域 -->
-      <PlayerView
-          ref="playerViewRef"
-          :flv-url="flvUrl"
-          :ws-url="wsUrl"
-          :rtc-url="rtcUrl"
-          :device-type="deviceType"
-          :player-type="playerType"
-          :is-ptz="isPtz"
-          :is-gb28181-device="isGb28181Device"
-          :is-jt1078-device="isJt1078Device"
-          @auto-play="autoPlay"
-          @stop-play="stopPlay"
-      />
+    <template #header>
+      <span>{{ `视频播放-${props.deviceRow?.deviceName || ''}` }}</span>
+    </template>
 
-      <!-- 功能面板 -->
-      <div class="player-panel">
-        <el-tabs v-model="activeTab" type="card" class="player-tabs">
-          <!-- 播放地址 -->
-          <el-tab-pane label="播放地址" name="address">
-            <StreamAddress
-                :flv-url="flvUrl"
-                :ws-url="wsUrl"
-                :rtc-url="rtcUrl"
-                :shared-iframe="sharedIframe"
-                :stream-info="streamInfo"
-            />
-          </el-tab-pane>
-
-          <!-- 编码信息 -->
-          <el-tab-pane label="编码信息" name="codec">
-            <MediaInfo
-                v-if="streamInfo"
-                :app="streamInfo.app"
-                :stream="streamInfo.stream"
-                :media-server-id="streamInfo.mediaServerId"
-            />
-          </el-tab-pane>
-
-          <!-- 云台控制 -->
-          <el-tab-pane label="云台控制" name="ptz">
-            <PtzPanel
-                ref="ptzPanelRef"
-                :is-ptz="isPtz"
-                :is-preset-supported="isPresetSupported"
-                :is-gb28181-device="isGb28181Device"
-                :control-speed="controlSpeed"
-                :control-speed-min="controlSpeedMin"
-                :control-speed-max="controlSpeedMax"
-                @ptz="handlePtz"
-                @stop-ptz="handleStopPtz"
-                @load-preset-list="loadPresetList"
-                @preset-select="handlePresetSelect"
-                @goto-preset="handleGotoPreset"
-                @set-preset="handleSetPreset"
-                @delete-preset="handleDeletePreset"
-                @light-control="handleLightControl"
-                @wiper-control="handleWiperControl"
-                @query-home-position="handleQueryHomePosition"
-                @set-home-position="handleSetHomePosition"
-                @home-position-control="handleHomePositionControl"
-                @query-cruise-track-list="handleQueryCruiseTrackList"
-                @query-cruise-track="handleQueryCruiseTrack"
-                @start-cruise="handleStartCruise"
-                @stop-cruise="handleStopCruise"
-                @query-ptz-position="handleQueryPTZPosition"
-                @ptz-precise-control="handlePtzPreciseControl"
-            />
-          </el-tab-pane>
-
-          <!-- 抓图 -->
-          <el-tab-pane label="抓图" name="snapshot">
-            <SnapshotPanel
-                ref="snapshotPanelRef"
-                :stream-info="streamInfo"
-                @snapshot="handleSnapshot"
-                @download="handleDownloadSnapshot"
-            />
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-    </div>
-
-    <!-- 预置点设置弹窗 -->
-    <DevicePresetDialog
-        v-model="presetDialogVisible"
-        :device-id="deviceId"
-        :channel-id="channelId"
-        :device-type="deviceType"
-        :preset-index="currentPresetIndex"
-        @success="loadPresetList"
+    <!--播放器组件，只传入基础设备参数-->
+    <PlayerVideo
+        v-if="props.easyPlayerOpen"
+        ref="playerComponentRef"
+        :device-row="props.deviceRow"
+        :quality="quality"
+        :default-quality="defaultQuality"
+        :is-quality="isQuality"
+        :is-live="isLive"
+        @stream-ready="handleStreamReady"
+        @ptz="handlePlayerPtz"
     />
+
+    <el-tabs
+        v-model="tabActiveName"
+        type="card"
+        stretch
+        v-if="props.easyPlayerOpen"
+        class="video-tab-container"
+    >
+      <el-tab-pane label="地址" name="address">
+        <el-row :gutter="10">
+          <el-col :span="21">
+            <el-input v-model="flvUrl" disabled>
+              <template #prepend>flv地址</template>
+              <template #append>
+                <el-button type="primary" :icon="DocumentCopy" @click="copyText(flvUrl)"/>
+              </template>
+            </el-input>
+          </el-col>
+        </el-row>
+        <el-row :gutter="10" class="mt10">
+          <el-col :span="21">
+            <el-input v-model="sharedIframe" disabled>
+              <template #prepend>iframe：</template>
+              <template #append>
+                <el-button type="primary" :icon="DocumentCopy" @click="copyText(sharedIframe)"/>
+              </template>
+            </el-input>
+          </el-col>
+        </el-row>
+        <el-row :gutter="10" class="mt10">
+          <el-col :span="21">
+            <el-input v-model="rtcUrl" disabled>
+              <template #prepend>
+                <StreamDropdown :stream-info="streamInfo || {}"/>
+              </template>
+              <template #append>
+                <el-button type="primary" :icon="DocumentCopy" @click="copyText(wsUrl)"/>
+              </template>
+            </el-input>
+          </el-col>
+        </el-row>
+      </el-tab-pane>
+
+      <el-tab-pane label="编码信息" name="codec">
+        <MediaInfoPanel v-if="streamInfo" :stream-info="streamInfo"></MediaInfoPanel>
+      </el-tab-pane>
+
+      <el-tab-pane label="云台控制" name="control">
+        <PtzControlPanel
+            :device-id="props.deviceRow.id"
+            :device-code="props.deviceRow.deviceCode"
+            :device-type="props.deviceRow.type"
+            :media-server-id="String(streamInfo?.mediaServerId ?? '')"
+        ></PtzControlPanel>
+      </el-tab-pane>
+
+      <el-tab-pane label="抓图记录" name="snapshots">
+        <SnapshotPanel
+            :device-id="props.deviceRow.id"
+            :media-server-id="String(streamInfo?.mediaServerId ?? '')"
+        ></SnapshotPanel>
+      </el-tab-pane>
+    </el-tabs>
   </el-drawer>
 </template>
 
 <script setup>
-/**
- * DevicePlayerDialog - 设备播放弹窗（主页面）
- * 负责协调各子组件，处理播放逻辑
- */
-import { ref, computed, onBeforeUnmount, watch, nextTick } from 'vue'
-import { ElMessage } from 'element-plus'
-import PlayerView from './PlayerView.vue'
-import StreamAddress from './StreamAddress.vue'
-import PtzPanel from './PtzPanel.vue'
-import SnapshotPanel from './SnapshotPanel.vue'
-import DevicePresetDialog from './DevicePresetDialog.vue'
-import MediaInfo from '@/components/nvr/Channel/mediaInfo.vue'
-import {
-  streamPullPlay, stopStreamPullPlay, loadRecord, closeStreams,
-  rtpPlay, stopRtpPlay, streamPullPush,
-  startGb28181Play, stopGb28181Play,
-  startJt1078Play, stopJt1078Play
-} from '@/api/nvr/zlm'
-import {
-  startPtz, endPtz, getPresetList, setPreset, gotoPreset, deletePreset,
-  controlLight, controlWiper
-} from '@/api/nvr/device'
-import {
-  queryHomePosition, updateHomePosition, homePositionControl,
-  queryCruiseTrackList, queryCruiseTrack, startCruise, stopCruise,
-  ptzPreciseControl, queryPTZPosition
-} from '@/api/nvr/gb28181'
+import {ref, defineProps, defineEmits, watch,nextTick} from 'vue'
+import {ElMessage} from 'element-plus'
+import {DocumentCopy} from '@element-plus/icons-vue'
+import PlayerVideo from '@/views/nvr/components/nvr/PlayerVideo.vue'
+import MediaInfoPanel from '@/views/nvr/components/nvr/MediaInfoPanel.vue'
+import PtzControlPanel from '@/views/nvr/components/nvr/PtzControlPanel.vue'
+import SnapshotPanel from '@/views/nvr/components/nvr/SnapshotPanel.vue'
+import StreamDropdown from '@/components/nvr/Channel/streamDropdown.vue'
 
-// 播放类型配置
-const PLAY_TYPE_CONFIG = {
-  1: { api: streamPullPlay, stopApi: stopStreamPullPlay, type: 'rtsp' },
-  2: { api: streamPullPlay, stopApi: stopStreamPullPlay, type: 'rtmp' },
-  3: { api: streamPullPlay, stopApi: stopStreamPullPlay, type: 'flv' },
-  4: { api: streamPullPlay, stopApi: stopStreamPullPlay, type: 'hls' },
-  5: { api: streamPullPlay, stopApi: stopStreamPullPlay, type: 'onvif' },
-  6: { api: loadRecord, stopApi: stopStreamPullPlay, type: 'record' },
-  7: { api: rtpPlay, stopApi: stopRtpPlay, type: 'hik_rtp' },
-  8: { api: streamPullPush, stopApi: stopStreamPullPlay, type: 'hik_isup' },
-  9: { api: rtpPlay, stopApi: stopRtpPlay, type: 'dahua_rtp' },
-  13: { api: streamPullPush, stopApi: stopStreamPullPlay, type: 'pull_push' },
-  12: { api: startGb28181Play, stopApi: stopGb28181Play, type: 'gb28181' },
-  14: { api: startJt1078Play, stopApi: stopJt1078Play, type: 'jt1078' }
-}
-
-// Props
 const props = defineProps({
-  easyPlayerOpen: { type: Boolean, default: false },
-  deviceRow: { type: Object, default: () => ({}) },
-  channels: { type: Array, default: () => [] }
+  deviceRow: {type: Object, default: () => ({})},
+  easyPlayerOpen: {type: Boolean, default: false},
+  dict: {type: Object, default: () => ({})}
 })
+const emit = defineEmits(['update:easyPlayerOpen'])
 
-// Emits
-const emit = defineEmits(['update:easy-player-open'])
-
-// 状态
-const dialogVisible = computed({
-  get: () => props.easyPlayerOpen,
-  set: (val) => emit('update:easy-player-open', val)
-})
-const activeTab = ref('address')
-const playerViewRef = ref(null)
-const ptzPanelRef = ref(null)
-const snapshotPanelRef = ref(null)
-
-// 播放相关
+//页面展示变量，数据由播放器组件推送过来
 const flvUrl = ref('')
 const wsUrl = ref('')
 const rtcUrl = ref('')
 const sharedIframe = ref('')
 const streamInfo = ref(null)
-const playerType = ref('flv')
+const tabActiveName = ref('address')
+const quality = ref([])
+const defaultQuality = ref('高清')
+const isQuality = ref(true)
+const isLive = ref(true)
+const playerComponentRef = ref(null)
+let lastDeviceId = null
 
-// 设备信息
-const deviceId = computed(() => props.deviceRow?.id)
-const deviceName = computed(() => props.deviceRow?.deviceName || '设备播放')
-const deviceType = computed(() => props.deviceRow?.type || 1)
-const channelId = computed(() => props.deviceRow?.channelId || props.deviceRow?.gbChannelId || '')
-const channelName = computed(() => props.deviceRow?.channelName || '')
-
-// 监听弹窗打开，自动播放
-watch(dialogVisible, (val) => {
-  if (val) {
-    activeTab.value = 'address'
-    nextTick(() => {
-      handlePlay()
-    })
-  } else {
-    stopPlay()
-  }
-})
-
-// 云台相关
-const isPtz = computed(() => !!props.deviceRow?.ptz)
-const isGb28181Device = computed(() => deviceType.value === 12)
-const isJt1078Device = computed(() => deviceType.value === 14)
-const isPresetSupported = computed(() => isGb28181Device.value || isJt1078Device.value)
-const controlSpeed = ref(50)
-const controlSpeedMin = 1
-const controlSpeedMax = 100
-
-// 预置点相关
-const presetDialogVisible = ref(false)
-const currentPresetIndex = ref(null)
-
-// 打开弹窗
-const open = () => {
-  dialogVisible.value = true
-  activeTab.value = 'address'
-  handlePlay()
+//播放器返回流信息
+const handleStreamReady = (payload) => {
+  flvUrl.value = payload.flvUrl
+  wsUrl.value = payload.wsUrl
+  rtcUrl.value = payload.rtcUrl
+  sharedIframe.value = payload.sharedIframe
+  streamInfo.value = payload.streamInfo
 }
 
-// 关闭弹窗
-const handleClose = () => {
-  stopPlay()
-  dialogVisible.value = false
+//播放器原生ptz事件接收
+const handlePlayerPtz = (info) => {
+  console.log('播放器ptz事件：', info)
 }
 
-// 设置流数据
-const setStreamBaseData = (res) => {
-  const data = res || {}
-  const isHttps = location.protocol === 'https:'
-
-  // 直接使用 API 返回的播放地址
-  flvUrl.value = isHttps ? data.https_flv : data.flv
-  wsUrl.value = isHttps ? data.wss_flv : data.ws_flv
-  rtcUrl.value = isHttps ? data.rtcs : data.rtc
-
-  // 生成 iframe 分享代码
-  const playerUrl = flvUrl.value
-  if (playerUrl) {
-    sharedIframe.value = `<iframe src="${playerUrl}" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>`
-  }
-
-  // 保存流信息
-  streamInfo.value = {
-    ...data,
-    app: data.app || 'live',
-    stream: data.stream || '',
-    mediaServerId: data.mediaServerId || data.mediaInfo?.mediaServer?.id || ''
-  }
+//复制文本工具方法，属于页面通用方法留在父组件
+const copyText = (text) => {
+  if (!text) return
+  const input = document.createElement('textarea')
+  input.value = text
+  document.body.appendChild(input)
+  input.select()
+  document.execCommand('copy')
+  document.body.removeChild(input)
+  ElMessage.success('复制成功')
 }
 
-// 自动播放
-const autoPlay = () => {
-  if (flvUrl.value && playerViewRef.value) {
-    playerViewRef.value.play(flvUrl.value, 'flv')
-  }
-}
-
-// 播放
-const handlePlay = async () => {
-  const config = PLAY_TYPE_CONFIG[deviceType.value]
-  if (!config) {
-    ElMessage.warning('不支持的设备类型')
-    return
-  }
-
-  try {
-    const params = {
-      deviceId: deviceId.value,
-      channelId: channelId.value,
-      type: config.type
+//关闭抽屉，调用播放器内部暴露出来停止播放和销毁方法
+const handleDialogClose = async () => {
+  // 只有实例存在才调用方法，使用可选链操作符
+  if (playerComponentRef.value) {
+    try {
+      await playerComponentRef.value.stopPlay()
+      // destroyPlayer里面本身也增加内部判断
+      await playerComponentRef.value.destroyPlayer()
+    } catch (err) {
+      console.warn('播放器关闭过程异常：', err)
     }
+  }
+  lastDeviceId = null
+  tabActiveName.value = 'address'
+  flvUrl.value = wsUrl.value = rtcUrl.value = sharedIframe.value = ''
+  streamInfo.value = null
+  emit('update:easyPlayerOpen', false)
+}
 
-    const res = await config.api(params)
-    if (res?.data) {
-      setStreamBaseData(res.data)
-      autoPlay()
+//监听抽屉打开，调用播放器内部startPlay方法，播放逻辑全部在子组件内部
+watch(() => props.easyPlayerOpen, async (newVal, oldVal) => {
+  if (newVal && !oldVal && props.deviceRow?.id && props.deviceRow.id !== lastDeviceId) {
+    lastDeviceId = props.deviceRow.id
+    // 等待DOM渲染完成，组件实例挂载完毕
+    await nextTick()
+    if (!playerComponentRef.value) {
+      console.warn('播放器实例获取不到')
+      return
     }
-  } catch (err) {
-    console.error('播放失败:', err)
-    ElMessage.error(err?.message || '播放失败')
-  }
-}
-
-// 停止播放
-const stopPlay = async () => {
-  const config = PLAY_TYPE_CONFIG[deviceType.value]
-  if (!config?.stopApi) return
-
-  try {
-    await config.stopApi({
-      deviceId: deviceId.value,
-      channelId: channelId.value
-    })
-  } catch (err) {
-    console.error('停止播放失败:', err)
-  }
-}
-
-// 云台控制
-const handlePtz = async ({ cmd, speed }) => {
-  try {
-    await startPtz({
-      deviceId: deviceId.value,
-      channelId: channelId.value,
-      command: cmd,
-      speed
-    })
-  } catch (err) {
-    ElMessage.error('云台控制失败')
-  }
-}
-
-const handleStopPtz = async () => {
-  try {
-    await endPtz({
-      deviceId: deviceId.value,
-      channelId: channelId.value
-    })
-  } catch (err) {
-    console.error('停止云台失败:', err)
-  }
-}
-
-// 预置点操作
-const loadPresetList = async () => {
-  try {
-    const res = await getPresetList({
-      deviceId: deviceId.value,
-      channelId: channelId.value
-    })
-    if (res?.data && ptzPanelRef.value) {
-      ptzPanelRef.value.presetList = res.data
+    try {
+      await playerComponentRef.value.startPlay()
+    } catch (err) {
+      console.error('startPlay执行异常：', err)
     }
-  } catch (err) {
-    console.error('加载预置点列表失败:', err)
   }
-}
-
-const handlePresetSelect = (index) => {
-  // 预置点选择由 PtzPanel 内部管理
-}
-
-const handleGotoPreset = async (index) => {
-  try {
-    await gotoPreset({
-      deviceId: deviceId.value,
-      channelId: channelId.value,
-      presetIndex: index
-    })
-    ElMessage.success('调用预置点成功')
-  } catch (err) {
-    ElMessage.error('调用预置点失败')
-  }
-}
-
-const handleSetPreset = (index) => {
-  currentPresetIndex.value = index
-  presetDialogVisible.value = true
-}
-
-const handleDeletePreset = async (index) => {
-  try {
-    await deletePreset({
-      deviceId: deviceId.value,
-      channelId: channelId.value,
-      presetIndex: index
-    })
-    ElMessage.success('删除预置点成功')
-    loadPresetList()
-  } catch (err) {
-    ElMessage.error('删除预置点失败')
-  }
-}
-
-// 灯光控制
-const handleLightControl = async (on) => {
-  try {
-    await controlLight({
-      deviceId: deviceId.value,
-      channelId: channelId.value,
-      command: on ? 'on' : 'off'
-    })
-    ElMessage.success(on ? '开灯成功' : '关灯成功')
-  } catch (err) {
-    ElMessage.error('灯光控制失败')
-  }
-}
-
-// 雨刷控制
-const handleWiperControl = async (on) => {
-  try {
-    await controlWiper({
-      deviceId: deviceId.value,
-      channelId: channelId.value,
-      command: on ? 'on' : 'off'
-    })
-    ElMessage.success(on ? '开雨刷成功' : '关雨刷成功')
-  } catch (err) {
-    ElMessage.error('雨刷控制失败')
-  }
-}
-
-// 看守位
-const handleQueryHomePosition = async (form) => {
-  try {
-    const res = await queryHomePosition({
-      deviceId: deviceId.value,
-      channelId: channelId.value
-    })
-    if (res?.data && ptzPanelRef.value) {
-      ptzPanelRef.value.homePositionForm = res.data
-    }
-  } catch (err) {
-    ElMessage.error('查询看守位失败')
-  }
-}
-
-const handleSetHomePosition = async (form) => {
-  try {
-    await updateHomePosition({
-      deviceId: deviceId.value,
-      channelId: channelId.value,
-      ...form
-    })
-    ElMessage.success('设置看守位成功')
-  } catch (err) {
-    ElMessage.error('设置看守位失败')
-  }
-}
-
-const handleHomePositionControl = async (form) => {
-  try {
-    await homePositionControl({
-      deviceId: deviceId.value,
-      channelId: channelId.value,
-      ...form
-    })
-    ElMessage.success('调用看守位成功')
-  } catch (err) {
-    ElMessage.error('调用看守位失败')
-  }
-}
-
-// 巡航轨迹
-const handleQueryCruiseTrackList = async (form) => {
-  try {
-    const res = await queryCruiseTrackList({
-      deviceId: deviceId.value,
-      channelId: channelId.value
-    })
-    if (res?.data && ptzPanelRef.value) {
-      ptzPanelRef.value.cruiseTrackList = res.data
-    }
-  } catch (err) {
-    ElMessage.error('查询巡航轨迹列表失败')
-  }
-}
-
-const handleQueryCruiseTrack = async (form) => {
-  try {
-    const res = await queryCruiseTrack({
-      deviceId: deviceId.value,
-      channelId: channelId.value,
-      ...form
-    })
-    ElMessage.success('查询巡航轨迹成功')
-  } catch (err) {
-    ElMessage.error('查询巡航轨迹失败')
-  }
-}
-
-const handleStartCruise = async (form) => {
-  try {
-    await startCruise({
-      deviceId: deviceId.value,
-      channelId: channelId.value,
-      ...form
-    })
-    ElMessage.success('开始巡航成功')
-  } catch (err) {
-    ElMessage.error('开始巡航失败')
-  }
-}
-
-const handleStopCruise = async (form) => {
-  try {
-    await stopCruise({
-      deviceId: deviceId.value,
-      channelId: channelId.value,
-      ...form
-    })
-    ElMessage.success('停止巡航成功')
-  } catch (err) {
-    ElMessage.error('停止巡航失败')
-  }
-}
-
-// 精准控制
-const handleQueryPTZPosition = async () => {
-  try {
-    const res = await queryPTZPosition({
-      deviceId: deviceId.value,
-      channelId: channelId.value
-    })
-    if (res?.data && ptzPanelRef.value) {
-      ptzPanelRef.value.ptzPosition = res.data
-    }
-  } catch (err) {
-    ElMessage.error('查询PTZ位置失败')
-  }
-}
-
-const handlePtzPreciseControl = async (form) => {
-  try {
-    await ptzPreciseControl({
-      deviceId: deviceId.value,
-      channelId: channelId.value,
-      ...form
-    })
-    ElMessage.success('执行精准控制成功')
-  } catch (err) {
-    ElMessage.error('执行精准控制失败')
-  }
-}
-
-// 抓图
-const handleSnapshot = ({ onSuccess, onComplete }) => {
-  if (!streamInfo.value) {
-    ElMessage.warning('请先播放视频')
-    onComplete?.()
-    return
-  }
-
-  // 调用抓图 API
-  loadRecord({
-    deviceId: deviceId.value,
-    channelId: channelId.value,
-    command: 'snapshot'
-  }).then(res => {
-    if (res?.data?.url) {
-      onSuccess?.(res.data.url)
-    }
-  }).catch(err => {
-    ElMessage.error('抓图失败')
-  }).finally(() => {
-    onComplete?.()
-  })
-}
-
-// 下载抓图
-const handleDownloadSnapshot = (url) => {
-  if (!url) return
-  const link = document.createElement('a')
-  link.href = url
-  link.download = `snapshot_${Date.now()}.jpg`
-  link.click()
-}
-
-// 组件卸载时停止播放
-onBeforeUnmount(() => {
-  stopPlay()
-})
-
-// 暴露方法给父组件
-defineExpose({
-  open,
-  handleClose
 })
 </script>
 
 <style scoped lang="scss">
-.player-container {
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 16px;
-  height: 100%;
-}
-
-.player-panel {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-
-  .player-tabs {
-    flex: 1;
+.play-drawer {
+  .player-wrap {
+    width: 100%;
     display: flex;
-    flex-direction: column;
-
-    :deep(.el-tabs__content) {
-      flex: 1;
-      overflow: auto;
-      padding: 12px;
-    }
+    justify-content: center;
   }
+  .video-tab-container {margin-top:10px;}
+  .url-label {
+    line-height:40px;
+    text-align:right;
+    display:inline-block;
+  }
+  .mt10 {margin-top:10px;}
 }
 </style>

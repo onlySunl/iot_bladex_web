@@ -13,6 +13,9 @@ export function useDeviceAction(tableHook, dialogHook) {
             case 'play':
                 dialogHook.handlePlay(row)
                 break
+            case 'record':
+                dialogHook.recordPlay(row)
+                break
             case 'snapshot':
                 dialogHook.handleSnapshot(row)
                 break
