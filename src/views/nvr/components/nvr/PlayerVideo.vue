@@ -18,23 +18,19 @@
 </template>
 
 <script setup>
-import {ref, defineProps, defineEmits, nextTick} from 'vue'
+import {ref, defineProps, defineEmits, nextTick, watch} from 'vue'
 import {ElMessage} from 'element-plus'
 import EasyPlayer from '@/components/EasyPlayer'
-//全部播放接口写在当前组件
 import {
-  streamPullPlay,
   stopStreamPullPlay,
-  loadRecord,
   closeStreams,
-  rtpPlay,
+  rtpPlayback,
   stopRtpPlay,
-  streamPullPush,
-  startGb28181Play,
   stopGb28181Play,
-  stopJt1078Play
+  stopJt1078Play, stopRtpPlayback
 } from '@/api/nvr/zlm'
-import { getPlayApi, hasPtz, isRecordPlay, getSpeedConfig,PLAY_TYPE_CONFIG  } from '@/utils/play‑type‑util'
+import {getPlayApi, hasPtz, isRecordPlay, getSpeedConfig, PLAY_TYPE_CONFIG} from '@/utils/play‑type‑util'
+
 const props = defineProps({
   deviceRow: {type: Object, required: true},
   quality: Array,
@@ -45,16 +41,13 @@ const props = defineProps({
 const emit = defineEmits(['stream-ready', 'ptz'])
 const innerPlayerRef = ref(null)
 
-//组件内部私有变量，父组件访问不到
+//组件内部私有变量
 const wsUrl = ref('')
 const flvUrl = ref('')
 const rtcUrl = ref('')
 const sharedIframe = ref('')
 const streamInfo = ref(null)
 const ptzEnable = ref(false)
-
-//设备类型配置全部放入播放器组件内部
-
 
 //私有方法
 const convertWsToHttp = (url) => {
@@ -88,9 +81,9 @@ const setStreamBaseData = (resData) => {
 }
 
 const autoPlayVideo = async () => {
-  if (!wsUrl.value || !innerPlayerRef.value) return
+  if (!flvUrl.value || !innerPlayerRef.value) return
   await nextTick()
-  innerPlayerRef.value.play(wsUrl.value)
+  innerPlayerRef.value.play(flvUrl.value)
 }
 
 const showPlayErr = (msg) => {
@@ -98,7 +91,7 @@ const showPlayErr = (msg) => {
 }
 
 /**
- * 对外暴露：开始播放，父组件只调用这个方法，内部执行zlm拉流逻辑
+ * 实时预览播放
  */
 const startPlay = async () => {
   const row = props.deviceRow
@@ -107,12 +100,11 @@ const startPlay = async () => {
   resetInnerStreamData()
   try {
     const deviceType = row.type
-    const typeCfg = PLAY_TYPE_CONFIG [deviceType]
+    const typeCfg = PLAY_TYPE_CONFIG[deviceType]
     if (!typeCfg) throw new Error('未知设备类型，无法播放')
     const baseParams = {
       deviceId: row.id,
       streamId: row.deviceCode,
-      url: row.liveAddress,
       type: deviceType,
       rtp_type: row.protocol === 'UDP' ? '0' : '1',
       enable_audio: row.enableAudio === '1',
@@ -128,7 +120,6 @@ const startPlay = async () => {
     if (apiResponse?.data?.data) {
       setStreamBaseData(apiResponse.data.data)
       await autoPlayVideo()
-      //流准备完成后把参数抛给父组件渲染地址
       emit('stream-ready', {
         flvUrl: flvUrl.value,
         wsUrl: wsUrl.value,
@@ -154,7 +145,80 @@ const startPlay = async () => {
   }
 }
 
-//停止播放内部逻辑
+/**
+ * 新增：录像回放播放
+ * @param {string} startTime 开始时间  YYYY‑MM‑DD HH:mm:ss
+ * @param {string} endTime   结束时间  YYYY‑MM‑DD HH:mm:ss
+ * @param {number} speed     倍速
+ */
+const startPlayBack = async (startTime, endTime, speed = 1) => {
+  const row = props.deviceRow
+  if (!row.id) return
+  row.loading = true
+  resetInnerStreamData()
+  try {
+    const deviceType = row.type
+    const typeCfg = PLAY_TYPE_CONFIG[deviceType]
+    if (!typeCfg) throw new Error('未知设备类型，无法回放')
+
+    //回放接口参数
+    const params = {
+      deviceId: row.id,
+      deviceCode: row.deviceCode,
+      streamId: row.deviceCode,
+      app:typeCfg.app,
+      startTime,
+      endTime,
+      speed,
+      type: deviceType
+    }
+    //调用回放接口 loadRecord
+    const apiResponse = await rtpPlayback(params)
+    ptzEnable.value = !!typeCfg.ptz
+    if (apiResponse?.data?.data) {
+      setStreamBaseData(apiResponse.data.data)
+      await autoPlayVideo()
+      emit('stream-ready', {
+        flvUrl: flvUrl.value,
+        wsUrl: wsUrl.value,
+        rtcUrl: rtcUrl.value,
+        sharedIframe: sharedIframe.value,
+        streamInfo: streamInfo.value
+      })
+    }
+  } catch (err) {
+    let errMsg = '回放打开失败'
+    if (err?.code === 'ECONNABORTED' || err?.message?.includes('timeout')) {
+      errMsg = '回放请求超时，请稍后重试'
+    } else if (err?.response?.status === 503) {
+      errMsg = '流媒体服务不可用'
+    } else if (err?.response?.status === 404) {
+      errMsg = '录像文件不存在'
+    } else if (err?.message) {
+      errMsg = err.message
+    }
+    showPlayErr(errMsg)
+  } finally {
+    row.loading = false
+  }
+}
+
+const stopPlaybackPlay = async () => {
+  const deviceType = props.deviceRow.type
+  const typeCfg = PLAY_TYPE_CONFIG[deviceType]
+  const params = {
+    deviceId: props.deviceRow.id,
+    deviceCode: props.deviceRow.deviceCode,
+    streamId: props.deviceRow.deviceCode,
+    type: deviceType
+  }
+  if (typeCfg.app) params.app =typeCfg.app
+  if (typeCfg.needTcpMode) params.tcpMode = '0'
+  await stopRtpPlayback(params)
+  sharedIframe.value = ''
+  streamInfo.value = null
+}
+//停止播放内部参数构造
 const buildRtpData = () => ({
   type: props.deviceRow.type,
   streamId: props.deviceRow.deviceCode,
@@ -162,12 +226,11 @@ const buildRtpData = () => ({
 })
 const buildPullData = () => ({
   deviceId: props.deviceRow.id,
-  mediaServerId: props.deviceRow.mediaServerId,
-  streamKey: props.deviceRow.streamKey
+  mediaServerId: props.mediaServerId
 })
 
 /**
- * 对外暴露：停止播放
+ * 停止播放（实时预览 + 回放通用）
  */
 const stopPlay = async () => {
   const typeHandlerMap = {
@@ -176,7 +239,7 @@ const stopPlay = async () => {
     '3': () => stopStreamPullPlay(buildPullData()),
     '4': () => stopStreamPullPlay(buildPullData()),
     '5': () => stopStreamPullPlay(buildPullData()),
-    '6': () => closeStreams(props.deviceRow.id),
+    '6': () => closeStreams(props.deviceRow.id), //type=6 回放停止
     '7': () => stopRtpPlay(buildRtpData()),
     '8': () => stopRtpPlay(buildRtpData()),
     '9': () => stopRtpPlay(buildRtpData()),
@@ -196,11 +259,10 @@ const stopPlay = async () => {
 }
 
 /**
- * 对外暴露：销毁播放器实例
+ * 销毁播放器实例
  */
 const destroyPlayer = async () => {
   await nextTick()
-  // 内部再次判断
   if (!innerPlayerRef?.value) return
   if (typeof innerPlayerRef.value.destroy === 'function') {
     innerPlayerRef.value.destroy()
@@ -209,9 +271,11 @@ const destroyPlayer = async () => {
   resetInnerStreamData()
 }
 
-//暴露方法给父组件调用，父组件只能调用这里定义的方法
+//向外暴露方法，父组件可以调用 startPlay、playbackPlay、stopPlay、destroyPlayer
 defineExpose({
   startPlay,
+  startPlayBack,
+  stopPlaybackPlay,
   stopPlay,
   destroyPlayer
 })

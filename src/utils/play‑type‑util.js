@@ -1,4 +1,4 @@
-import { streamPullPlay, loadRecord, rtpPlay, startGb28181Play, startJt1078Play, streamPullPush } from '@/api/nvr/zlm'
+import { streamPullPlay, loadRecord, rtpPlay,rtpPlayback, startGb28181Play, startJt1078Play, streamPullPush } from '@/api/nvr/zlm'
 
 const PLAY_TYPE_CONFIG = {
     1: { api: streamPullPlay, app: 'rtsp', ptz: false },
