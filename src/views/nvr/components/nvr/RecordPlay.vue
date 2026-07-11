@@ -71,13 +71,15 @@
       </el-col>
       <el-col :span="5">
         <div class="right-panel">
-          <avue-date
+          <el-date-picker
               v-model="selectedDate"
+              type="date"
               format="YYYY年MM月DD日"
               value-format="YYYY-MM-DD"
               placeholder="请选择日期"
               @change="handleDateChange"
-          ></avue-date>
+              style="width: 100%"
+          ></el-date-picker>
           <div class="time-position-title">回放时间点定位</div>
           <div class="time-input-wrap">
             <el-input v-model="hour" style="width:60px"></el-input>
@@ -130,7 +132,8 @@ const ONE_DAY_SEC = 86400
 
 // 修复1：初始化强制赋值今日日期，保证初始值不为空字符串
 const todayStr = dayjs().format('YYYY-MM-DD')
-let baseTime = ref(dayjs(todayStr).startOf('day').valueOf())
+const nowTime = dayjs()
+let baseTime = ref(nowTime.startOf('day').valueOf())
 
 const streamInfo = ref(null)
 const quality = ref([])
@@ -141,11 +144,11 @@ const playerHeight = ref(400)
 const playUrl = ref('')
 const playing = ref(false)
 const playSpeed = ref(1)
-const selectedDate = ref(todayStr) // 初始化直接赋值今日日期，解决avue‑date空白
-const currentPlayTime = ref(`${todayStr} 00:00:00`)
-const hour = ref('00')
-const minute = ref('00')
-const second = ref('00')
+const selectedDate = ref(todayStr) // 初始化直接赋值今日日期，解决日期选择器空白
+const currentPlayTime = ref(nowTime.format('YYYY-MM-DD HH:mm:ss')) // 默认当前时间
+const hour = ref(nowTime.format('HH'))
+const minute = ref(nowTime.format('mm'))
+const second = ref(nowTime.format('ss'))
 const recordSegmentList = ref([])
 let lastDeviceId = null
 
