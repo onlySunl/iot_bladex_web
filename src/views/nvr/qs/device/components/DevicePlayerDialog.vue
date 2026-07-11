@@ -110,6 +110,7 @@ const emit = defineEmits(['update:easyPlayerOpen'])
 const flvUrl = ref('')
 const wsUrl = ref('')
 const rtcUrl = ref('')
+const hlsUrl = ref('')
 const sharedIframe = ref('')
 const streamInfo = ref(null)
 const tabActiveName = ref('address')
@@ -125,6 +126,7 @@ const handleStreamReady = (payload) => {
   flvUrl.value = payload.flvUrl
   wsUrl.value = payload.wsUrl
   rtcUrl.value = payload.rtcUrl
+  hlsUrl.value = payload.hlsUrl
   sharedIframe.value = payload.sharedIframe
   streamInfo.value = payload.streamInfo
 }
