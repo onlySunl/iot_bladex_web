@@ -85,7 +85,7 @@ const setStreamBaseData = (resData) => {
 
 const autoPlayVideo = async () => {
   // EasyPlayerPro 仅支持 HLS (m3u8) 和 FMP4 (mp4) 格式，优先使用 HLS
-  const playUrl = flvUrl.value
+  const playUrl = hlsUrl.value
   if (!playUrl || !innerPlayerRef.value) return
   await nextTick()
   innerPlayerRef.value.play(playUrl)
@@ -129,6 +129,7 @@ const startPlay = async () => {
         flvUrl: flvUrl.value,
         wsUrl: wsUrl.value,
         rtcUrl: rtcUrl.value,
+        hlsUrl: hlsUrl.value,
         sharedIframe: sharedIframe.value,
         streamInfo: streamInfo.value
       })
@@ -188,6 +189,7 @@ const startPlayBack = async (startTime, endTime, speed = 1) => {
         flvUrl: flvUrl.value,
         wsUrl: wsUrl.value,
         rtcUrl: rtcUrl.value,
+        hlsUrl: hlsUrl.value,
         sharedIframe: sharedIframe.value,
         streamInfo: streamInfo.value
       })

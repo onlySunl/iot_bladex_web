@@ -294,7 +294,8 @@ const handleDateChange = (newDateVal) => {
 }
 
 const handleStreamReady = (payload) => {
-  playUrl.value = payload.flvUrl
+  // EasyPlayerPro 仅支持 HLS (m3u8) 和 FMP4 (mp4) 格式，优先使用 HLS
+  playUrl.value = payload.hlsUrl || payload.flvUrl
   streamInfo.value = payload.streamInfo
 }
 
