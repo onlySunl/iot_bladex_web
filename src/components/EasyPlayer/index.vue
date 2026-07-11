@@ -96,7 +96,7 @@ import {
   VideoPlay, VideoPause, WarningFilled, RefreshRight,
   VideoCamera, Mute, Microphone, Camera, FullScreen, Connection
 } from '@element-plus/icons-vue'
-import { computed, onMounted, ref, onBeforeUnmount, watch } from "vue"
+import { computed, onMounted, ref, onBeforeUnmount, watch, nextTick } from "vue"
 
 const emit = defineEmits(['error', 'play', 'pause', 'fullscreen', 'screenshot', 'ptz'])
 
@@ -142,26 +142,24 @@ const wrapperStyle = computed(() => {
   return { width: w, height: h }
 })
 
-onMounted(() => {
-  if (props.videoUrl) {
-    isLoading.value = true
-    playCreate()
-  }
-})
-
-onBeforeUnmount(() => {
+/**
+ * 统一销毁播放器并且重置所有状态变量，重点解决实例残留黑屏问题
+ */
+const destroyPlayerInstance = async () => {
   if (easyplayer.value) {
-    destroy()
+    console.log('执行播放器销毁')
+    live.value = 'STOP'
+    easyplayer.value.destroy()
+    easyplayer.value = null
   }
-})
-
-watch(() => props.videoUrl, (newUrl) => {
-  if (newUrl && easyplayer.value) {
-    hasError.value = false
-    isLoading.value = true
-    play(newUrl)
-  }
-})
+  // 重置状态
+  isLoading.value = false
+  hasError.value = false
+  isPlaying.value = false
+  isPlayingState.value = false
+  networkStatus.value = null
+  await nextTick()
+}
 
 const playCreate = () => {
   const container = props.id
@@ -179,11 +177,11 @@ const playCreate = () => {
     bufferTime: 0.2,
     loadTimeOut: 10,
     loadTimeReplay: 3,
-    MSE: false,
+    MSE: true, // 开启MSE，浏览器解析fmp4，大幅提升ws‑fmp4兼容性（重点修改）
     WCS: false,
     WASM: false,
     WASMSIMD: false,
-    gpuDecoder: false,
+    gpuDecoder: false, // 关闭硬件解码，避免GPU解码H264‑FMP4黑屏
     isFlv: false,
     webGPU: false,
     canvasRender: false,
@@ -291,33 +289,37 @@ const bindEvents = () => {
   })
 }
 
-const play = (url) => {
+/**
+ * 实时预览播放
+ */
+const play = async (url) => {
   const targetUrl = url || props.videoUrl
   if (!targetUrl) return
-
+  // 切换流之前销毁旧实例，杜绝残留帧黑屏
+  await destroyPlayerInstance()
   hasError.value = false
   isLoading.value = true
-
-  if (easyplayer.value && live.value === 'STOP') {
-    live.value = 'LIVE'
+  live.value = 'LIVE'
+  playCreate()
+  await nextTick()
+  if (easyplayer.value) {
     easyplayer.value.play(targetUrl)
-  } else if (easyplayer.value && live.value === 'PAUSE') {
-    live.value = 'LIVE'
-    easyplayer.value.play(targetUrl)
-  } else if (!easyplayer.value) {
-    playCreate()
-    live.value = 'LIVE'
-    if (easyplayer.value) easyplayer.value.play(targetUrl)
   }
 }
 
-const playback = (url) => {
+/**
+ * 录像回放播放（重点修复：回放前销毁旧实例，重新初始化播放器）
+ */
+const playback = async (url) => {
   if (!url) return
-
+  await destroyPlayerInstance()
   hasError.value = false
   isLoading.value = true
-
-  if (easyplayer.value) easyplayer.value.playback(url)
+  playCreate()
+  await nextTick()
+  if (easyplayer.value) {
+    easyplayer.value.playback(url)
+  }
 }
 
 const pause = () => {
@@ -373,12 +375,12 @@ const setQuality = () => {
   if (easyplayer.value) easyplayer.value.setQuality()
 }
 
-const setRate = () => {
-  if (easyplayer.value) easyplayer.value.setRate()
+const setRate = (speed) => {
+  if (easyplayer.value) easyplayer.value.setRate(speed)
 }
 
-const seekTime = () => {
-  if (easyplayer.value) easyplayer.value.seekTime()
+const seekTime = (time) => {
+  if (easyplayer.value) easyplayer.value.seekTime(time)
 }
 
 const getVideoInfo = () => {
@@ -393,12 +395,11 @@ const setMic = (mic) => {
   if (easyplayer.value) easyplayer.value.setMic(mic)
 }
 
-const destroy = () => {
-  if (easyplayer.value) {
-    live.value = 'STOP'
-    easyplayer.value.destroy()
-    easyplayer.value = null
-  }
+/**
+ * 对外暴露销毁方法，父组件stopPlay调用
+ */
+const destroy = async () => {
+  await destroyPlayerInstance()
 }
 
 const handlePlayClick = () => {
@@ -407,17 +408,36 @@ const handlePlayClick = () => {
   }
 }
 
-const handleRetry = () => {
+const handleRetry = async () => {
+  await destroyPlayerInstance()
   hasError.value = false
   isLoading.value = true
-  if (easyplayer.value) {
-    destroy()
-  }
   playCreate()
   if (props.videoUrl) {
-    play(props.videoUrl)
+    await play(props.videoUrl)
   }
 }
+
+onMounted(async () => {
+  if (props.videoUrl) {
+    isLoading.value = true
+    await playCreate()
+    easyplayer.value?.play(props.videoUrl)
+  }
+})
+
+onBeforeUnmount(async () => {
+  await destroyPlayerInstance()
+})
+
+// 监听video‑url变化，销毁旧实例后再创建播放器
+watch(() => props.videoUrl, async (newUrl) => {
+  if (!newUrl) {
+    await destroyPlayerInstance()
+    return
+  }
+  await play(newUrl)
+})
 
 defineExpose({
   play, playback, pause, setMute, isMute: isMuteFn,
@@ -425,7 +445,6 @@ defineExpose({
   setRate, seekTime, getVideoInfo, getAudioInfo, setMic, destroy
 })
 </script>
-
 <style scoped>
 /* ==========================================
    EasyPlayer 现代风格包装

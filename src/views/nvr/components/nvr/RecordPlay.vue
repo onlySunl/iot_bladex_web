@@ -333,7 +333,9 @@ const getRecordSegmentList = async () => {
 const playSegment = async (startTime, endTime) => {
   if (!playerComponentRef.value) return
   try {
-    await playerComponentRef.value.startPlayBack(startTime, endTime)
+    //每次新开回放前强制关闭之前流，避免残留流黑屏
+    await stopPlay()
+    await playerComponentRef.value.startPlayBack(startTime, endTime, Number(playSpeed.value))
     playing.value = true
   } catch (err) {
     ElMessage.error('回放打开失败')
@@ -360,15 +362,41 @@ const togglePlay = async () => {
 const stopPlay = async () => {
   if (playerComponentRef.value) {
     try {
+      // 先停止回放接口，再销毁播放器实例
       await playerComponentRef.value.stopPlaybackPlay()
       await playerComponentRef.value.destroyPlayer()
     } catch (err) {
       console.warn('关闭播放器异常', err)
     }
   }
+  // ==========父组件全部状态重置==========
   playing.value = false
+  playUrl.value = ''
+  streamInfo.value = null
+  // 时间相关重置
+  const nowTime = dayjs()
+  currentPlayTime.value = nowTime.format('YYYY‑MM‑DD HH:mm:ss')
+  hour.value = nowTime.format('HH')
+  minute.value = nowTime.format('mm')
+  second.value = nowTime.format('ss')
+  // 时间轴滚动位置清空
+  scrollX.value = 0
+  isDrag = false
+  startClientX = 0
+  // 录像片段清空
+  recordSegmentList.value = []
+  renderList.value = []
+  hourList.value = []
+  halfList.value = []
+  quarterList.value = []
+  // 倍速恢复默认1倍
+  playSpeed.value = 1
+  // 基准时间重置为选中日期凌晨
+  baseTime.value = dayjs(selectedDate.value).startOf('day').valueOf()
+  await nextTick(() => {
+    updateTimeAndRender()
+  })
 }
-
 const changeSpeed = async () => {
   const speedConfig = getSpeedConfig(rawType)
   if (speedConfig) {

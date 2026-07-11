@@ -1,22 +1,20 @@
 <template>
-  <div className="player-wrap">
+  <div class="player-wrap">
     <EasyPlayer
         ref="innerPlayerRef"
         class="easy-player-box"
-        width="100"
-        height="100"
-        :isPercentage="true"
+        :width="playerWidth"
+        :height="playerHeight"
+        :isPercentage="false"
         :quality="quality"
         :defaultQuality="defaultQuality"
         :isPtz="ptzEnable"
         :isQuality="isQuality"
         :isLive="isLive"
-        :videoUrl="wsUrl"
         @ptz="$emit('ptz',$event)"
     />
   </div>
 </template>
-
 <script setup>
 import {ref, defineProps, defineEmits, nextTick, watch} from 'vue'
 import {ElMessage} from 'element-plus'
@@ -46,9 +44,13 @@ const wsUrl = ref('')
 const flvUrl = ref('')
 const hlsUrl = ref('')
 const rtcUrl = ref('')
+const fmp4Url = ref('')
 const sharedIframe = ref('')
 const streamInfo = ref(null)
 const ptzEnable = ref(false)
+const playVideoUrl = ref('') // 绑定到Easy‑Player组件
+const playerWidth = ref(800)
+const playerHeight = ref(400)
 
 //私有方法
 const convertWsToHttp = (url) => {
@@ -61,9 +63,11 @@ const resetInnerStreamData = () => {
   wsUrl.value = ''
   flvUrl.value = ''
   rtcUrl.value = ''
+  fmp4Url.value = ''
   sharedIframe.value = ''
   streamInfo.value = null
   ptzEnable.value = false
+  playVideoUrl.value = '' //清空播放地址
 }
 
 const setStreamBaseData = (resData) => {
@@ -74,6 +78,8 @@ const setStreamBaseData = (resData) => {
   hlsUrl.value = isHttps ? data.https_hls : data.hls
   wsUrl.value = isHttps ? data.wss_flv : data.ws_flv
   rtcUrl.value = isHttps ? data.rtcs : data.rtc
+  //重点修复：回放优先ws‑fmp4，http‑fmp4播放器容易黑屏
+  fmp4Url.value = isHttps ? data.wss_fmp4 : data.ws_fmp4 || data.fmp4
   sharedIframe.value = `<iframe src="${window.location.origin}/easyPlayer?url=${encodeURIComponent(wsUrl.value)}"></iframe>`
   streamInfo.value = {
     ...data,
@@ -83,12 +89,29 @@ const setStreamBaseData = (resData) => {
   }
 }
 
+// 实时预览：移除手动play，赋值 playVideoUrl 由组件内部自动播放
 const autoPlayVideo = async () => {
-  // EasyPlayerPro 仅支持 HLS (m3u8) 和 FMP4 (mp4) 格式，优先使用 HLS
-  const playUrl = hlsUrl.value
-  if (!playUrl || !innerPlayerRef.value) return
+  const playUrl = flvUrl.value
+  if (!playUrl) return
   await nextTick()
-  innerPlayerRef.value.play(playUrl)
+  // 延迟300ms等待Easy‑Player实例初始化完毕
+  setTimeout(() => {
+    playVideoUrl.value = playUrl
+    innerPlayerRef.value.play(playVideoUrl.value);
+    console.log(playVideoUrl.value)
+  }, 300)
+}
+
+//回放播放：改用ws‑fmp4并且绑定playVideoUrl，不再手动调用实例play方法
+const autoPlayBackVideo = async () => {
+  const playUrl = fmp4Url.value
+  if (!playUrl) return
+  await nextTick()
+  setTimeout(() => {
+    playVideoUrl.value = playUrl
+    innerPlayerRef.value.play(playVideoUrl.value);
+    console.log(playVideoUrl.value)
+  }, 300)
 }
 
 const showPlayErr = (msg) => {
@@ -158,7 +181,7 @@ const startPlay = async () => {
  * @param {number} speed     倍速
  */
 const startPlayBack = async (startTime, endTime, speed = 1) => {
-  await  stopPlaybackPlay();
+  await stopPlaybackPlay();
   const row = props.deviceRow
   if (!row.id) return
   row.loading = true
@@ -173,7 +196,7 @@ const startPlayBack = async (startTime, endTime, speed = 1) => {
       deviceId: row.id,
       deviceCode: row.deviceCode,
       streamId: row.deviceCode,
-      app:typeCfg.app,
+      app: typeCfg.app,
       startTime,
       endTime,
       speed,
@@ -184,7 +207,7 @@ const startPlayBack = async (startTime, endTime, speed = 1) => {
     ptzEnable.value = !!typeCfg.ptz
     if (apiResponse?.data?.data) {
       setStreamBaseData(apiResponse.data.data)
-      await autoPlayVideo()
+      await autoPlayBackVideo()
       emit('stream-ready', {
         flvUrl: flvUrl.value,
         wsUrl: wsUrl.value,
@@ -212,6 +235,11 @@ const startPlayBack = async (startTime, endTime, speed = 1) => {
 }
 
 const stopPlaybackPlay = async () => {
+  //前端播放器先停止
+  if (innerPlayerRef.value && typeof innerPlayerRef.value.stop === 'function') {
+    innerPlayerRef.value.stop()
+  }
+  playVideoUrl.value = ''
   const deviceType = props.deviceRow.type
   const typeCfg = PLAY_TYPE_CONFIG[deviceType]
   const params = {
@@ -220,12 +248,13 @@ const stopPlaybackPlay = async () => {
     streamId: props.deviceRow.deviceCode,
     type: deviceType
   }
-  if (typeCfg.app) params.app =typeCfg.app
+  if (typeCfg.app) params.app = typeCfg.app
   if (typeCfg.needTcpMode) params.tcpMode = '0'
   await stopRtpPlayback(params)
   sharedIframe.value = ''
   streamInfo.value = null
 }
+
 //停止播放内部参数构造
 const buildRtpData = () => ({
   type: props.deviceRow.type,
@@ -261,6 +290,7 @@ const stopPlay = async () => {
     if (innerPlayerRef.value && typeof innerPlayerRef.value.stop === 'function') {
       innerPlayerRef.value.stop()
     }
+    playVideoUrl.value = ''
   } catch (err) {
     console.error('停止播放失败', err)
   }
@@ -272,9 +302,7 @@ const stopPlay = async () => {
 const destroyPlayer = async () => {
   await nextTick()
   if (!innerPlayerRef?.value) return
-  if (typeof innerPlayerRef.value.destroy === 'function') {
-    innerPlayerRef.value.destroy()
-  }
+  innerPlayerRef.value.destroy()
   innerPlayerRef.value = null
   resetInnerStreamData()
 }
@@ -287,6 +315,7 @@ defineExpose({
   stopPlay,
   destroyPlayer
 })
+
 </script>
 
 <style scoped lang="scss">
@@ -295,7 +324,6 @@ defineExpose({
   display: flex;
   justify-content: center;
 }
-
 .easy-player-box {
   width: 800px;
   height: 400px;
