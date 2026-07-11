@@ -1,5 +1,5 @@
 <template>
-  <div className="player-wrap">
+  <div class="player-wrap">
     <EasyPlayer
         ref="innerPlayerRef"
         class="easy-player-box"
@@ -13,6 +13,7 @@
         :isLive="isLive"
         :videoUrl="wsUrl"
         @ptz="$emit('ptz',$event)"
+        @play-progress="handlePlayerProgress"
     />
   </div>
 </template>
@@ -38,7 +39,7 @@ const props = defineProps({
   isQuality: Boolean,
   isLive: Boolean
 })
-const emit = defineEmits(['stream-ready', 'ptz'])
+const emit = defineEmits(['stream-ready', 'ptz', 'play-progress'])
 const innerPlayerRef = ref(null)
 
 //组件内部私有变量
@@ -49,6 +50,12 @@ const rtcUrl = ref('')
 const sharedIframe = ref('')
 const streamInfo = ref(null)
 const ptzEnable = ref(false)
+
+//接收播放器进度事件，规范化数据后抛出给父组件，杜绝抛出实例对象
+const handlePlayerProgress = (res) => {
+  if (!res || typeof res !== 'object' || !res.playTime) return
+  emit('play-progress', {playTime: res.playTime})
+}
 
 //私有方法
 const convertWsToHttp = (url) => {
@@ -84,10 +91,11 @@ const setStreamBaseData = (resData) => {
 }
 
 const autoPlayVideo = async () => {
-  // EasyPlayerPro 仅支持 HLS (m3u8) 和 FMP4 (mp4) 格式，优先使用 HLS
   const playUrl = flvUrl.value
   if (!playUrl || !innerPlayerRef.value) return
   await nextTick()
+  // 使用wasm版本直接传入http‑flv，不需要前缀；JS版启用下面一行
+  // const playUrl = 'mp4:' + flvUrl.value
   innerPlayerRef.value.play(playUrl)
 }
 
@@ -157,7 +165,7 @@ const startPlay = async () => {
  * @param {number} speed     倍速
  */
 const startPlayBack = async (startTime, endTime, speed = 1) => {
-  await  stopPlaybackPlay();
+  await stopPlaybackPlay();
   const row = props.deviceRow
   if (!row.id) return
   row.loading = true
